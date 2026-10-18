@@ -61,7 +61,7 @@ This project demonstrates:
 ## 🧰 Technology Stack
 
 ### Core Language & Build
-- **Java 21**
+- **Java 21** (compiled with `release 21`; CI runs on JDK 24)
 - **Maven**
 
 ### Browser Automation
@@ -121,12 +121,13 @@ This project demonstrates:
   - Manual dispatch
   - Nightly CRON
   - Parallel shards (`lingua`, `non-lingua`) + a single `publish` job
-- Artifact storage
-- GitHub Pages hosting (report hub)
+- Artifact storage (the Extent upload runs even after earlier step failures and errors if the run folder is empty)
+- GitHub Pages hosting (report hub); the `gh-pages` push is retried up to 3 times
 
 ### Notifications
 - **Discord Webhooks**
   - Start & completion alerts
+  - Publish-result alert from the `publish` job (status + test job result), so a missing nightly message means the run or publish never happened
   - Status indicators
   - Direct links to reports
 
@@ -459,7 +460,8 @@ Chosen for:
 
 - CAPTCHA may appear on YouTube → retry usually resolves it
 - Increase waits only when absolutely necessary
-- Verify GitHub Pages deployment if report links fail
+- Verify GitHub Pages deployment if report links fail: a green CI run only means the `gh-pages` push succeeded. GitHub then runs a separate "pages build and deployment" workflow (Actions tab), which can fail or lag on its own and leave the site stale
+- Scheduled (CRON) runs can be delayed or skipped by GitHub, and are auto-disabled after 60 days without repo activity; the Discord publish-result message is the quickest way to notice a missed night
 - Logs are always linked inside the Extent report
 
 ---
