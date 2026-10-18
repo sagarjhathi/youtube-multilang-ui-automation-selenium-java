@@ -114,11 +114,15 @@ jobs:
 
 
       - name: Upload test artifacts
+        # always() so a failed earlier step doesn't skip the upload; the RUN_FOLDER guard
+        # avoids uploading the whole WORKDIR if no run_* folder was found.
+        if: always() && env.RUN_FOLDER != ''
         uses: actions/upload-artifact@v4
         with:
           name: extent-${{ matrix.group }}
           path: ${{ env.WORKDIR }}/${{ env.RUN_FOLDER }}
           retention-days: 30
+          if-no-files-found: error
 
 
       - name: Upload Allure results
@@ -285,4 +289,25 @@ jobs:
           git checkout --orphan gh-pages-deploy
           git add -A
           git commit -m "Update report"
-          git push origin gh-pages-deploy:gh-pages --force
+
+          # Retry the push to ride out transient GitHub/network errors.
+          $pushed = $false
+          foreach ($attempt in 1..3) {
+            git push origin gh-pages-deploy:gh-pages --force
+            if ($LASTEXITCODE -eq 0) { $pushed = $true; break }
+            Write-Host "Push attempt $attempt failed, retrying..."
+            Start-Sleep -Seconds (10 * $attempt)
+          }
+          if (-not $pushed) { throw "git push to gh-pages failed after 3 attempts" }
+
+
+      - name: Notify Discord – Publish result
+        if: always()
+        continue-on-error: true
+        shell: bash
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          timestamp=$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p IST")
+          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**Report Publish - ${{ job.status }}**\\n Tests job: ${{ needs.test.result }}\\n Trigger: ${{ github.event_name }}\\n Branch: ${{ github.ref_name }}\\n Time: $timestamp\\n [View Run]($runUrl)\"}" "$DISCORD_WEBHOOK"

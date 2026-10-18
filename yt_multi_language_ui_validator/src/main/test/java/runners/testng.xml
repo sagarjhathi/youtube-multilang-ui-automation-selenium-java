@@ -13,12 +13,6 @@
      
       <class name="main.test.java.tests.YtMasterTests">
 
-     <methods>
-                    <include name="verifyingGlobalFilterLandingPage" />
-                    <include name="verifyingSideMenuLanguageAsInSettings" />
-                    
-                    <include name="verifyingSettingOptionsLang" />
-                </methods>
       </class>
       
       
