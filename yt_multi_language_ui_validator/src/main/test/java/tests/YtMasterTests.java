@@ -119,8 +119,8 @@ public class YtMasterTests extends BaseTest{
 			System.out.println(sideMenuItems.toString()+"        Append text from list");
 
 
-			String expectedData=genericUtility.stripKeywords(verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 1), "YouTube Music");
-			String actualData=genericUtility.stripKeywords(sideMenuItems.toString(), "YouTube Music");
+			String expectedData=genericUtility.stripKeywords(verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 1), "YouTube Music", "YouTube TV");
+			String actualData=genericUtility.stripKeywords(sideMenuItems.toString(), "YouTube Music", "YouTube TV");
 
 
 			if(sideMenuItems.toString().trim().equals(expectedData.trim())) {
