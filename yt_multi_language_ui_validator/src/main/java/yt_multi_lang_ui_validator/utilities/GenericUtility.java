@@ -251,6 +251,18 @@ public class GenericUtility extends BasePage {
 
 
 	/**
+	 * Repeats a very short text (e.g. a single language name) so Lingua has more to score. The expected language is
+	 * already known from the sheet, so this only gives the detector enough input to confirm it; it adds no new
+	 * information. Blank text is returned unchanged.
+	 */
+	public String repeatTextForDetection(String text, int times) {
+		if (text == null || text.isBlank() || times <= 1) {
+			return text;
+		}
+		return String.join(" ", java.util.Collections.nCopies(times, text.trim()));
+	}
+
+	/**
 	 * Language check for the Lingua tests: it only fails when BOTH the Lingua result and the {@code <html lang>}
 	 * attribute are wrong. If just one of them mismatches, the other still vouches for the language, so the
 	 * mismatch is logged as a warning and the test is not failed. For flaky-detection languages the Lingua

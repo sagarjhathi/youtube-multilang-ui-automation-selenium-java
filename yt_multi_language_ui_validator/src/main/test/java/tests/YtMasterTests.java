@@ -25,7 +25,7 @@ public class YtMasterTests extends BaseTest{
 
 	private static final  Logger log=LoggerUtility.getLogger(YtMasterTests.class);
 
-	@Test(groups = {"non-lingua"})
+	@Test(groups = {"non-lingua", "side-menu-expanded"})
 	public void verifyingSideMenuLanguageAsInSettings() throws InterruptedException {
 
 
@@ -119,7 +119,7 @@ public class YtMasterTests extends BaseTest{
 
 
 
-	@Test(groups = {"lingua"})
+	@Test(groups = {"lingua", "side-menu-expanded"})
 	public void verifyingSideMenuLanguageAsInSettingsLingua() throws InterruptedException {
 
 
@@ -221,7 +221,7 @@ public class YtMasterTests extends BaseTest{
 
 
 
-	@Test(groups = {"non-lingua"})
+	@Test(groups = {"non-lingua", "side-menu-collapsed"})
 	public void verifyingSideMenuCollapsedLangAsInSettings() throws InterruptedException, InvalidFormatException, IOException {
 
 
@@ -314,7 +314,7 @@ public class YtMasterTests extends BaseTest{
 
 
 
-	@Test(groups = {"lingua"})
+	@Test(groups = {"lingua", "side-menu-collapsed"})
 	public void verifyingSideMenuCollapsedLangAsInSettingsLingua() throws InterruptedException, InvalidFormatException, IOException {
 
 
@@ -418,7 +418,7 @@ public class YtMasterTests extends BaseTest{
 	}
 
 
-	@Test(groups = {"non-lingua"})
+	@Test(groups = {"non-lingua", "settings-region"})
 	public void verifyingSettingOptionsLang() throws InterruptedException {
 
 
@@ -475,7 +475,7 @@ public class YtMasterTests extends BaseTest{
 
 
 			String applicableLanguage=applicableExpectedLangReader.getCellValue(languageIndex, 0);
-			String detectedLanguage=LinguaHelper.detectLanguage(languageFromSettings);
+			String detectedLanguage=LinguaHelper.detectLanguage(genericUtility.repeatTextForDetection(languageFromSettings, 4));
 			String expectedLanguage=applicableExpectedLangReader.getCellValue(languageIndex, 1);
 
 
@@ -509,7 +509,7 @@ public class YtMasterTests extends BaseTest{
 
 
 
-	@Test(groups = {"non-lingua"})
+	@Test(groups = {"non-lingua", "settings-region"})
 	public void verifyCountryCodeAsBasedOnRegion() throws InterruptedException {
 
 
@@ -589,7 +589,7 @@ public class YtMasterTests extends BaseTest{
 
 
 
-	@Test(groups = {"non-lingua"})
+	@Test(groups = {"non-lingua", "global-filter"})
 	public void verifyingGlobalFilterLandingPage() throws InterruptedException {
 
 
@@ -669,7 +669,7 @@ public class YtMasterTests extends BaseTest{
 
 
 
-	@Test(groups = {"lingua"})
+	@Test(groups = {"lingua", "global-filter"})
 	public void verifyingGlobalFilterLandingPageLingua() throws InterruptedException {
 
 

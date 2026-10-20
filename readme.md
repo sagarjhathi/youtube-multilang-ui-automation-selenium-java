@@ -76,7 +76,7 @@ This project demonstrates:
   - Retry analyzers
   - Custom listeners
   - Suite-based execution
-  - Test groups (`lingua` / `non-lingua`)
+  - Test groups (feature groups used as CI shards, plus `lingua` / `non-lingua`)
 
 ### Data & Configuration
 - **Apache POI** (Excel-driven tests)
@@ -120,7 +120,7 @@ This project demonstrates:
   - Pull Request
   - Manual dispatch
   - Nightly CRON
-  - Parallel shards (`lingua`, `non-lingua`) + a single `publish` job
+  - Four parallel shards (`side-menu-expanded`, `side-menu-collapsed`, `settings-region`, `global-filter`) + a single `publish` job
 - Artifact storage (the Extent upload runs even after earlier step failures and errors if the run folder is empty)
 - GitHub Pages hosting (report hub); the `gh-pages` push is retried up to 3 times
 
@@ -188,8 +188,8 @@ This catches:
 ### 🌐 Public GitHub Pages Reports
 
 The latest execution report is always browser-accessible through a report hub page:
-- Merged Allure dashboard (both shards)
-- Separate Extent report per shard (`lingua`, `non-lingua`)
+- Merged Allure dashboard (all shards)
+- Separate Extent report per shard (one per feature group)
 - No downloads
 - Shareable links
 - Embedded screenshots and logs
@@ -262,11 +262,17 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-    A[GitHub Action Trigger] --> B1[Shard: lingua]
-    A --> B2[Shard: non-lingua]
-    B1 --> C[Artifacts: Extent run folder + Allure results]
+    A[GitHub Action Trigger] --> B1[Shard: side-menu-expanded]
+    A --> B2[Shard: side-menu-collapsed]
+    A --> B3[Shard: settings-region]
+    A --> B4[Shard: global-filter]
     B2 --> C
+    B3 --> C
+    B4 --> C
     B1 --> G[Discord Webhook]
+    B2 --> G
+    B3 --> G
+    B4 --> G
     B2 --> G
     C --> P[Publish job]
     P --> M[Merged Allure Report]
@@ -328,12 +334,16 @@ Every `@Test` in `YtMasterTests` carries a TestNG group, which is also how CI sp
 
 | Group | Tests |
 |---|---|
+| `side-menu-expanded` (CI shard) | `verifyingSideMenuLanguageAsInSettings`, `verifyingSideMenuLanguageAsInSettingsLingua` |
+| `side-menu-collapsed` (CI shard) | `verifyingSideMenuCollapsedLangAsInSettings`, `verifyingSideMenuCollapsedLangAsInSettingsLingua` |
+| `settings-region` (CI shard) | `verifyingSettingOptionsLang`, `verifyCountryCodeAsBasedOnRegion` |
+| `global-filter` (CI shard) | `verifyingGlobalFilterLandingPage`, `verifyingGlobalFilterLandingPageLingua` |
 | `lingua` | `verifyingSideMenuLanguageAsInSettingsLingua`, `verifyingSideMenuCollapsedLangAsInSettingsLingua`, `verifyingGlobalFilterLandingPageLingua` |
-| `non-lingua` | `verifyingSideMenuLanguageAsInSettings`, `verifyingSideMenuCollapsedLangAsInSettings`, `verifyingSettingOptionsLang`, `verifyCountryCodeAsBasedOnRegion`, `verifyingGlobalFilterLandingPage` |
+| `non-lingua` | the other five tests |
 
 The `groups` Maven property (empty by default = run everything) is passed to surefire, so a group is selected with `-Dgroups=<group>`.
 
-A new test needs a `groups = {...}` tag, otherwise it will not run in any CI shard.
+A new test needs a feature-group tag (one of the four shard groups), otherwise it will not run in any CI shard.
 
 ---
 
@@ -400,6 +410,7 @@ mvn clean test -DrunForAllLanguages=true
 ```bash
 mvn clean test -Dgroups=lingua
 mvn clean test -Dgroups=non-lingua
+mvn clean test -Dgroups=side-menu-expanded   # or side-menu-collapsed, settings-region, global-filter
 ```
 
 Run these from the `yt_multi_language_ui_validator/` folder. CI runs the same two commands as parallel shards.

@@ -25,9 +25,9 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 300
     strategy:
-      fail-fast: false   # one shard failing shouldn't cancel the other two
+      fail-fast: false   # one shard failing shouldn't cancel the others
       matrix:
-        group: [lingua,non-lingua]
+        group: [side-menu-expanded, side-menu-collapsed, settings-region, global-filter]
     env:
       REPORT_BASE: "/youtube-multi-lang-ui-validator-automation/"
       IS_CRON: ${{ github.event_name == 'schedule'}}  # <-- "true" only for cron
@@ -147,29 +147,20 @@ jobs:
           $ts = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'
           Add-Content -Path $env:GITHUB_ENV -Value "RUN_TIMESTAMP=$ts"
 
-      - name: Download ligua report
+      # Each shard's Extent run folder lands in its own subfolder: shards/extent-<group>/
+      - name: Download Extent reports (all shards)
         uses: actions/download-artifact@v4
         with:
-          name: extent-lingua
-          path: shards/lingua
+          pattern: extent-*
+          path: shards
 
-      - name: Download non-lingua report
+      # Allure raw results have unique file names, so every shard is merged into one folder
+      - name: Download Allure results (all shards)
         uses: actions/download-artifact@v4
         with:
-          name: extent-non-lingua
-          path: shards/non-lingua
-
-      - name: Download lingua allure results
-        uses: actions/download-artifact@v4
-        with:
-          name: allure-results-lingua
-          path: allure-results/lingua
-
-      - name: Download non-lingua allure results
-        uses: actions/download-artifact@v4
-        with:
-          name: allure-results-non-lingua
-          path: allure-results/non-lingua
+          pattern: allure-results-*
+          path: allure-results
+          merge-multiple: true
 
       - name: Set up Node (for Allure CLI)
         if: always()
@@ -181,7 +172,7 @@ jobs:
       - name: Generate merged Allure report
         run: |
           npm install -g allure-commandline
-          allure generate allure-results/lingua allure-results/non-lingua  --clean -o allure-report
+          allure generate allure-results --clean -o allure-report
 
 
       - name: Enable long paths (Windows)
@@ -216,8 +207,16 @@ jobs:
           # Each shard's reports/logs/screenshots folder is moved as a whole, untouched -
           # its ExtentReport.html uses ../logs and ../screenshots relative links, so the
           # three subfolders inside it must stay exactly as the shard produced them.
-          Copy-Item -Recurse -Force "shards/lingua" "$runPath/lingua"
-          Copy-Item -Recurse -Force "shards/non-lingua" "$runPath/non-lingua"
+          # One folder + one report card per shard that actually produced an artifact.
+          $shardCards = @()
+          foreach ($shard in Get-ChildItem -Path "shards" -Directory | Sort-Object Name) {
+            $name = $shard.Name -replace '^extent-', ''
+            Copy-Item -Recurse -Force $shard.FullName "$runPath/$name"
+            $shardCards += "<a class='card' href='$run/$name/reports/ExtentReport.html'>"
+            $shardCards += "<div class='card-title'>$name</div>"
+            $shardCards += '<div class="card-desc">Extent report for this shard</div>'
+            $shardCards += '</a>'
+          }
           Copy-Item -Recurse -Force "allure-report" "$runPath/allure-report"
 
           $indexPath = "gh-pages/index.html"
@@ -253,20 +252,10 @@ jobs:
             "<a class='card' href='$run/allure-report/index.html'>"
             '<span class="badge">MERGED</span>'
             '<div class="card-title">Allure report</div>'
-            '<div class="card-desc">Both shards combined in one dashboard</div>'
+            '<div class="card-desc">All shards combined in one dashboard</div>'
             '</a>'
 
-            "<a class='card' href='$run/lingua/reports/ExtentReport.html'>"
-            '<div class="card-title">lingua</div>'
-            '<div class="card-desc">Extent report for this shard</div>'
-            '</a>'
-
-            "<a class='card' href='$run/non-lingua/reports/ExtentReport.html'>"
-            '<div class="card-title">non-lingua</div>'
-            '<div class="card-desc">Extent report for this shard</div>'
-            '</a>'
-
-          
+            $shardCards
 
             '</div>'
             '</body>'
