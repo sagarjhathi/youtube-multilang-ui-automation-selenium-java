@@ -190,7 +190,7 @@ public class YtMasterTests extends BaseTest{
 
 
 			String applicableLanguage=applicableExpectedLangReader.getCellValue(languageIndex, 0);
-			String detectedLanguage=LinguaHelper.detectLanguage(sideMenuItems.toString());
+			String detectedLanguage=LinguaHelper.detectLanguage(genericUtility.removeEnglishWordsForNonEnglish(sideMenuItems.toString(), langText));
 			String expectedLanguage=applicableExpectedLangReader.getCellValue(languageIndex, 1);
 
 
@@ -391,8 +391,9 @@ public class YtMasterTests extends BaseTest{
 
 
 			String applicableLanguage=applicableExpectedReader.getCellValue(languageIndex, 0);
-			String detectedLanguage=LinguaHelper.detectLanguage(sideMenuItems.toString());
-			log.info("text sent to lingua is "+"      "+sideMenuItems.toString());
+			String textForLingua=genericUtility.removeEnglishWordsForNonEnglish(sideMenuItems.toString(), langText);
+			String detectedLanguage=LinguaHelper.detectLanguage(textForLingua);
+			log.info("text sent to lingua is "+"      "+textForLingua);
 			String expectedLanguage=applicableExpectedReader.getCellValue(languageIndex, 1);
 
 
@@ -741,7 +742,7 @@ public class YtMasterTests extends BaseTest{
 
 
 			String applicableLanguage=applicableExpectedLangReader.getCellValue(languageIndex, 0);
-			String detectedLanguage=LinguaHelper.detectLanguage(globalSettingText);
+			String detectedLanguage=LinguaHelper.detectLanguage(genericUtility.removeEnglishWordsForNonEnglish(globalSettingText, langText));
 			String expectedLanguage=applicableExpectedLangReader.getCellValue(languageIndex, 1);
 
 

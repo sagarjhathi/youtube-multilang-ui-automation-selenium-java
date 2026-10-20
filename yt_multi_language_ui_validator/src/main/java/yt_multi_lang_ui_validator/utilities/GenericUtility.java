@@ -221,6 +221,35 @@ public class GenericUtility extends BasePage {
 	}
 
 
+	/**
+	 * English / brand words YouTube leaves untranslated in every language's UI. Matched as whole words,
+	 * case-insensitive. Extend this list if a new untranslated label starts confusing Lingua.
+	 */
+	private static final List<String> UNTRANSLATED_ENGLISH_WORDS = List.of(
+			"YouTube", "Shorts", "Music", "Premium", "Kids", "Studio", "TV");
+
+	/**
+	 * Removes the untranslated English words from text before it is handed to Lingua, so they don't dilute or
+	 * skew the detection of the real UI language. Nothing is removed when the language under test is English
+	 * (the English words are then the expected content). If stripping would leave nothing, the original text
+	 * is returned so Lingua always has something to work with.
+	 *
+	 * @param text         the UI text fetched from the page
+	 * @param languageName the language selected in the UI, as written in the sheet (e.g. "Deutsch", "English (US)")
+	 */
+	public String removeEnglishWordsForNonEnglish(String text, String languageName) {
+		if (text == null || languageName == null || languageName.trim().regionMatches(true, 0, "English", 0, 7)) {
+			return text;
+		}
+		String result = text;
+		for (String word : UNTRANSLATED_ENGLISH_WORDS) {
+			result = result.replaceAll("(?iu)(?<![\\p{L}\\p{N}])" + java.util.regex.Pattern.quote(word) + "(?![\\p{L}\\p{N}])", " ");
+		}
+		result = result.replaceAll("\\s+", " ").trim();
+		return result.isEmpty() ? text : result;
+	}
+
+
 	/** Languages whose Lingua detection result is unreliable; the detection assertion is skipped for these. */
 	// non-ASCII chars written as (char) codes so the source compiles regardless of platform encoding
 	private static final List<String> FLAKY_DETECTION_LANGUAGES = List.of(

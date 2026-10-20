@@ -40,3 +40,6 @@ bin/
 .env
 *.pem
 *.key
+
+# Internal notes (local only)
+docs/
