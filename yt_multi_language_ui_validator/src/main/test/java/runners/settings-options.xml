@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Suite" parallel="methods" thread-count="1">
+
+<listeners>
+        <listener class-name="main.test.java.retry.RetryListener"/>
+        <listener class-name="main.java.yt_multi_lang_ui_validator.reporting.TestListenerUpdated"/>
+    </listeners>
+
+  <!-- Single-test runner: mvn clean test -Dsurefire.suiteXmlFiles=src/main/test/java/runners/settings-options.xml -->
+  <test name="Settings Options Lang" parallel="methods" thread-count="1">
+    <classes>
+      <class name="main.test.java.tests.YtMasterTests">
+        <methods>
+          <include name="verifyingSettingOptionsLang"/>
+        </methods>
+      </class>
+    </classes>
+  </test>
+
+</suite>

@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -153,6 +154,37 @@ public class YtLandingPage  extends BasePage{
 	public void clickingSettingEllipsesButton() throws InterruptedException {
 		log.info("Clicking settings ellipses button...");
 		safeAct.safeFindElement(settingEllipsesButton).click();
+	}
+
+	/** The rows you see inside the open settings menu (Appearance, Language, Location...). Language independent. */
+	public By settingsMenuRows=By.xpath("//ytd-multi-page-menu-renderer//ytd-compact-link-renderer");
+
+	/** The menu counts as open only while at least one of its rows is actually displayed on screen. */
+	private boolean isSettingsMenuOpen() {
+		try {
+			// return driver.findElements(settingEllipsesOptionsListLandingPage).stream().anyMatch(WebElement::isDisplayed);
+			return driver.findElements(settingsMenuRows).stream().anyMatch(WebElement::isDisplayed);
+		} catch (StaleElementReferenceException e) {
+			return false;
+		}
+	}
+
+	/** Opens the settings menu only if it is closed, so repeated calls never toggle it shut. */
+	public void openSettingsMenu() {
+		if (!isSettingsMenuOpen()) {
+			log.info("Settings menu is closed, opening it...");
+			safeAct.safeFindElement(settingEllipsesButton).click();
+		}
+		wait.until(d -> isSettingsMenuOpen());
+	}
+
+	/** Closes the settings menu only if it is open, so repeated calls never toggle it open. */
+	public void closeSettingsMenu() {
+		if (isSettingsMenuOpen()) {
+			log.info("Settings menu is open, closing it...");
+			safeAct.safeFindElement(settingEllipsesButton).click();
+		}
+		wait.until(d -> !isSettingsMenuOpen());
 	}
 
 	public void clickingLanguageDropdownButton() throws InterruptedException {

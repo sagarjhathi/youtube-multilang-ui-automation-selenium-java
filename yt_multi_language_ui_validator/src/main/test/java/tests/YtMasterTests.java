@@ -461,17 +461,17 @@ public class YtMasterTests extends BaseTest{
 
 			landingPage.getLanguageElementByName(langText).click();
 
-			landingPage.clickingSettingEllipsesButton();
+			// landingPage.clickingSettingEllipsesButton();
+			landingPage.openSettingsMenu();
 			genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
 			ScreenshotUtilUpdated.capture(testName, langText);
-			landingPage.clickingSettingEllipsesButton();
-
-
-
-			landingPage.clickingSettingEllipsesButton();
+			// landingPage.clickingSettingEllipsesButton();
+			//
+			// landingPage.clickingSettingEllipsesButton();
 
 			String languageFromSettings=landingPage.getsettingEllipsesOptionsListLandingPage();
-			landingPage.clickingSettingEllipsesButton();
+			// landingPage.clickingSettingEllipsesButton();
+			landingPage.closeSettingsMenu();
 
 
 			String applicableLanguage=applicableExpectedLangReader.getCellValue(languageIndex, 0);
@@ -493,8 +493,8 @@ public class YtMasterTests extends BaseTest{
 			softAssert.assertEquals(detectedLanguageAttribute, expectedLanguageAttribute, "Language attributr mismatch for language="+langText);
 
 
-			landingPage.clickingSettingEllipsesButton();
-
+			// landingPage.clickingSettingEllipsesButton();
+			landingPage.openSettingsMenu();
 			landingPage.clickingLanguageDropdownButton();
 
 
