@@ -202,12 +202,7 @@ public class YtMasterTests extends BaseTest{
 
 			log.info("[{}] ApplicableLanguage==  "+applicableLanguage+"     "+"Detected Language ==  "+detectedLanguage+"  "+"Expected Language == "+expectedLanguage, ThreadContext.get("testName"));
 
-			if(genericUtility.isFlakyDetectionLanguage(langText)) {
-				log.info("[{}] Skipping language detection check for flaky language={}", ThreadContext.get("testName"), langText);
-			} else {
-				softAssert.assertEquals(detectedLanguage, expectedLanguage, "Page title mismatch for language="+langText);
-			}
-			softAssert.assertEquals(detectedLanguageAttribute, expectedLanguageAttribute, "Language attributr mismatch for language"+langText);
+			genericUtility.assertLanguageDetectedOrAttributeMatches(softAssert, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
 
 
 			landingPage.clickingSettingEllipsesButton();
@@ -406,12 +401,7 @@ public class YtMasterTests extends BaseTest{
 
 
 
-			if(genericUtility.isFlakyDetectionLanguage(langText)) {
-				log.info("[{}] Skipping language detection check for flaky language={}", ThreadContext.get("testName"), langText);
-			} else {
-				softAssert.assertEquals(detectedLanguage, expectedLanguage, "Language detection mismatch for language="+langText);
-			}
-			softAssert.assertEquals(detectedLanguageAttribute, expectedLanguageAttribute, "Language attributr mismatch for language="+langText);
+			genericUtility.assertLanguageDetectedOrAttributeMatches(softAssert, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
 
 
 			landingPage.clickingSettingEllipsesButton();
@@ -752,12 +742,7 @@ public class YtMasterTests extends BaseTest{
 			System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
 			System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language attribute   "+detectedLanguageAttribute+"  "+"Expected Language attribute "+expectedLanguageAttribute);
 
-			if(genericUtility.isFlakyDetectionLanguage(langText)) {
-				log.info("[{}] Skipping language detection check for flaky language={}", ThreadContext.get("testName"), langText);
-			} else {
-				softAssert.assertEquals(detectedLanguage, expectedLanguage, "Language detection mismatch for language="+langText);
-			}
-			softAssert.assertEquals(detectedLanguageAttribute, expectedLanguageAttribute, "Language attributr mismatch for language"+langText);
+			genericUtility.assertLanguageDetectedOrAttributeMatches(softAssert, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
 
 
 
