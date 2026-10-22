@@ -258,32 +258,18 @@ public class GenericUtility extends BasePage {
 	}
 
 	/**
-	 * Language check for the Lingua tests: it only fails when BOTH the Lingua result and the {@code <html lang>}
-	 * attribute are wrong. If just one of them mismatches, the other still vouches for the language, so the
-	 * mismatch is logged as a warning and the test is not failed. For flaky-detection languages the Lingua
-	 * result is ignored and only the attribute is asserted.
+	 * Language check for the Lingua tests: both the {@code <html lang>} attribute and the Lingua result must
+	 * match the expected values. For flaky-detection languages the Lingua result is ignored and only the
+	 * attribute is asserted.
 	 */
-	public void assertLanguageDetectedOrAttributeMatches(org.testng.asserts.SoftAssert softAssert, String langText,
+	public void assertLanguageDetectedAndAttributeMatch(org.testng.asserts.SoftAssert softAssert, String langText,
 			String detectedLanguage, String expectedLanguage, String detectedAttribute, String expectedAttribute) {
-		String testName = ThreadContext.get("testName");
+		softAssert.assertEquals(detectedAttribute, expectedAttribute, "Language attribute mismatch for language=" + langText);
 		if (isFlakyDetectionLanguage(langText)) {
-			log.info("[{}] Skipping language detection check for flaky language={}", testName, langText);
-			softAssert.assertEquals(detectedAttribute, expectedAttribute, "Language attribute mismatch for language=" + langText);
+			log.info("[{}] Skipping language detection check for flaky language={}", ThreadContext.get("testName"), langText);
 			return;
 		}
-		boolean detectionMatches = detectedLanguage != null && detectedLanguage.equals(expectedLanguage);
-		boolean attributeMatches = detectedAttribute != null && detectedAttribute.equals(expectedAttribute);
-		if (!detectionMatches && !attributeMatches) {
-			softAssert.fail("Both language detection and lang attribute mismatch for language=" + langText
-					+ " | detected [" + detectedLanguage + "] expected [" + expectedLanguage + "]"
-					+ " | attribute detected [" + detectedAttribute + "] expected [" + expectedAttribute + "]");
-		} else if (!detectionMatches) {
-			log.warn("[{}] Lingua mismatch ignored because lang attribute matches. language={} detected={} expected={}",
-					testName, langText, detectedLanguage, expectedLanguage);
-		} else if (!attributeMatches) {
-			log.warn("[{}] Lang attribute mismatch ignored because Lingua detection matches. language={} detected={} expected={}",
-					testName, langText, detectedAttribute, expectedAttribute);
-		}
+		softAssert.assertEquals(detectedLanguage, expectedLanguage, "Language detection mismatch for language=" + langText);
 	}
 
 
