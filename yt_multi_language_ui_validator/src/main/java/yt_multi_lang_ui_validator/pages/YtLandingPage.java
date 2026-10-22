@@ -1,30 +1,16 @@
 package main.java.yt_multi_lang_ui_validator.pages;
 
-import java.time.Duration; 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.ThreadContext;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import main.java.yt_multi_lang_ui_validator.base.BasePage;
 import main.java.yt_multi_lang_ui_validator.config.ConfigManager;
-import main.java.yt_multi_lang_ui_validator.lingua.LinguaHelper;
 import main.java.yt_multi_lang_ui_validator.logger.LoggerUtility;
 import main.java.yt_multi_lang_ui_validator.safeActions.SafeActions;
-import main.java.yt_multi_lang_ui_validator.utilities.WaitUtility;
 
 public class YtLandingPage  extends BasePage{
 
@@ -89,7 +75,7 @@ public class YtLandingPage  extends BasePage{
 	
 	public By getLanguageElementByNameBy(String name) {
 		By locator=By.xpath("//yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='" + name + "']");
-		WebElement safeElement = safeAct.safeFindElement(locator);
+		safeAct.safeFindElement(locator);
 		log.info("Looking for language element with name: {}", name);
 		return locator;
 	}

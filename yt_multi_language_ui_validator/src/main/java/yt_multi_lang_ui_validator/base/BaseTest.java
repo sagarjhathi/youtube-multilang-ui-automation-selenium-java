@@ -1,22 +1,17 @@
 package main.java.yt_multi_lang_ui_validator.base;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Listeners;
 import main.java.yt_multi_lang_ui_validator.driverManager.DriverManager;
-import main.java.yt_multi_lang_ui_validator.logger.LoggerUtility;
 import main.java.yt_multi_lang_ui_validator.pathManager.PathManager;
 import main.java.yt_multi_lang_ui_validator.reporting.ReportManager;
 
@@ -82,10 +77,6 @@ public class BaseTest {
 	      // Now safe to do anything else
 	      DriverManager.initDriver();
 	      driver = DriverManager.getDriver();
-
-	      String path = PathManager.getRunFolderPath()
-	              + File.separator + testName;
-
 	  }
 	    
 	  

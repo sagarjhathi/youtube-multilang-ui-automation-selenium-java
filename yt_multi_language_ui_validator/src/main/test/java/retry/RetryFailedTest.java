@@ -5,7 +5,6 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 
 import main.java.yt_multi_lang_ui_validator.logger.LoggerUtility;
-import main.java.yt_multi_lang_ui_validator.utilities.GenericUtility;
 
 import java.util.Arrays;
 import java.util.List;

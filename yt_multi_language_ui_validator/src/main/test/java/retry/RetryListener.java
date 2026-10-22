@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 public class RetryListener implements IAnnotationTransformer {
 
     @Override
+    @SuppressWarnings("rawtypes") // raw types are required by the IAnnotationTransformer signature
     public void transform(
             ITestAnnotation annotation,
             Class testClass,

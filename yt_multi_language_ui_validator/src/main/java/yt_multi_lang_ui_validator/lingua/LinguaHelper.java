@@ -1,19 +1,11 @@
 package main.java.yt_multi_lang_ui_validator.lingua;
 
 import com.github.pemistahl.lingua.api.*; 
-import com.github.pemistahl.lingua.api.*;
 
-import main.java.yt_multi_lang_ui_validator.driverManager.DriverManager;
 import main.java.yt_multi_lang_ui_validator.logger.LoggerUtility;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.ThreadContext;
 
 public class LinguaHelper {
 	

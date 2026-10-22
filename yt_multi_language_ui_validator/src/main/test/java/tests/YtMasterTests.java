@@ -8,10 +8,8 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
-import main.test.java.retry.*;
 import main.java.yt_multi_lang_ui_validator.base.BaseTest;
 import main.java.yt_multi_lang_ui_validator.fileReader.FileReader;
-import main.java.yt_multi_lang_ui_validator.fileWriter.ExcelFileWriter;
 import main.java.yt_multi_lang_ui_validator.lingua.LinguaHelper;
 import main.java.yt_multi_lang_ui_validator.logger.LoggerUtility;
 import main.java.yt_multi_lang_ui_validator.pages.YtLandingPage;
@@ -343,7 +341,7 @@ public class YtMasterTests extends BaseTest{
 
 
 
-		List<Integer> sizes=genericUtility.getWindowHeightWidth();
+		genericUtility.getWindowHeightWidth();
 		landingPage.clickingLeftEllipses();
 
 

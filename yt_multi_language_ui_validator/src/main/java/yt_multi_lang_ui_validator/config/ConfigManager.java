@@ -7,8 +7,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Duration;
-import java.util.Locale;
 import java.util.Properties;
 
 

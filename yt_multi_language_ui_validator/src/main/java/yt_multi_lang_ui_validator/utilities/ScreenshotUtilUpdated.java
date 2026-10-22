@@ -1,9 +1,6 @@
 package main.java.yt_multi_lang_ui_validator.utilities;
 
 import java.io.File; 
-import java.nio.file.Files;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Logger;

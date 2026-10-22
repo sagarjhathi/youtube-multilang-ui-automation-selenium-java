@@ -15,7 +15,7 @@ public class ImageCompressor {
 			.outputQuality(outPutQuality)
 			.toFile(new File(outPutPath));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.err.println("Failed to compress image " + src + ": " + e.getMessage());
 			e.printStackTrace();
 		}
 		
