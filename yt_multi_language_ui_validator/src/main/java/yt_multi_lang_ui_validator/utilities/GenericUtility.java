@@ -299,12 +299,12 @@ public class GenericUtility extends BasePage {
 	 */
 	public void assertLanguageDetectedAndAttributeMatch(org.testng.asserts.SoftAssert softAssert, String langText,
 			String detectedLanguage, String expectedLanguage, String detectedAttribute, String expectedAttribute) {
-		softAssert.assertEquals(detectedAttribute, expectedAttribute, "Language attribute mismatch for language=" + langText);
+		softAssert.assertEquals(detectedAttribute, expectedAttribute, "Html lang attribute differs | language=" + langText);
 		if (isFlakyDetectionLanguage(langText)) {
 			log.info("[{}] Skipping language detection check for flaky language={}", ThreadContext.get("testName"), langText);
 			return;
 		}
-		softAssert.assertEquals(detectedLanguage, expectedLanguage, "Language detection mismatch for language=" + langText);
+		softAssert.assertEquals(detectedLanguage, expectedLanguage, "Lingua detection differs | language=" + langText);
 	}
 
 

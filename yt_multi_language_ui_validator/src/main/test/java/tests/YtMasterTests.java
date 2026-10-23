@@ -15,6 +15,7 @@ import main.java.yt_multi_lang_ui_validator.lingua.LinguaHelper;
 import main.java.yt_multi_lang_ui_validator.logger.LoggerUtility;
 import main.java.yt_multi_lang_ui_validator.pages.YtLandingPage;
 import main.java.yt_multi_lang_ui_validator.utilities.GenericUtility;
+import main.java.yt_multi_lang_ui_validator.utilities.LoopGuard;
 import main.java.yt_multi_lang_ui_validator.utilities.ScreenshotUtilUpdated;
 import main.java.yt_multi_lang_ui_validator.utilities.WaitUtility;
 
@@ -53,10 +54,11 @@ public class YtMasterTests extends BaseTest{
 		LanguagesRowCount = genericUtility.resolveLanguageIterationCount(LanguagesRowCount);
 
 
-		try {
-			for(int languageIndex=1;languageIndex<LanguagesRowCount;languageIndex++) {
+		LoopGuard guard=new LoopGuard(softAssert);
+		for(int languageIndex=1;languageIndex<LanguagesRowCount && !guard.shouldStop();languageIndex++) {
 
-				String langText=verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 0);
+			String langText=verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 0);
+			try {
 				System.out.println(langText+" lang text from the sheet   "+languageIndex);
 
 				ScreenshotUtilUpdated.capture(testName, langText);
@@ -97,7 +99,7 @@ public class YtMasterTests extends BaseTest{
 
 
 				System.out.println("========="+expectedData+" =====  Expected data from the sheet");
-				softAssert.assertEquals(actualData.trim(),expectedData.trim(),"Mismatch in the Actual and Expected data for language="+langText);
+				softAssert.assertEquals(actualData.trim(),expectedData.trim(),"Side menu text differs | language="+langText);
 
 
 				landingPage.clickingSettingEllipsesButton();
@@ -105,9 +107,12 @@ public class YtMasterTests extends BaseTest{
 				landingPage.clickingLanguageDropdownButton();
 
 
+				guard.passed(langText);
+			} catch (Exception e) {
+				if (guard.retryAfterFailure(langText, e, () -> reopenLanguageDropdown(landingPage))) {
+					languageIndex--; // run the same language again
+				}
 			}
-		} catch (Exception e) {
-			softAssert.fail("Test stopped early: " + e);
 		}
 
 		verifyingSideMenuLanguageAsInSettingsDataReader.closeWorkbook();
@@ -161,10 +166,11 @@ public class YtMasterTests extends BaseTest{
 		LanguagesRowCount = genericUtility.resolveLanguageIterationCount(LanguagesRowCount);
 
 
-		try {
-			for(int languageIndex=1;languageIndex<LanguagesRowCount;languageIndex++) {
+		LoopGuard guard=new LoopGuard(softAssert);
+		for(int languageIndex=1;languageIndex<LanguagesRowCount && !guard.shouldStop();languageIndex++) {
 
-				String langText=applicableExpectedLangReader.getCellValue(languageIndex, 0);
+			String langText=applicableExpectedLangReader.getCellValue(languageIndex, 0);
+			try {
 				System.out.println(langText+" lang text from the sheet   "+languageIndex);
 
 
@@ -201,7 +207,7 @@ public class YtMasterTests extends BaseTest{
 
 
 				String expectedLanguageAttribute=applicableExpectedAttributeReader.getCellValue(languageIndex, 1);
-				softAssert.assertEquals(applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Attribute sheet row "+languageIndex+" is for a different language than the language sheet");
+				softAssert.assertEquals(applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
 				String detectedLanguageAttribute=genericUtility.getLangAttribute();
 
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
@@ -217,9 +223,12 @@ public class YtMasterTests extends BaseTest{
 				landingPage.clickingLanguageDropdownButton();
 
 
+				guard.passed(langText);
+			} catch (Exception e) {
+				if (guard.retryAfterFailure(langText, e, () -> reopenLanguageDropdown(landingPage))) {
+					languageIndex--; // run the same language again
+				}
 			}
-		} catch (Exception e) {
-			softAssert.fail("Test stopped early: " + e);
 		}
 		applicableExpectedLangReader.closeWorkbook();
 		applicableExpectedAttributeReader.closeWorkbook();
@@ -269,10 +278,11 @@ public class YtMasterTests extends BaseTest{
 		LanguagesRowCount = genericUtility.resolveLanguageIterationCount(LanguagesRowCount);
 
 
-		try {
-			for(int languageIndex=1;languageIndex<LanguagesRowCount;languageIndex++) {
+		LoopGuard guard=new LoopGuard(softAssert);
+		for(int languageIndex=1;languageIndex<LanguagesRowCount && !guard.shouldStop();languageIndex++) {
 
-				String langText=verifyingSideMenuCollapsedLangAsInSettingsDataReader.getCellValue(languageIndex, 0);
+			String langText=verifyingSideMenuCollapsedLangAsInSettingsDataReader.getCellValue(languageIndex, 0);
+			try {
 				System.out.println(langText+"    "+languageIndex);
 
 
@@ -299,16 +309,19 @@ public class YtMasterTests extends BaseTest{
 				String actualData=sideMenuItems.toString();
 
 
-				softAssert.assertEquals(actualData.trim(),expectedData.trim(),"Mismatch in the Actual and Expected data for language="+langText);
+				softAssert.assertEquals(actualData.trim(),expectedData.trim(),"Side menu text differs | language="+langText);
 
 
 				landingPage.clickingSettingEllipsesButton();
 
 				landingPage.clickingLanguageDropdownButton();
 
+				guard.passed(langText);
+			} catch (Exception e) {
+				if (guard.retryAfterFailure(langText, e, () -> reopenCollapsedLanguageDropdown(landingPage))) {
+					languageIndex--; // run the same language again
+				}
 			}
-		} catch (Exception e) {
-			softAssert.fail("Test stopped early: " + e);
 		}
 
 		verifyingSideMenuCollapsedLangAsInSettingsDataReader.closeWorkbook();
@@ -369,10 +382,11 @@ public class YtMasterTests extends BaseTest{
 
 		LanguagesRowCount = genericUtility.resolveLanguageIterationCount(LanguagesRowCount);
 
-		try {
-			for(int languageIndex=1;languageIndex<LanguagesRowCount;languageIndex++) {
+		LoopGuard guard=new LoopGuard(softAssert);
+		for(int languageIndex=1;languageIndex<LanguagesRowCount && !guard.shouldStop();languageIndex++) {
 
-				String langText=applicableExpectedReader.getCellValue(languageIndex, 0);
+			String langText=applicableExpectedReader.getCellValue(languageIndex, 0);
+			try {
 				System.out.println(langText+"    "+languageIndex);
 
 
@@ -404,7 +418,7 @@ public class YtMasterTests extends BaseTest{
 
 
 				String expectedLanguageAttribute=applicableExpectedAttributeReader.getCellValue(languageIndex, 1);
-				softAssert.assertEquals(applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Attribute sheet row "+languageIndex+" is for a different language than the language sheet");
+				softAssert.assertEquals(applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
 
 				String detectedLanguageAttribute=genericUtility.getLangAttribute();
 
@@ -420,9 +434,12 @@ public class YtMasterTests extends BaseTest{
 
 				landingPage.clickingLanguageDropdownButton();
 
+				guard.passed(langText);
+			} catch (Exception e) {
+				if (guard.retryAfterFailure(langText, e, () -> reopenCollapsedLanguageDropdown(landingPage))) {
+					languageIndex--; // run the same language again
+				}
 			}
-		} catch (Exception e) {
-			softAssert.fail("Test stopped early: " + e);
 		}
 		applicableExpectedReader.closeWorkbook();
 		applicableExpectedAttributeReader.closeWorkbook();
@@ -468,10 +485,11 @@ public class YtMasterTests extends BaseTest{
 
 		LanguagesRowCount = genericUtility.resolveLanguageIterationCount(LanguagesRowCount);
 
-		try {
-			for(int languageIndex=1;languageIndex<LanguagesRowCount;languageIndex++) {
+		LoopGuard guard=new LoopGuard(softAssert);
+		for(int languageIndex=1;languageIndex<LanguagesRowCount && !guard.shouldStop();languageIndex++) {
 
-				String langText=applicableExpectedLangReader.getCellValue(languageIndex, 0);
+			String langText=applicableExpectedLangReader.getCellValue(languageIndex, 0);
+			try {
 				System.out.println(langText+"    "+languageIndex);
 
 
@@ -496,7 +514,7 @@ public class YtMasterTests extends BaseTest{
 
 
 				String expectedLanguageAttribute=applicableExpectedAttributeReader.getCellValue(languageIndex, 1);
-				softAssert.assertEquals(applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Attribute sheet row "+languageIndex+" is for a different language than the language sheet");
+				softAssert.assertEquals(applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
 				String detectedLanguageAttribute=genericUtility.getLangAttribute();
 
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
@@ -510,9 +528,12 @@ public class YtMasterTests extends BaseTest{
 				landingPage.clickingLanguageDropdownButton();
 
 
+				guard.passed(langText);
+			} catch (Exception e) {
+				if (guard.retryAfterFailure(langText, e, () -> reopenLanguageDropdown(landingPage))) {
+					languageIndex--; // run the same language again
+				}
 			}
-		} catch (Exception e) {
-			softAssert.fail("Test stopped early: " + e);
 		}
 
 		applicableExpectedLangReader.closeWorkbook();
@@ -562,10 +583,12 @@ public class YtMasterTests extends BaseTest{
 
 
 
-		try {
-			for(int locationIndex=0;locationIndex<locationListSize;locationIndex++) {
+		LoopGuard guard=new LoopGuard(softAssert);
+		for(int locationIndex=0;locationIndex<locationListSize && !guard.shouldStop();locationIndex++) {
+			String locationText = "location #"+locationIndex;
+			try {
 				locationList=landingPage.getLocationList();
-				String locationText = locationList.get(locationIndex).getText();
+				locationText = locationList.get(locationIndex).getText();
 
 
 				System.out.println(locationText+"    "+locationIndex);
@@ -590,17 +613,18 @@ public class YtMasterTests extends BaseTest{
 				String detectedCountryCode=landingPage.getCountryCode();
 
 				System.out.println("applicable location is ==  "+applicableLocation+" Expected location  =="+expectedCountryCode+"  detected country code"+detectedCountryCode);
-				softAssert.assertEquals(detectedCountryCode, expectedCountryCode,"Country code mismatch for location="+locationText);
+				softAssert.assertEquals(detectedCountryCode, expectedCountryCode,"Country code differs | location="+locationText);
 
 				landingPage.clickingSettingEllipsesButton();
 
 				landingPage.clickingLocationDropdownUnderSettings();
 
-
-
+				guard.passed(locationText);
+			} catch (Exception e) {
+				if (guard.retryAfterFailure(locationText, e, () -> reopenLocationDropdown(landingPage))) {
+					locationIndex--; // run the same location again
+				}
 			}
-		} catch (Exception e) {
-			softAssert.fail("Test stopped early: " + e);
 		}
 		reader.closeWorkbook();
 		softAssert.assertAll();
@@ -637,15 +661,16 @@ public class YtMasterTests extends BaseTest{
 
 		LanguagesRowCount = genericUtility.resolveLanguageIterationCount(LanguagesRowCount);
 
-		try {
-			for(int languageIndex=1;languageIndex<LanguagesRowCount;languageIndex++) {
+		LoopGuard guard=new LoopGuard(softAssert);
+		for(int languageIndex=1;languageIndex<LanguagesRowCount && !guard.shouldStop();languageIndex++) {
 
+			String langText=verifyingGlobalFilterLandingPageDataReader.getCellValue(languageIndex, 0);
+			try {
 				landingPage.clickingSettingEllipsesButton();
 
 				landingPage.clickingLanguageDropdownButton();
 
 
-				String langText=verifyingGlobalFilterLandingPageDataReader.getCellValue(languageIndex, 0);
 				System.out.println(langText+"    "+languageIndex);
 
 
@@ -670,13 +695,14 @@ public class YtMasterTests extends BaseTest{
 				String actualValue=globalSettingText;
 
 
-				softAssert.assertEquals(genericUtility.normalizeText(actualValue), genericUtility.normalizeText(expectedData), "Mismatch in the Expected and Actual Data for language="+langText);
+				softAssert.assertEquals(genericUtility.normalizeText(actualValue), genericUtility.normalizeText(expectedData), "Global filter text differs | language="+langText);
 
-
-
+				guard.passed(langText);
+			} catch (Exception e) {
+				if (guard.retryAfterFailure(langText, e, () -> reopenSearchResults(landingPage, genericUtility))) {
+					languageIndex--; // run the same language again
+				}
 			}
-		} catch (Exception e) {
-			softAssert.fail("Test stopped early: " + e);
 		}
 
 		verifyingGlobalFilterLandingPageDataReader.closeWorkbook();
@@ -725,15 +751,16 @@ public class YtMasterTests extends BaseTest{
 		LanguagesRowCount = genericUtility.resolveLanguageIterationCount(LanguagesRowCount);
 
 
-		try {
-			for(int languageIndex=1;languageIndex<LanguagesRowCount;languageIndex++) {
+		LoopGuard guard=new LoopGuard(softAssert);
+		for(int languageIndex=1;languageIndex<LanguagesRowCount && !guard.shouldStop();languageIndex++) {
 
+			String langText=applicableExpectedLangReader.getCellValue(languageIndex, 0);
+			try {
 				landingPage.clickingSettingEllipsesButton();
 
 				landingPage.clickingLanguageDropdownButton();
 
 
-				String langText=applicableExpectedLangReader.getCellValue(languageIndex, 0);
 				System.out.println(langText+"    "+languageIndex);
 
 
@@ -761,7 +788,7 @@ public class YtMasterTests extends BaseTest{
 
 
 				String expectedLanguageAttribute=applicableExpectedAttributeReader.getCellValue(languageIndex, 1);
-				softAssert.assertEquals(applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Attribute sheet row "+languageIndex+" is for a different language than the language sheet");
+				softAssert.assertEquals(applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
 				String detectedLanguageAttribute=genericUtility.getLangAttribute();
 
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
@@ -769,26 +796,50 @@ public class YtMasterTests extends BaseTest{
 
 				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
 
-
-
+				guard.passed(langText);
+			} catch (Exception e) {
+				if (guard.retryAfterFailure(langText, e, () -> reopenSearchResults(landingPage, genericUtility))) {
+					languageIndex--; // run the same language again
+				}
 			}
-		} catch (Exception e) {
-			softAssert.fail("Test stopped early: " + e);
 		}
 
 		applicableExpectedLangReader.closeWorkbook();
 		applicableExpectedAttributeReader.closeWorkbook();
 
 
-		softAssert.assertAll();	
+		softAssert.assertAll();
 
 
 
 	}
 
 
+	// Recovery steps used by LoopGuard after a failure: they bring the page back to the state each loop starts from.
 
+	private void reopenLanguageDropdown(YtLandingPage landingPage) throws InterruptedException {
+		landingPage.openingLandingPage();
+		landingPage.clickingSettingEllipsesButton();
+		landingPage.clickingLanguageDropdownButton();
+	}
 
+	private void reopenCollapsedLanguageDropdown(YtLandingPage landingPage) throws InterruptedException {
+		landingPage.openingLandingPage();
+		landingPage.clickingLeftEllipses();
+		landingPage.clickingSettingEllipsesButton();
+		landingPage.clickingLanguageDropdownButton();
+	}
 
+	private void reopenLocationDropdown(YtLandingPage landingPage) throws InterruptedException {
+		landingPage.openingLandingPage();
+		landingPage.clickingSettingEllipsesButton();
+		landingPage.clickingLocationDropdownUnderSettings();
+	}
+
+	private void reopenSearchResults(YtLandingPage landingPage, GenericUtility genericUtility) throws InterruptedException {
+		landingPage.openingLandingPage();
+		landingPage.givingInputUnderSearchBar("youtube");
+		genericUtility.clickEnter(landingPage.searchInputLandinfPage);
+	}
 
 }
