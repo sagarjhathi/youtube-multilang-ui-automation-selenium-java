@@ -1,6 +1,7 @@
 package main.test.java.tests;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -85,8 +86,14 @@ public class YtMasterTests extends BaseTest{
 				System.out.println(sideMenuItems.toString()+"        Append text from list");
 
 
-				String expectedData=genericUtility.stripKeywords(verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 1), "YouTube Music", "YouTube TV");
-				String actualData=genericUtility.stripKeywords(sideMenuItems.toString(), "YouTube Music", "YouTube TV");
+				List<String> sideMenuTexts=new ArrayList<>();
+				for(WebElement sideMenuElement:listOfSideMenu) {
+					sideMenuTexts.add(sideMenuElement.getText());
+				}
+				// Hype/Live entry is dropped from both sides, YouTube swaps the word between runs (see docs)
+				String[] comparable=genericUtility.removeHypeOrLive(sideMenuTexts, verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 1), "YouTube Music", "YouTube TV");
+				String expectedData=comparable[0];
+				String actualData=comparable[1];
 
 
 				System.out.println("========="+expectedData+" =====  Expected data from the sheet");

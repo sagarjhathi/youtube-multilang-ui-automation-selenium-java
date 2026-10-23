@@ -215,6 +215,41 @@ public class GenericUtility extends BasePage {
 		return result.replaceAll("\\s+", " ").trim();
 	}
 
+	/**
+	 * Removes the Hype/Live entry from both the actual side-menu text and the expected text, so the rest can be
+	 * compared as is. YouTube shows either word in that slot, it changes between runs and differs per language,
+	 * so it can't be stripped by keyword. The entry is found by its neighbour instead of a fixed position: it is
+	 * always the item right before "YouTube Premium" (a brand that is never translated).
+	 * If that anchor isn't found, nothing is removed and the full texts come back, so the assertion fails
+	 * visibly instead of ignoring the wrong entry.
+	 *
+	 * @param actualItems side-menu entries in page order
+	 * @return {expected, actual}, both stripped of the given keywords and the Hype/Live entry
+	 */
+	public String[] removeHypeOrLive(List<String> actualItems, String expectedText, String... keywords) {
+		String expected = stripKeywords(expectedText, keywords);
+		String actual = stripKeywords(String.join(" ", actualItems), keywords);
+
+		int premium = -1;
+		for (int i = 0; i < actualItems.size(); i++) {
+			if (actualItems.get(i).toLowerCase().contains("premium")) {
+				premium = i;
+				break;
+			}
+		}
+		if (premium < 1) {
+			return new String[] { expected, actual };
+		}
+
+		String before = stripKeywords(String.join(" ", actualItems.subList(0, premium - 1)), keywords);
+		String after = stripKeywords(String.join(" ", actualItems.subList(premium, actualItems.size())), keywords);
+		actual = (before + " " + after).trim();
+		if (expected.startsWith(before) && expected.endsWith(after) && before.length() + after.length() < expected.length()) {
+			expected = (before + " " + after).trim();
+		}
+		return new String[] { expected, actual };
+	}
+
 
 	/**
 	 * English / brand words YouTube leaves untranslated in every language's UI. Matched as whole words,
@@ -279,6 +314,7 @@ public class GenericUtility extends BasePage {
 			"Afrikaans",
 			"Az" + (char) 0x259 + "rbaycan",
 			"Bahasa Indonesia",
+			"Dansk",
 			"English (US)",
 			"Espa" + (char) 0xF1 + "ol (Espa" + (char) 0xF1 + "a)",
 			"Espa" + (char) 0xF1 + "ol (Latinoam" + (char) 0xE9 + "rica)",
