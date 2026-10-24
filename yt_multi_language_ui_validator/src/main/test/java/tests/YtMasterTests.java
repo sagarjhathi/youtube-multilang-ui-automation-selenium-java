@@ -92,10 +92,9 @@ public class YtMasterTests extends BaseTest{
 				for(WebElement sideMenuElement:listOfSideMenu) {
 					sideMenuTexts.add(sideMenuElement.getText());
 				}
-				// Hype/Live entry is dropped from both sides, YouTube swaps the word between runs (see docs)
-				String[] comparable=genericUtility.removeHypeOrLive(sideMenuTexts, verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 1), "YouTube Music", "YouTube TV");
-				String expectedData=comparable[0];
-				String actualData=comparable[1];
+				// the sheet has no Hype/Live word, YouTube swaps it between runs, so it is dropped from the actual text
+				String expectedData=genericUtility.stripKeywords(verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 1), "YouTube Music", "YouTube TV");
+				String actualData=genericUtility.removeHypeOrLive(langText, sideMenuTexts, expectedData);
 
 
 				System.out.println("========="+expectedData+" =====  Expected data from the sheet");

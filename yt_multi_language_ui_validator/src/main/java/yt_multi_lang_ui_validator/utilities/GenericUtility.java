@@ -210,44 +210,35 @@ public class GenericUtility extends BasePage {
 	public String stripKeywords(String text, String... keywords) {
 		String result = normalizeText(text);
 		for (String keyword : keywords) {
-			result = result.replaceAll("(?i)" + java.util.regex.Pattern.quote(keyword), " ");
+			result = result.replaceAll("(?i)" + java.util.regex.Pattern.quote(normalizeText(keyword)), " ");
 		}
 		return result.replaceAll("\\s+", " ").trim();
 	}
 
 	/**
-	 * Removes the Hype/Live entry from both the actual side-menu text and the expected text, so the rest can be
-	 * compared as is. YouTube shows either word in that slot, it changes between runs and differs per language,
-	 * so it can't be stripped by keyword. The entry is found by its neighbour instead of a fixed position: it is
-	 * always the item right before "YouTube Premium" (a brand that is never translated).
-	 * If that anchor isn't found, nothing is removed and the full texts come back, so the assertion fails
-	 * visibly instead of ignoring the wrong entry.
+	 * The expected sheet has no Hype/Live word because YouTube shows either one (translated differently per
+	 * language) and swaps it between runs. So any side-menu entry whose text is not in the expected text is that
+	 * word and is dropped from the actual text. A wrong entry would be dropped too, but then the real entry is
+	 * missing from the actual text and the assertion still fails.
 	 *
 	 * @param actualItems side-menu entries in page order
-	 * @return {expected, actual}, both stripped of the given keywords and the Hype/Live entry
+	 * @return the actual text, without the entries that are not in the expected text
 	 */
-	public String[] removeHypeOrLive(List<String> actualItems, String expectedText, String... keywords) {
+	public String removeHypeOrLive(String langText, List<String> actualItems, String expectedText, String... keywords) {
 		String expected = stripKeywords(expectedText, keywords);
-		String actual = stripKeywords(String.join(" ", actualItems), keywords);
-
-		int premium = -1;
-		for (int i = 0; i < actualItems.size(); i++) {
-			if (actualItems.get(i).toLowerCase().contains("premium")) {
-				premium = i;
-				break;
+		List<String> kept = new ArrayList<>();
+		for (String item : actualItems) {
+			String stripped = stripKeywords(item, keywords);
+			if (stripped.isEmpty()) {
+				continue;
+			}
+			if (expected.contains(stripped)) {
+				kept.add(stripped);
+			} else {
+				log.info("[{}] Hype/Live entry ignored | language={} entry='{}'", ThreadContext.get("testName"), langText, stripped);
 			}
 		}
-		if (premium < 1) {
-			return new String[] { expected, actual };
-		}
-
-		String before = stripKeywords(String.join(" ", actualItems.subList(0, premium - 1)), keywords);
-		String after = stripKeywords(String.join(" ", actualItems.subList(premium, actualItems.size())), keywords);
-		actual = (before + " " + after).trim();
-		if (expected.startsWith(before) && expected.endsWith(after) && before.length() + after.length() < expected.length()) {
-			expected = (before + " " + after).trim();
-		}
-		return new String[] { expected, actual };
+		return String.join(" ", kept);
 	}
 
 

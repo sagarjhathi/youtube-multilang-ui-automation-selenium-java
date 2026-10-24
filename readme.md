@@ -40,7 +40,7 @@ This project demonstrates:
 ## 📑 Table of Contents
 
 - Technology Stack
-- Key Highlights
+- Key Highlights (including Failure-Tolerant Loops / LoopGuard)
 - Architecture
 - Architecture Diagrams
 - Execution Flow
@@ -91,6 +91,11 @@ This project demonstrates:
   - Page refresh recovery
   - Centralized waits
   - Structured logging
+- **LoopGuard (per-language retry with retain)**:
+  - Page recovery after a failed language
+  - One retry of the same language, in code
+  - Earlier checks kept, later languages still validated
+  - Abort limits for environment vs element/code failures
 
 ### Language Intelligence
 - **Lingua Language Detector**
@@ -171,6 +176,42 @@ The framework adapts based on trigger source:
 | Push / PR | Reduced language coverage |
 | Nightly CRON | Full language & region validation |
 | Manual | Developer-controlled |
+
+---
+
+### 🛡 Failure-Tolerant Loops (Retry With Retain)
+
+Every test walks through up to 54 languages (or locations) on a live site that can hiccup at any point.
+A plain `try/catch` around the whole loop means one exception on language 21 throws away languages 22 to 54.
+
+`LoopGuard` fixes that with a **retry-with-retain** flow, one language at a time:
+
+```
+language fails (exception)
+   -> recover the page (reload, reopen the dropdown)
+   -> retry the SAME language once
+        passes  -> logged, carry on
+        fails   -> recorded as one clear failure, move to the NEXT language
+   -> everything checked so far is retained (soft assertions)
+```
+
+- **Retain:** every check already made is kept, and every language after a failure is still validated.
+  A bad language costs one language, not the rest of the run.
+- **Retry, once, in code:** the retry is for that one language only, so the log shows exactly one retry in one
+  place. It is separate from the TestNG test-level retry, which would rerun the whole test and make traces hard
+  to follow.
+- **Retries never hide mismatches:** a text mismatch is a soft-assert result, not an exception, so it is never
+  retried. Only exceptions (timing, element, driver) get a second chance.
+- **Fails fast when the run is clearly broken:** the loop aborts after 3 environment failures in a row
+  (lost browser session, network error, render time-out) or 5 element/code failures in a row. A passing language
+  resets the counts, so one-off glitches never trigger an abort.
+- **Readable results:** failures read `Failed at Dansk (also failed on retry) | TimeoutException: ...`, and an
+  abort reads `Aborted at ... remaining items not checked`. The report separates real page differences, items
+  that could not be checked (and why), and items never reached.
+
+Why it matters: on an uncontrolled live site, flakiness is normal. This keeps a nightly run useful by validating
+everything that can be validated, even when something fails, and by saying clearly what could not be.
+See `docs/project-challenges-live-site-automation.md` for the reasoning and trade-offs.
 
 ---
 
@@ -361,7 +402,7 @@ yt_multi_language_ui_validator/
     │   │   ├── config/          ConfigManager
     │   │   ├── pages/           YtLandingPage, YtInnerPage
     │   │   ├── safeActions/     SafeActions
-    │   │   ├── utilities/       GenericUtility, WaitUtility,
+    │   │   ├── utilities/       GenericUtility, WaitUtility, LoopGuard,
     │   │   │                    ScreenshotUtilUpdated, ImageCompressor
     │   │   ├── lingua/          LinguaHelper
     │   │   ├── reporting/       ReportManager, Attachers, TestListenerUpdated
@@ -427,6 +468,14 @@ Centralizes all browser interactions to:
 - Standardize retries
 - Enable recovery via refresh
 - Improve observability
+
+### LoopGuard Instead Of Test-Level Retry
+
+- Failures in the language loops end as soft-assert failures, which the TestNG retry listener deliberately
+  does not retry (it is set not to retry assertion errors)
+- A whole-test retry would repeat every language and double the logs; a per-language retry is cheap and easy to trace
+- Environment failures stop the loop sooner (3) than element/code failures (5), because a broken browser or
+  network fails every remaining language the same way
 
 ### TestNG Over JUnit
 
