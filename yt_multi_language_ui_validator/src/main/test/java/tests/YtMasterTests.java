@@ -62,7 +62,9 @@ public class YtMasterTests extends BaseTest{
 				System.out.println(langText+" lang text from the sheet   "+languageIndex);
 
 				ScreenshotUtilUpdated.capture(testName, langText);
-
+				if(languageIndex==5){
+					langText+="h";
+				}
 
 				landingPage.getLanguageElementByName(langText).click();	
 
