@@ -196,15 +196,60 @@ public class YtLandingPage  extends BasePage{
 
 	public List<WebElement> gettingSideMenuExpandedList() throws InterruptedException{
 		log.info("Fetching the side menu in expanded view");
-		List<WebElement> sideMenuList=safeAct.safeFindElements(sideMenuExpandedList);
+		List<WebElement> sideMenuList=readUntilStable(() -> safeAct.safeFindElements(sideMenuExpandedList));
 		return sideMenuList;
 	}
 
 
 	public List<WebElement> gettingSideMenuCollapsedList() throws InterruptedException{
 		log.info("Fetching the side menu in collapsed view");
-		List<WebElement> sideMenuList=safeAct.safeFindElements(sideMenuCollapsedList);
+		List<WebElement> sideMenuList=readUntilStable(() -> safeAct.safeFindElements(sideMenuCollapsedList));
 		return sideMenuList;
+	}
+
+
+	/** Extra reads allowed after the first one while the menu is still changing. */
+	private static final int MENU_MAX_EXTRA_READS = 10;
+	/** Identical reads in a row (the first one included) that count as a settled menu. */
+	private static final int MENU_STABLE_READS = 3;
+	private static final long MENU_READ_INTERVAL_MS = 500;
+
+	/**
+	 * The menu can still be filling up after a language switch, so a single read may return only the first entries.
+	 * Reads the menu, then reads it again every 500 ms until the joined text is identical on 3 reads in a row
+	 * (at most 10 extra reads). Returns the last read if it never settles, so the comparison stays strict.
+	 */
+	public static List<WebElement> readUntilStable(java.util.function.Supplier<List<WebElement>> reader) throws InterruptedException {
+		List<WebElement> elements = reader.get();
+		String text = menuText(elements);
+		int identicalReads = 1;
+		for (int extraRead = 0; extraRead < MENU_MAX_EXTRA_READS && identicalReads < MENU_STABLE_READS; extraRead++) {
+			Thread.sleep(MENU_READ_INTERVAL_MS);
+			List<WebElement> reRead = reader.get();
+			String reReadText = menuText(reRead);
+			if (reReadText.equals(text)) {
+				identicalReads++;
+			} else {
+				log.info("The menu was still changing ({} then {} characters), reading it again", text.length(), reReadText.length());
+				identicalReads = 1;
+			}
+			elements = reRead;
+			text = reReadText;
+		}
+		return elements;
+	}
+
+	/** Joined text of the menu entries; an entry that went stale while reading makes the text unequal, so it is read again. */
+	private static String menuText(List<WebElement> elements) {
+		StringBuilder text = new StringBuilder();
+		for (WebElement element : elements) {
+			try {
+				text.append(element.getText()).append(' ');
+			} catch (StaleElementReferenceException e) {
+				text.append("<stale>").append(System.nanoTime());
+			}
+		}
+		return text.toString();
 	}
 
 

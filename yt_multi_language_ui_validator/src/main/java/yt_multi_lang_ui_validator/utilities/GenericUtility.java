@@ -241,21 +241,24 @@ public class GenericUtility extends BasePage {
 
 	/**
 	 * YouTube fills one slot of the expanded side menu with the Hype entry, the Live entry or nothing, and the
-	 * words differ per language. The expected sheet holds the Hype word, so this makes the EXPECTED text match
-	 * what the page shows; the page text is never changed.
+	 * words differ per language. The expected sheet holds one of the two words, so this makes the EXPECTED text
+	 * match what the page shows; the page text is never changed.
 	 * <ol>
-	 * <li>Compare as they are. Equal: nothing to change (the page showed Hype).</li>
-	 * <li>Different, and the page has the language's Live word (and not the Hype word): the Hype word in the
-	 * expected text is replaced by the Live word, which keeps its position.</li>
-	 * <li>Different, and the page has neither word: the Hype word is removed from the expected text.</li>
-	 * <li>Anything else (another entry in the slot, a changed word elsewhere, language not in the word rows,
-	 * empty Hype word, Hype word not in the expected text): nothing is changed, so the assertion fails with the
-	 * full texts.</li>
+	 * <li>Compare as they are. Equal: nothing to change.</li>
+	 * <li>Take the language's Hype and Live word (an empty one is ignored) and find which of them are in the
+	 * expected text and in the page text, as whole words.</li>
+	 * <li>The expected text must contain exactly one of the two words and the page must not contain both,
+	 * otherwise nothing is changed.</li>
+	 * <li>The page has the OTHER word: the expected word is replaced by the page word, which keeps its
+	 * position.</li>
+	 * <li>The page has NEITHER word: the expected word is removed.</li>
+	 * <li>Anything else (another entry in the slot, a changed word elsewhere, a truncated menu, a language that is
+	 * not in the word rows): nothing is changed, so the assertion fails with the full texts.</li>
 	 * </ol>
 	 *
 	 * @param wordRows     rows of {@link #loadHypeLiveWordRows()}
 	 * @param actualText   side-menu text from the page
-	 * @param expectedText expected text from the sheet (with the Hype word)
+	 * @param expectedText expected text from the sheet (holding the Hype or the Live word)
 	 * @return the expected text to compare {@link #comparableSideMenuText} of the page text with
 	 */
 	public static String alignExpectedHypeLive(List<String[]> wordRows, String langText, String actualText, String expectedText) {
@@ -267,8 +270,8 @@ public class GenericUtility extends BasePage {
 			return expected;
 		}
 
-		String[] words = null;
 		String language = normalizeText(langText).trim();
+		String[] words = null;
 		for (String[] row : wordRows) {
 			if (row[0].equals(language)) {
 				words = row;
@@ -279,29 +282,55 @@ public class GenericUtility extends BasePage {
 			log.info("[{}] No Hype/Live adjustment, language is not in the word file | language={}", testName, langText);
 			return expected;
 		}
-		String hype = words[1];
-		String live = words[2];
-		if (hype.isEmpty() || !containsWord(expected, hype)) {
-			log.info("[{}] No Hype/Live adjustment, Hype word '{}' is empty or not in the expected text | language={}", testName, hype, langText);
+
+		List<String> languageWords = new ArrayList<>();
+		for (int column = 1; column <= 2; column++) {
+			String word = words[column];
+			if (!word.isEmpty() && languageWords.stream().noneMatch(word::equalsIgnoreCase)) {
+				languageWords.add(word);
+			}
+		}
+		List<String> inExpected = new ArrayList<>();
+		List<String> inPage = new ArrayList<>();
+		for (String word : languageWords) {
+			if (containsWord(expected, word)) {
+				inExpected.add(word);
+			}
+			if (containsWord(actual, word)) {
+				inPage.add(word);
+			}
+		}
+		if (inExpected.size() != 1) {
+			log.info("[{}] No Hype/Live adjustment, the expected text holds {} of the 2 words | language={}", testName, inExpected.size(), langText);
 			return expected;
 		}
-		if (containsWord(actual, hype)) {
-			log.info("[{}] No Hype/Live adjustment, the page shows Hype '{}' and differs elsewhere | language={}", testName, hype, langText);
+		if (inPage.size() > 1) {
+			log.info("[{}] No Hype/Live adjustment, the page shows both words {} | language={}", testName, inPage, langText);
 			return expected;
 		}
 
-		boolean liveUsable = !live.isEmpty() && !live.equalsIgnoreCase(hype);
-		if (liveUsable && containsWord(actual, live)) {
-			String aligned = replaceWord(expected, hype, live);
-			log.info("[{}] The page shows Live ('{}'), expected Hype ('{}') replaced by it | language={} matches={}",
-					testName, live, hype, langText, aligned.equals(actual));
+		String expectedWord = inExpected.get(0);
+		if (inPage.isEmpty()) {
+			String aligned = replaceWord(expected, expectedWord, "");
+			log.info("[{}] The page shows neither Hype nor Live, '{}' removed from the expected text | language={} matches={}",
+					testName, expectedWord, langText, aligned.equals(actual));
 			return aligned;
 		}
-		// neither the Hype nor the Live word is on the page: the entry is missing
-		String aligned = replaceWord(expected, hype, "");
-		log.info("[{}] The page shows neither Hype nor Live, Hype removed from the expected text | language={} matches={}",
-				testName, langText, aligned.equals(actual));
+		if (inPage.get(0).equalsIgnoreCase(expectedWord)) {
+			log.info("[{}] No Hype/Live adjustment, the page shows the expected word '{}' and differs elsewhere | language={}", testName, expectedWord, langText);
+			return expected;
+		}
+		String pageWord = firstWordMatch(actual, inPage.get(0));
+		String aligned = replaceWord(expected, expectedWord, pageWord);
+		log.info("[{}] The page shows '{}', expected '{}' replaced by it | language={} matches={}",
+				testName, pageWord, expectedWord, langText, aligned.equals(actual));
 		return aligned;
+	}
+
+	/** The text of the first whole-word match of {@code word} in {@code text}, as it is written there. */
+	private static String firstWordMatch(String text, String word) {
+		java.util.regex.Matcher matcher = wordPattern(word).matcher(text);
+		return matcher.find() ? matcher.group() : word;
 	}
 
 	/** Side-menu text as compared: normalised, and without the entries YouTube shows inconsistently. */
