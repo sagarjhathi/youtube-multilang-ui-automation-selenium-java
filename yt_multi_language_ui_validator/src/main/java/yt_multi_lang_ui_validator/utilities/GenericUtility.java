@@ -15,6 +15,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import main.java.yt_multi_lang_ui_validator.base.BasePage;
 import main.java.yt_multi_lang_ui_validator.config.ConfigManager;
+import main.java.yt_multi_lang_ui_validator.fileReader.FileReader;
 import main.java.yt_multi_lang_ui_validator.logger.LoggerUtility;
 import main.java.yt_multi_lang_ui_validator.safeActions.SafeActions;
 
@@ -189,7 +190,7 @@ public class GenericUtility extends BasePage {
 	 * plain space, invisible format characters (e.g. LRM/RLM bidi marks) are dropped, and the Turkish/Azeri
 	 * dotted capital I (which the page renders as plain I) is folded to I. Newlines are kept.
 	 */
-	public String normalizeText(String text) {
+	public static String normalizeText(String text) {
 		if (text == null) {
 			return "";
 		}
@@ -207,7 +208,7 @@ public class GenericUtility extends BasePage {
 	 * stripped (case-insensitive) from both expected and actual text before comparing. Whitespace is
 	 * collapsed afterwards so removing a keyword mid-string doesn't leave a double space behind.
 	 */
-	public String stripKeywords(String text, String... keywords) {
+	public static String stripKeywords(String text, String... keywords) {
 		String result = normalizeText(text);
 		for (String keyword : keywords) {
 			result = result.replaceAll("(?i)" + java.util.regex.Pattern.quote(normalizeText(keyword)), " ");
@@ -215,30 +216,113 @@ public class GenericUtility extends BasePage {
 		return result.replaceAll("\\s+", " ").trim();
 	}
 
+	/** Sheet with the Hype and Live word of every language (columns: Applied Language, Hype, Live). */
+	private static final String HYPE_LIVE_WORDS_FILE = "data/HypeLiveWords.xlsx";
+	private static final String HYPE_LIVE_WORDS_SHEET = "HypeLive";
+
+	/** Word characters for whole-word matching: letters, combining marks and digits (works for non-Latin scripts). */
+	private static final String WORD_CHAR = "[\\p{L}\\p{M}\\p{N}]";
+
+	/** Reads the Hype/Live word sheet. Each row is {language, hype, live}, normalised like the side-menu texts. */
+	public static List<String[]> loadHypeLiveWordRows() {
+		FileReader reader = new FileReader();
+		reader.loadWorkbook(HYPE_LIVE_WORDS_FILE);
+		reader.loadSheet(HYPE_LIVE_WORDS_SHEET);
+		List<String[]> rows = new ArrayList<>();
+		for (int row = 1; row < reader.getRowCount(); row++) {
+			rows.add(new String[] {
+					normalizeText(reader.getCellValue(row, 0)).trim(),
+					normalizeText(reader.getCellValue(row, 1)).trim(),
+					normalizeText(reader.getCellValue(row, 2)).trim() });
+		}
+		reader.closeWorkbook();
+		return rows;
+	}
+
 	/**
-	 * The expected sheet has no Hype/Live word because YouTube shows either one (translated differently per
-	 * language) and swaps it between runs. So any side-menu entry whose text is not in the expected text is that
-	 * word and is dropped from the actual text. A wrong entry would be dropped too, but then the real entry is
-	 * missing from the actual text and the assertion still fails.
+	 * YouTube fills one slot of the expanded side menu with the Hype entry, the Live entry or nothing, and the
+	 * words differ per language. The expected sheet holds the Hype word, so this makes the EXPECTED text match
+	 * what the page shows; the page text is never changed.
+	 * <ol>
+	 * <li>Compare as they are. Equal: nothing to change (the page showed Hype).</li>
+	 * <li>Different, and the page has the language's Live word (and not the Hype word): the Hype word in the
+	 * expected text is replaced by the Live word, which keeps its position.</li>
+	 * <li>Different, and the page has neither word: the Hype word is removed from the expected text.</li>
+	 * <li>Anything else (another entry in the slot, a changed word elsewhere, language not in the word rows,
+	 * empty Hype word, Hype word not in the expected text): nothing is changed, so the assertion fails with the
+	 * full texts.</li>
+	 * </ol>
 	 *
-	 * @param actualItems side-menu entries in page order
-	 * @return the actual text, without the entries that are not in the expected text
+	 * @param wordRows     rows of {@link #loadHypeLiveWordRows()}
+	 * @param actualText   side-menu text from the page
+	 * @param expectedText expected text from the sheet (with the Hype word)
+	 * @return the expected text to compare {@link #comparableSideMenuText} of the page text with
 	 */
-	public String removeHypeOrLive(String langText, List<String> actualItems, String expectedText, String... keywords) {
-		String expected = stripKeywords(expectedText, keywords);
-		List<String> kept = new ArrayList<>();
-		for (String item : actualItems) {
-			String stripped = stripKeywords(item, keywords);
-			if (stripped.isEmpty()) {
-				continue;
-			}
-			if (expected.contains(stripped)) {
-				kept.add(stripped);
-			} else {
-				log.info("[{}] Hype/Live entry ignored | language={} entry='{}'", ThreadContext.get("testName"), langText, stripped);
+	public static String alignExpectedHypeLive(List<String[]> wordRows, String langText, String actualText, String expectedText) {
+		String testName = ThreadContext.get("testName");
+		String actual = comparableSideMenuText(actualText);
+		String expected = comparableSideMenuText(expectedText);
+		if (actual.equals(expected)) {
+			log.info("[{}] Side menu matches the expected text as it is | language={}", testName, langText);
+			return expected;
+		}
+
+		String[] words = null;
+		String language = normalizeText(langText).trim();
+		for (String[] row : wordRows) {
+			if (row[0].equals(language)) {
+				words = row;
+				break;
 			}
 		}
-		return String.join(" ", kept);
+		if (words == null) {
+			log.info("[{}] No Hype/Live adjustment, language is not in the word file | language={}", testName, langText);
+			return expected;
+		}
+		String hype = words[1];
+		String live = words[2];
+		if (hype.isEmpty() || !containsWord(expected, hype)) {
+			log.info("[{}] No Hype/Live adjustment, Hype word '{}' is empty or not in the expected text | language={}", testName, hype, langText);
+			return expected;
+		}
+		if (containsWord(actual, hype)) {
+			log.info("[{}] No Hype/Live adjustment, the page shows Hype '{}' and differs elsewhere | language={}", testName, hype, langText);
+			return expected;
+		}
+
+		boolean liveUsable = !live.isEmpty() && !live.equalsIgnoreCase(hype);
+		if (liveUsable && containsWord(actual, live)) {
+			String aligned = replaceWord(expected, hype, live);
+			log.info("[{}] The page shows Live ('{}'), expected Hype ('{}') replaced by it | language={} matches={}",
+					testName, live, hype, langText, aligned.equals(actual));
+			return aligned;
+		}
+		// neither the Hype nor the Live word is on the page: the entry is missing
+		String aligned = replaceWord(expected, hype, "");
+		log.info("[{}] The page shows neither Hype nor Live, Hype removed from the expected text | language={} matches={}",
+				testName, langText, aligned.equals(actual));
+		return aligned;
+	}
+
+	/** Side-menu text as compared: normalised, and without the entries YouTube shows inconsistently. */
+	public static String comparableSideMenuText(String text) {
+		return stripKeywords(text, "YouTube Music", "YouTube TV");
+	}
+
+	private static boolean containsWord(String text, String word) {
+		return !word.isEmpty() && wordPattern(word).matcher(text).find();
+	}
+
+	/** Replaces the first whole-word occurrence of {@code word}; whitespace is collapsed afterwards. */
+	private static String replaceWord(String text, String word, String replacement) {
+		String replaced = wordPattern(word).matcher(text)
+				.replaceFirst(java.util.regex.Matcher.quoteReplacement(" " + replacement + " "));
+		return replaced.replaceAll("\\s+", " ").trim();
+	}
+
+	private static java.util.regex.Pattern wordPattern(String word) {
+		return java.util.regex.Pattern.compile("(?<!" + WORD_CHAR + ")" + java.util.regex.Pattern.quote(word) + "(?!" + WORD_CHAR + ")",
+				java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.UNICODE_CASE);
 	}
 
 

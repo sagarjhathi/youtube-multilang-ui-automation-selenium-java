@@ -54,6 +54,8 @@ public class YtMasterTests extends BaseTest{
 		LanguagesRowCount = genericUtility.resolveLanguageIterationCount(LanguagesRowCount);
 
 
+		List<String[]> hypeLiveWordRows=GenericUtility.loadHypeLiveWordRows();
+
 		LoopGuard guard=new LoopGuard(softAssert);
 		for(int languageIndex=1;languageIndex<LanguagesRowCount && !guard.shouldStop();languageIndex++) {
 
@@ -92,9 +94,9 @@ public class YtMasterTests extends BaseTest{
 				for(WebElement sideMenuElement:listOfSideMenu) {
 					sideMenuTexts.add(sideMenuElement.getText());
 				}
-				// the sheet has no Hype/Live word, YouTube swaps it between runs, so it is dropped from the actual text
-				String expectedData=genericUtility.stripKeywords(verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 1), "YouTube Music", "YouTube TV");
-				String actualData=genericUtility.removeHypeOrLive(langText, sideMenuTexts, expectedData);
+				// YouTube fills one slot with Hype, Live or nothing: the expected text is aligned to it only for the known words (see docs)
+				String expectedData=GenericUtility.alignExpectedHypeLive(hypeLiveWordRows, langText, String.join(" ", sideMenuTexts), verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 1));
+				String actualData=GenericUtility.comparableSideMenuText(String.join(" ", sideMenuTexts));
 
 
 				System.out.println("========="+expectedData+" =====  Expected data from the sheet");
