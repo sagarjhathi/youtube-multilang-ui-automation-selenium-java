@@ -150,7 +150,8 @@ public class GenericUtility extends BasePage {
 		int defaultLanguageCount = ConfigManager.getInt("overideLanguageCountDefault" + suffix);
 		int overrideLanguageCount = ConfigManager.getInt("overideLanguageCount" + suffix, defaultLanguageCount);
 
-		return resolveIterationCount(isCron, runForAllLanguages, overrideLanguageCount, fullRowCount);
+		// the override is a number of languages and row 0 of the sheets is the header, so one more row is read
+		return resolveIterationCount(isCron, runForAllLanguages, overrideLanguageCount + 1, fullRowCount);
 	}
 
 	/** Row-count override for the country-driven tests (masterdata.properties: runForAllCountries / overideCountriesCount*). */
@@ -181,8 +182,9 @@ public class GenericUtility extends BasePage {
 			return fullRowCount;
 		}
 
-		log.info("[{}] Row count is == {}", ThreadContext.get("testName"), overrideCount);
-		return overrideCount;
+		int rowCount = Math.min(overrideCount, fullRowCount);
+		log.info("[{}] Row count is == {}", ThreadContext.get("testName"), rowCount);
+		return rowCount;
 	}
 
 	/**
@@ -240,6 +242,17 @@ public class GenericUtility extends BasePage {
 	}
 
 	/**
+	 * Result of {@link #alignExpectedHypeLive}: the expected text to compare with, and what happened to the
+	 * Hype/Live slot, for the comparison log line and the summary.
+	 *
+	 * @param expected the expected text to compare the page text with
+	 * @param kind     "Hype", "Live", "missing", "equal", "unknown language" or "not adjusted"
+	 * @param detail   readable form of the slot, e.g. "Live 'Regstreeks'" or "entry missing"
+	 */
+	public record HypeLiveAlignment(String expected, String kind, String detail) {
+	}
+
+	/**
 	 * YouTube fills one slot of the expanded side menu with the Hype entry, the Live entry or nothing, and the
 	 * words differ per language. The expected sheet holds one of the two words, so this makes the EXPECTED text
 	 * match what the page shows; the page text is never changed.
@@ -259,16 +272,11 @@ public class GenericUtility extends BasePage {
 	 * @param wordRows     rows of {@link #loadHypeLiveWordRows()}
 	 * @param actualText   side-menu text from the page
 	 * @param expectedText expected text from the sheet (holding the Hype or the Live word)
-	 * @return the expected text to compare {@link #comparableSideMenuText} of the page text with
+	 * @return the expected text to compare {@link #comparableSideMenuText} of the page text with, and the slot
 	 */
-	public static String alignExpectedHypeLive(List<String[]> wordRows, String langText, String actualText, String expectedText) {
-		String testName = ThreadContext.get("testName");
+	public static HypeLiveAlignment alignExpectedHypeLive(List<String[]> wordRows, String langText, String actualText, String expectedText) {
 		String actual = comparableSideMenuText(actualText);
 		String expected = comparableSideMenuText(expectedText);
-		if (actual.equals(expected)) {
-			log.info("[{}] Side menu matches the expected text as it is | language={}", testName, langText);
-			return expected;
-		}
 
 		String language = normalizeText(langText).trim();
 		String[] words = null;
@@ -279,8 +287,8 @@ public class GenericUtility extends BasePage {
 			}
 		}
 		if (words == null) {
-			log.info("[{}] No Hype/Live adjustment, language is not in the word file | language={}", testName, langText);
-			return expected;
+			return new HypeLiveAlignment(expected, "unknown language",
+					actual.equals(expected) ? "texts equal, language not in the word sheet" : "language not in the word sheet");
 		}
 
 		List<String> languageWords = new ArrayList<>();
@@ -300,31 +308,69 @@ public class GenericUtility extends BasePage {
 				inPage.add(word);
 			}
 		}
+
+		if (actual.equals(expected)) {
+			if (inPage.size() == 1) {
+				String pageWord = firstWordMatch(actual, inPage.get(0));
+				String kind = slotKind(words, inPage.get(0));
+				return new HypeLiveAlignment(expected, kind, kind + " '" + pageWord + "'");
+			}
+			return new HypeLiveAlignment(expected, inPage.isEmpty() ? "missing" : "equal", inPage.isEmpty() ? "entry missing, texts equal" : "texts equal");
+		}
 		if (inExpected.size() != 1) {
-			log.info("[{}] No Hype/Live adjustment, the expected text holds {} of the 2 words | language={}", testName, inExpected.size(), langText);
-			return expected;
+			return new HypeLiveAlignment(expected, "not adjusted", "not adjusted, the expected text holds " + inExpected.size() + " of the 2 words");
 		}
 		if (inPage.size() > 1) {
-			log.info("[{}] No Hype/Live adjustment, the page shows both words {} | language={}", testName, inPage, langText);
-			return expected;
+			return new HypeLiveAlignment(expected, "not adjusted", "not adjusted, the page shows both words " + inPage);
 		}
 
 		String expectedWord = inExpected.get(0);
 		if (inPage.isEmpty()) {
-			String aligned = replaceWord(expected, expectedWord, "");
-			log.info("[{}] The page shows neither Hype nor Live, '{}' removed from the expected text | language={} matches={}",
-					testName, expectedWord, langText, aligned.equals(actual));
-			return aligned;
+			return new HypeLiveAlignment(replaceWord(expected, expectedWord, ""), "missing", "entry missing, '" + expectedWord + "' removed from the expected text");
 		}
 		if (inPage.get(0).equalsIgnoreCase(expectedWord)) {
-			log.info("[{}] No Hype/Live adjustment, the page shows the expected word '{}' and differs elsewhere | language={}", testName, expectedWord, langText);
-			return expected;
+			return new HypeLiveAlignment(expected, "not adjusted", "not adjusted, the page shows the expected word '" + expectedWord + "' and differs elsewhere");
 		}
 		String pageWord = firstWordMatch(actual, inPage.get(0));
-		String aligned = replaceWord(expected, expectedWord, pageWord);
-		log.info("[{}] The page shows '{}', expected '{}' replaced by it | language={} matches={}",
-				testName, pageWord, expectedWord, langText, aligned.equals(actual));
-		return aligned;
+		String kind = slotKind(words, inPage.get(0));
+		return new HypeLiveAlignment(replaceWord(expected, expectedWord, pageWord), kind,
+				kind + " '" + pageWord + "', expected '" + expectedWord + "' replaced by it");
+	}
+
+	/** "Hype" or "Live", depending on which column of the word row {@code word} is in. */
+	private static String slotKind(String[] words, String word) {
+		return word.equalsIgnoreCase(words[1]) ? "Hype" : "Live";
+	}
+
+	/**
+	 * One log line for a text comparison, e.g. "Side menu | Afrikaans | match | 123 chars | slot: Live 'Regstreeks'".
+	 * A mismatch is logged as MISMATCH (warning) so a pass and a failure can be told apart in the report.
+	 *
+	 * @param what   what was compared ("Side menu", "Collapsed side menu", "Search filter", "Country code")
+	 * @param item   language or location
+	 * @param chars  length of the compared page text
+	 * @param extra  optional text appended after the length, may be null
+	 * @return {@code match}, so the call can be used inside a condition
+	 */
+	public static boolean logComparison(String what, String item, boolean match, int chars, String extra) {
+		String line = what + " | " + item + " | " + (match ? "match" : "MISMATCH") + " | " + chars + " chars" + (extra == null ? "" : " | " + extra);
+		if (match) {
+			log.info("[{}] {}", ThreadContext.get("testName"), line);
+		} else {
+			log.warn("[{}] {}", ThreadContext.get("testName"), line);
+		}
+		return match;
+	}
+
+	/**
+	 * Soft assertion that also tells the loop guard when the values differ, so the item is counted as failed in the
+	 * summary instead of passed.
+	 */
+	public static void softAssertEquals(org.testng.asserts.SoftAssert softAssert, LoopGuard guard, Object actual, Object expected, String message) {
+		softAssert.assertEquals(actual, expected, message);
+		if (!java.util.Objects.equals(actual, expected)) {
+			guard.mismatch();
+		}
 	}
 
 	/** The text of the first whole-word match of {@code word} in {@code text}, as it is written there. */
@@ -401,14 +447,15 @@ public class GenericUtility extends BasePage {
 	 * match the expected values. For flaky-detection languages the Lingua result is ignored and only the
 	 * attribute is asserted.
 	 */
-	public void assertLanguageDetectedAndAttributeMatch(org.testng.asserts.SoftAssert softAssert, String langText,
+	public void assertLanguageDetectedAndAttributeMatch(org.testng.asserts.SoftAssert softAssert, LoopGuard guard, String langText,
 			String detectedLanguage, String expectedLanguage, String detectedAttribute, String expectedAttribute) {
-		softAssert.assertEquals(detectedAttribute, expectedAttribute, "Html lang attribute differs | language=" + langText);
+		softAssertEquals(softAssert, guard, detectedAttribute, expectedAttribute, "Html lang attribute differs | language=" + langText);
 		if (isFlakyDetectionLanguage(langText)) {
 			log.info("[{}] Skipping language detection check for flaky language={}", ThreadContext.get("testName"), langText);
+			guard.count("detection skipped");
 			return;
 		}
-		softAssert.assertEquals(detectedLanguage, expectedLanguage, "Lingua detection differs | language=" + langText);
+		softAssertEquals(softAssert, guard, detectedLanguage, expectedLanguage, "Lingua detection differs | language=" + langText);
 	}
 
 

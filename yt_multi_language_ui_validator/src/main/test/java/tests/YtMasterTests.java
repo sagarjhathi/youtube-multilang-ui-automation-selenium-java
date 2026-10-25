@@ -95,12 +95,15 @@ public class YtMasterTests extends BaseTest{
 					sideMenuTexts.add(sideMenuElement.getText());
 				}
 				// YouTube fills one slot with Hype, Live or nothing: the expected text is aligned to it only for the known words (see docs)
-				String expectedData=GenericUtility.alignExpectedHypeLive(hypeLiveWordRows, langText, String.join(" ", sideMenuTexts), verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 1));
+				GenericUtility.HypeLiveAlignment alignment=GenericUtility.alignExpectedHypeLive(hypeLiveWordRows, langText, String.join(" ", sideMenuTexts), verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 1));
+				String expectedData=alignment.expected();
 				String actualData=GenericUtility.comparableSideMenuText(String.join(" ", sideMenuTexts));
 
 
 				System.out.println("========="+expectedData+" =====  Expected data from the sheet");
-				softAssert.assertEquals(actualData.trim(),expectedData.trim(),"Side menu text differs | language="+langText);
+				GenericUtility.logComparison("Side menu", langText, actualData.trim().equals(expectedData.trim()), actualData.trim().length(), "slot: "+alignment.detail());
+				guard.count("slot "+alignment.kind());
+				GenericUtility.softAssertEquals(softAssert, guard, actualData.trim(),expectedData.trim(),"Side menu text differs | language="+langText);
 
 
 				landingPage.clickingSettingEllipsesButton();
@@ -118,6 +121,8 @@ public class YtMasterTests extends BaseTest{
 
 		verifyingSideMenuLanguageAsInSettingsDataReader.closeWorkbook();
 
+
+		guard.logSummary(LanguagesRowCount-1);
 
 		softAssert.assertAll();
 	}
@@ -208,7 +213,7 @@ public class YtMasterTests extends BaseTest{
 
 
 				String expectedLanguageAttribute=applicableExpectedAttributeReader.getCellValue(languageIndex, 1);
-				softAssert.assertEquals(applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
+				GenericUtility.softAssertEquals(softAssert, guard, applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
 				String detectedLanguageAttribute=genericUtility.getLangAttribute();
 
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
@@ -216,7 +221,7 @@ public class YtMasterTests extends BaseTest{
 
 				log.info("[{}] ApplicableLanguage==  "+applicableLanguage+"     "+"Detected Language ==  "+detectedLanguage+"  "+"Expected Language == "+expectedLanguage, ThreadContext.get("testName"));
 
-				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
+				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
 
 
 				landingPage.clickingSettingEllipsesButton();
@@ -233,6 +238,8 @@ public class YtMasterTests extends BaseTest{
 		}
 		applicableExpectedLangReader.closeWorkbook();
 		applicableExpectedAttributeReader.closeWorkbook();
+
+		guard.logSummary(LanguagesRowCount-1);
 
 		softAssert.assertAll();
 	}
@@ -310,7 +317,8 @@ public class YtMasterTests extends BaseTest{
 				String actualData=sideMenuItems.toString();
 
 
-				softAssert.assertEquals(actualData.trim(),expectedData.trim(),"Side menu text differs | language="+langText);
+				GenericUtility.logComparison("Collapsed side menu", langText, actualData.trim().equals(expectedData.trim()), actualData.trim().length(), null);
+				GenericUtility.softAssertEquals(softAssert, guard, actualData.trim(),expectedData.trim(),"Side menu text differs | language="+langText);
 
 
 				landingPage.clickingSettingEllipsesButton();
@@ -328,6 +336,8 @@ public class YtMasterTests extends BaseTest{
 		verifyingSideMenuCollapsedLangAsInSettingsDataReader.closeWorkbook();
 		applicableExpectedReader.closeWorkbook();
 
+
+		guard.logSummary(LanguagesRowCount-1);
 
 		softAssert.assertAll();	
 	}
@@ -419,7 +429,7 @@ public class YtMasterTests extends BaseTest{
 
 
 				String expectedLanguageAttribute=applicableExpectedAttributeReader.getCellValue(languageIndex, 1);
-				softAssert.assertEquals(applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
+				GenericUtility.softAssertEquals(softAssert, guard, applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
 
 				String detectedLanguageAttribute=genericUtility.getLangAttribute();
 
@@ -428,7 +438,7 @@ public class YtMasterTests extends BaseTest{
 
 
 
-				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
+				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
 
 
 				landingPage.clickingSettingEllipsesButton();
@@ -446,6 +456,8 @@ public class YtMasterTests extends BaseTest{
 		applicableExpectedAttributeReader.closeWorkbook();
 
 
+
+		guard.logSummary(LanguagesRowCount-1);
 
 		softAssert.assertAll();	
 	}
@@ -515,13 +527,13 @@ public class YtMasterTests extends BaseTest{
 
 
 				String expectedLanguageAttribute=applicableExpectedAttributeReader.getCellValue(languageIndex, 1);
-				softAssert.assertEquals(applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
+				GenericUtility.softAssertEquals(softAssert, guard, applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
 				String detectedLanguageAttribute=genericUtility.getLangAttribute();
 
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language attribute   "+detectedLanguageAttribute+"  "+"Expected Language attribute "+expectedLanguageAttribute);
 
-				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
+				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
 
 
 				// landingPage.clickingSettingEllipsesButton();
@@ -539,6 +551,8 @@ public class YtMasterTests extends BaseTest{
 
 		applicableExpectedLangReader.closeWorkbook();
 		applicableExpectedAttributeReader.closeWorkbook();
+
+		guard.logSummary(LanguagesRowCount-1);
 
 		softAssert.assertAll();	
 	}
@@ -571,6 +585,9 @@ public class YtMasterTests extends BaseTest{
 
 		List<WebElement> locationList=landingPage.getLocationList();
 		int locationListSize=locationList.size();
+		if(reader.getRowCount()-1!=locationListSize) {
+			log.warn("[{}] Country sheet has {} rows but the page lists {} locations", ThreadContext.get("testName"), reader.getRowCount()-1, locationListSize);
+		}
 
 
 
@@ -596,6 +613,7 @@ public class YtMasterTests extends BaseTest{
 
 				String locationTextFromSheet=reader.getCellValue(locationIndex+1, 0);
 				System.out.println(locationTextFromSheet+"  location text from sheet  "+locationIndex);
+				GenericUtility.softAssertEquals(softAssert, guard, locationTextFromSheet, locationText, "Sheet rows out of sync | country sheet row "+(locationIndex+1)+" is not "+locationText);
 
 
 
@@ -614,7 +632,14 @@ public class YtMasterTests extends BaseTest{
 				String detectedCountryCode=landingPage.getCountryCode();
 
 				System.out.println("applicable location is ==  "+applicableLocation+" Expected location  =="+expectedCountryCode+"  detected country code"+detectedCountryCode);
-				softAssert.assertEquals(detectedCountryCode, expectedCountryCode,"Country code differs | location="+locationText);
+				boolean codeMatches=java.util.Objects.equals(detectedCountryCode, expectedCountryCode);
+				GenericUtility.logComparison("Country code", locationText, codeMatches, detectedCountryCode==null ? 0 : detectedCountryCode.length(), "code: '"+detectedCountryCode+"'");
+				GenericUtility.softAssertEquals(softAssert, guard, detectedCountryCode, expectedCountryCode,"Country code differs | location="+locationText);
+				if(expectedCountryCode.isEmpty()) {
+					// only the United States has no code, an empty expected code on any other row would pass a failed read
+					guard.count("no code expected");
+					GenericUtility.softAssertEquals(softAssert, guard, locationTextFromSheet, "United States", "Expected country code is empty for \""+locationText+"\", only \"United States\" has none.");
+				}
 
 				landingPage.clickingSettingEllipsesButton();
 
@@ -628,6 +653,8 @@ public class YtMasterTests extends BaseTest{
 			}
 		}
 		reader.closeWorkbook();
+		guard.logSummary(locationListSize);
+
 		softAssert.assertAll();
 	}
 
@@ -696,7 +723,10 @@ public class YtMasterTests extends BaseTest{
 				String actualValue=globalSettingText;
 
 
-				softAssert.assertEquals(genericUtility.normalizeText(actualValue), genericUtility.normalizeText(expectedData), "Global filter text differs | language="+langText);
+				String actualNormalized=GenericUtility.normalizeText(actualValue);
+				String expectedNormalized=GenericUtility.normalizeText(expectedData);
+				GenericUtility.logComparison("Search filter", langText, actualNormalized.equals(expectedNormalized), actualNormalized.length(), null);
+				GenericUtility.softAssertEquals(softAssert, guard, actualNormalized, expectedNormalized, "Global filter text differs | language="+langText);
 
 				guard.passed(langText);
 			} catch (Exception e) {
@@ -707,6 +737,8 @@ public class YtMasterTests extends BaseTest{
 		}
 
 		verifyingGlobalFilterLandingPageDataReader.closeWorkbook();
+
+		guard.logSummary(LanguagesRowCount-1);
 
 		softAssert.assertAll();	
 
@@ -789,13 +821,13 @@ public class YtMasterTests extends BaseTest{
 
 
 				String expectedLanguageAttribute=applicableExpectedAttributeReader.getCellValue(languageIndex, 1);
-				softAssert.assertEquals(applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
+				GenericUtility.softAssertEquals(softAssert, guard, applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
 				String detectedLanguageAttribute=genericUtility.getLangAttribute();
 
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language attribute   "+detectedLanguageAttribute+"  "+"Expected Language attribute "+expectedLanguageAttribute);
 
-				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
+				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
 
 				guard.passed(langText);
 			} catch (Exception e) {
@@ -808,6 +840,8 @@ public class YtMasterTests extends BaseTest{
 		applicableExpectedLangReader.closeWorkbook();
 		applicableExpectedAttributeReader.closeWorkbook();
 
+
+		guard.logSummary(LanguagesRowCount-1);
 
 		softAssert.assertAll();
 
