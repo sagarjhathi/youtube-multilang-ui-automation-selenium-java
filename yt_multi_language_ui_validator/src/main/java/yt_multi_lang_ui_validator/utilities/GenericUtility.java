@@ -57,12 +57,8 @@ public class GenericUtility extends BasePage {
     public void clickEnter(By locator) {
         log.info("clickEnter({})", locator);
         WebElement el = safeAct.safeFindElement(locator);
-        if (el != null) {
-            el.sendKeys(Keys.ENTER);
-            log.info("Sent ENTER to {}", locator);
-        } else {
-            log.warn("clickEnter - element not found: {}", locator);
-        }
+        el.sendKeys(Keys.ENTER);
+        log.info("Sent ENTER to {}", locator);
     }
     
     
@@ -86,16 +82,12 @@ public class GenericUtility extends BasePage {
             SafeActions safeAct = new SafeActions(driver);
             WebElement element = safeAct.safeFindElement(locator);
 
-            if (element != null) {
-                ((JavascriptExecutor) driver).executeScript(
-                    "arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", 
-                    element
-                );
-                wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-                log.info("[{}] Successfully scrolled to element: {}", ThreadContext.get("testName"), locator);
-            } else {
-                log.warn("[{}] Element not found for locator: {}", ThreadContext.get("testName"), locator);
-            }
+            ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });",
+                element
+            );
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            log.info("[{}] Successfully scrolled to element: {}", ThreadContext.get("testName"), locator);
 
         } catch (Exception e) {
             log.error("[{}] Error while scrolling to element: {} - {}", ThreadContext.get("testName"), locator, e.getMessage());

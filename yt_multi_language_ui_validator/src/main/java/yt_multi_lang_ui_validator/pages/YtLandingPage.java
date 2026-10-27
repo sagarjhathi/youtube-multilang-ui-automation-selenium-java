@@ -67,7 +67,6 @@ public class YtLandingPage  extends BasePage{
 		By locator=By.xpath("//yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='" + name + "']");
 		log.info("Looking for language element with name: {}", name);
 		WebElement safeElement = safeAct.safeFindElement(locator);
-		safeElement = safeAct.safeFindElement(locator);
 		System.out.println(locator);
 		return safeElement;
 	}

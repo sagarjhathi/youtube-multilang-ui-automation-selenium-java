@@ -46,10 +46,38 @@ public class SafeActions{
 	        }
 	    }
 
+	    // ---------- FAILURE MESSAGE ----------
+
+	    private String currentUrl() {
+	        try {
+	            return driver.getCurrentUrl();
+	        } catch (Exception e) {
+	            return "unknown"; // browser is gone
+	        }
+	    }
+
+	    /** Selenium messages are long with build info after the first line, so keep only the first line. */
+	    private String firstLine(String message) {
+	        if (message == null) return "";
+	        String line = message.split("\\R", 2)[0];
+	        return line.length() > 200 ? line.substring(0, 200) : line;
+	    }
+
+	    private String reasonOf(Exception e) {
+	        return e.getClass().getSimpleName() + ": " + firstLine(e.getMessage());
+	    }
+
+	    /** One line only: LoopGuard prints just the first line of an exception. */
+	    private RuntimeException failure(String action, By locator, String reason) {
+	        return new RuntimeException(action + " failed after " + attempts + " attempts | element=" + locator
+	                + " | reason=" + reason + " | page=" + currentUrl());
+	    }
+
 	    // ---------- SAFE FIND ELEMENT ----------
 
 	    public WebElement safeFindElement(By locator) {
 	        log.info("[{}] Trying to find element: {}", ThreadContext.get("testName"), locator);
+	        String reason = "element not visible or not enabled";
 
 	        for (int attempt = 1; attempt <= attempts; attempt++) {
 	            try {
@@ -64,8 +92,10 @@ public class SafeActions{
 	                    log.warn("[{}] Element found but not ready (attempt {}): {}", ThreadContext.get("testName"), attempt, locator);
 	                }
 	            } catch (TimeoutException e) {
+	                reason = reasonOf(e);
 	                log.warn("[{}] Timeout finding element (attempt {}): {}", ThreadContext.get("testName"), attempt, locator);
 	            } catch (Exception e) {
+	                reason = reasonOf(e);
 	                log.warn("[{}] Error while finding element (attempt {}): {} -> {}", ThreadContext.get("testName"), attempt, locator, e.toString());
 	            }
 
@@ -73,13 +103,14 @@ public class SafeActions{
 	        }
 
 	        log.error("[{}] Element not found after {} attempts: {}", ThreadContext.get("testName"), attempts, locator);
-	        return null;
+	        throw failure("Find element", locator, reason);
 	    }
 
 	    // ---------- SAFE FIND ELEMENTS ----------
 
 	    public List<WebElement> safeFindElements(By locator) {
 	        log.info("[{}] Finding elements list: {}", ThreadContext.get("testName"), locator);
+	        String reason = "element not visible or not enabled";
 
 	        for (int attempt = 1; attempt <= attempts; attempt++) {
 	            try {
@@ -93,6 +124,7 @@ public class SafeActions{
 	                    }
 	                }
 	            } catch (Exception e) {
+	                reason = reasonOf(e);
 	                log.warn("[{}] Attempt {} failed to find elements: {} -> {}", ThreadContext.get("testName"), attempt, locator, e.toString());
 	            }
 
@@ -100,7 +132,7 @@ public class SafeActions{
 	        }
 
 	        log.error("[{}] No elements ready after {} attempts: {}", ThreadContext.get("testName"), attempts, locator);
-	        return List.of();
+	        throw failure("Find elements", locator, reason);
 	    }
 
 	
@@ -108,6 +140,7 @@ public class SafeActions{
 	    
 	    public boolean safeClick(By locator) {
 	        log.info("[{}] Trying to click element: {}", ThreadContext.get("testName"), locator);
+	        String reason = "element not visible or not enabled";
 
 	        for (int attempt = 1; attempt <= attempts; attempt++) {
 	            try {
@@ -136,6 +169,7 @@ public class SafeActions{
 	                        
 	                            return true;
 	                        } catch (Exception jsEx) {
+	                            reason = reasonOf(jsEx);
 	                            log.error("[{}] JS click fallback failed (attempt {}): {} -> {}", 
 	                                      ThreadContext.get("testName"), attempt, locator, jsEx.toString());
 	                        }
@@ -146,10 +180,13 @@ public class SafeActions{
 	                }
 
 	            } catch (StaleElementReferenceException stale) {
+	                reason = reasonOf(stale);
 	                log.warn("[{}] Stale element detected (attempt {}): {}", ThreadContext.get("testName"), attempt, locator);
 	            } catch (org.openqa.selenium.TimeoutException timeout) {
+	                reason = reasonOf(timeout);
 	                log.warn("[{}] Timeout waiting for element (attempt {}): {}", ThreadContext.get("testName"), attempt, locator);
 	            } catch (Exception e) {
+	                reason = reasonOf(e);
 	                // This block also catches java.net.http.HttpTimeoutException indirectly
 	                log.warn("[{}] Unexpected WebDriver exception (attempt {}): {} -> {}", 
 	                         ThreadContext.get("testName"), attempt, locator, e.toString());
@@ -160,7 +197,7 @@ public class SafeActions{
 	        }
 
 	        log.error("[{}] Failed to click element after {} attempts: {}", ThreadContext.get("testName"), attempts, locator);
-	        return false;
+	        throw failure("Click", locator, reason);
 	    }
 
 	    
