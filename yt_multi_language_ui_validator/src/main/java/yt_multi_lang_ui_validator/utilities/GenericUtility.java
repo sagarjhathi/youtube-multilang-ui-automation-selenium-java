@@ -442,12 +442,28 @@ public class GenericUtility extends BasePage {
 	public void assertLanguageDetectedAndAttributeMatch(org.testng.asserts.SoftAssert softAssert, LoopGuard guard, String langText,
 			String detectedLanguage, String expectedLanguage, String detectedAttribute, String expectedAttribute) {
 		softAssertEquals(softAssert, guard, detectedAttribute, expectedAttribute, "Html lang attribute differs | language=" + langText);
-		if (isFlakyDetectionLanguage(langText)) {
+		boolean attributeMatch = java.util.Objects.equals(detectedAttribute, expectedAttribute);
+		if (ConfigManager.getBoolean("skipFlakyLanguageDetection", true) && isFlakyDetectionLanguage(langText)) {
 			log.info("[{}] Skipping language detection check for flaky language={}", ThreadContext.get("testName"), langText);
 			guard.count("detection skipped");
+			logLanguageCheck(langText, attributeMatch, detectedAttribute, expectedAttribute, "detection skipped (flaky), Lingua said " + detectedLanguage);
 			return;
 		}
 		softAssertEquals(softAssert, guard, detectedLanguage, expectedLanguage, "Lingua detection differs | language=" + langText);
+		boolean detectionMatch = java.util.Objects.equals(detectedLanguage, expectedLanguage);
+		logLanguageCheck(langText, attributeMatch && detectionMatch, detectedAttribute, expectedAttribute,
+				"detection " + detectedLanguage + (detectionMatch ? " = " : " != ") + expectedLanguage);
+	}
+
+	/** One log line per language for the Lingua tests, e.g. "Language check | Deutsch | match | lang 'de-DE' = 'de-DE' | detection GERMAN = GERMAN". */
+	private static void logLanguageCheck(String langText, boolean match, String detectedAttribute, String expectedAttribute, String detection) {
+		String line = "Language check | " + langText + " | " + (match ? "match" : "MISMATCH") + " | lang '" + detectedAttribute
+				+ "' " + (java.util.Objects.equals(detectedAttribute, expectedAttribute) ? "=" : "!=") + " '" + expectedAttribute + "' | " + detection;
+		if (match) {
+			log.info("[{}] {}", ThreadContext.get("testName"), line);
+		} else {
+			log.warn("[{}] {}", ThreadContext.get("testName"), line);
+		}
 	}
 
 
