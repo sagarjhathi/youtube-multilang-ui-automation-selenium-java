@@ -1,11 +1,14 @@
 package main.java.yt_multi_lang_ui_validator.pages;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import main.java.yt_multi_lang_ui_validator.base.BasePage;
 import main.java.yt_multi_lang_ui_validator.config.ConfigManager;
@@ -104,6 +107,9 @@ public class YtLandingPage  extends BasePage{
 
 	public void clickingLocationDropdownUnderSettings() {
 		log.info("Clicking on location dropdown under settings..");
+		// Old code: clicked straight away, even if the settings menu had not opened
+		// safeAct.safeClick(locationDropdownUnderSettings);
+		recoverSettingsMenuIfClosed();
 		safeAct.safeClick(locationDropdownUnderSettings);
 
 	}
@@ -172,9 +178,34 @@ public class YtLandingPage  extends BasePage{
 		wait.until(d -> !isSettingsMenuOpen());
 	}
 
+	/**
+	 * The dropdown exists only while the settings menu is open. The ellipses click just before this one can be missed,
+	 * and a page refresh (the SafeActions retry) would only close the menu again. So the menu is given a moment to
+	 * show and, if it still has not, opened here.
+	 */
 	public void clickingLanguageDropdownButton() throws InterruptedException {
 		log.info("Clicking language dropdown...");
+		// Old code: clicked straight away, so a missed ellipses click ended in "Find element failed after 3 attempts"
+		// safeAct.safeFindElement(languageDropdownUnderSettings).click();
+		recoverSettingsMenuIfClosed();
 		safeAct.safeFindElement(languageDropdownUnderSettings).click();
+	}
+
+	/** Recovery step: call right after the ellipses click and before using a dropdown that lives inside the settings menu. */
+	public void recoverSettingsMenuIfClosed() {
+		if (!settingsMenuOpensWithin(3)) {
+			log.warn("Settings menu is not open, opening it before using a dropdown inside it");
+			openSettingsMenu();
+		}
+	}
+
+	private boolean settingsMenuOpensWithin(int seconds) {
+		try {
+			new WebDriverWait(driver, Duration.ofSeconds(seconds)).until(d -> isSettingsMenuOpen());
+			return true;
+		} catch (TimeoutException e) {
+			return false;
+		}
 	}
 
 	public List<WebElement> gettingLanguageList() throws InterruptedException{
@@ -252,9 +283,38 @@ public class YtLandingPage  extends BasePage{
 	}
 
 
+	/** The side menu is collapsed while its mini-guide entries are displayed. */
+	private boolean isSideMenuCollapsed() {
+		try {
+			return driver.findElements(sideMenuCollapsedList).stream().anyMatch(WebElement::isDisplayed);
+		} catch (StaleElementReferenceException e) {
+			return false;
+		}
+	}
+
+	private boolean sideMenuCollapsesWithin(int seconds) {
+		try {
+			new WebDriverWait(driver, Duration.ofSeconds(seconds)).until(d -> isSideMenuCollapsed());
+			return true;
+		} catch (TimeoutException e) {
+			return false;
+		}
+	}
+
+	/** Collapses the side menu. Does nothing if it is already collapsed; clicks once more if the first click was missed. */
 	public void clickingLeftEllipses() {
 		log.info("Clicking left ellipses in the landing page");
+		// Old code: always clicked once, with no check that the side menu really collapsed
+		// safeAct.safeFindElement(ellipsesYtLandingPageTopLeft).click();
+		if (isSideMenuCollapsed()) {
+			log.info("Side menu is already collapsed, no click needed");
+			return;
+		}
 		safeAct.safeFindElement(ellipsesYtLandingPageTopLeft).click();
+		if (!sideMenuCollapsesWithin(3)) {
+			log.warn("Side menu did not collapse, clicking left ellipses once more");
+			safeAct.safeFindElement(ellipsesYtLandingPageTopLeft).click();
+		}
 	}
 
 

@@ -69,6 +69,7 @@ public class YtMasterTests extends BaseTest{
 				landingPage.getLanguageElementByName(langText).click();	
 
 				landingPage.clickingSettingEllipsesButton();
+				landingPage.recoverSettingsMenuIfClosed();
 				genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
 				ScreenshotUtilUpdated.capture(testName, langText);
 				landingPage.clickingSettingEllipsesButton();
@@ -187,6 +188,7 @@ public class YtMasterTests extends BaseTest{
 				landingPage.getLanguageElementByName(langText).click();	
 
 				landingPage.clickingSettingEllipsesButton();
+				landingPage.recoverSettingsMenuIfClosed();
 				genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
 				ScreenshotUtilUpdated.capture(testName, langText);
 				landingPage.clickingSettingEllipsesButton();
@@ -297,6 +299,7 @@ public class YtMasterTests extends BaseTest{
 				landingPage.getLanguageElementByName(langText).click();
 				waitUtility.waitForElementReady(landingPage.sideMenuCollapsedList);
 				landingPage.clickingSettingEllipsesButton();
+				landingPage.recoverSettingsMenuIfClosed();
 				genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
 				ScreenshotUtilUpdated.capture(testName, langText);
 				landingPage.clickingSettingEllipsesButton();
@@ -404,6 +407,7 @@ public class YtMasterTests extends BaseTest{
 				landingPage.getLanguageElementByName(langText).click();
 
 				landingPage.clickingSettingEllipsesButton();
+				landingPage.recoverSettingsMenuIfClosed();
 				genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
 				ScreenshotUtilUpdated.capture(testName, langText);
 				landingPage.clickingSettingEllipsesButton();
@@ -706,6 +710,7 @@ public class YtMasterTests extends BaseTest{
 				landingPage.getLanguageElementByName(langText).click();	
 
 				landingPage.clickingSettingEllipsesButton();
+				landingPage.recoverSettingsMenuIfClosed();
 				genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
 				ScreenshotUtilUpdated.capture(testName, langText);
 				landingPage.clickingSettingEllipsesButton();
@@ -800,6 +805,7 @@ public class YtMasterTests extends BaseTest{
 				landingPage.getLanguageElementByName(langText).click();	
 
 				landingPage.clickingSettingEllipsesButton();
+				landingPage.recoverSettingsMenuIfClosed();
 				genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
 				ScreenshotUtilUpdated.capture(testName, langText);
 				landingPage.clickingSettingEllipsesButton();
