@@ -57,12 +57,8 @@ public class GenericUtility extends BasePage {
     public void clickEnter(By locator) {
         log.info("clickEnter({})", locator);
         WebElement el = safeAct.safeFindElement(locator);
-        if (el != null) {
-            el.sendKeys(Keys.ENTER);
-            log.info("Sent ENTER to {}", locator);
-        } else {
-            log.warn("clickEnter - element not found: {}", locator);
-        }
+        el.sendKeys(Keys.ENTER);
+        log.info("Sent ENTER to {}", locator);
     }
     
     
@@ -86,16 +82,12 @@ public class GenericUtility extends BasePage {
             SafeActions safeAct = new SafeActions(driver);
             WebElement element = safeAct.safeFindElement(locator);
 
-            if (element != null) {
-                ((JavascriptExecutor) driver).executeScript(
-                    "arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", 
-                    element
-                );
-                wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-                log.info("[{}] Successfully scrolled to element: {}", ThreadContext.get("testName"), locator);
-            } else {
-                log.warn("[{}] Element not found for locator: {}", ThreadContext.get("testName"), locator);
-            }
+            ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });",
+                element
+            );
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            log.info("[{}] Successfully scrolled to element: {}", ThreadContext.get("testName"), locator);
 
         } catch (Exception e) {
             log.error("[{}] Error while scrolling to element: {} - {}", ThreadContext.get("testName"), locator, e.getMessage());
@@ -450,12 +442,28 @@ public class GenericUtility extends BasePage {
 	public void assertLanguageDetectedAndAttributeMatch(org.testng.asserts.SoftAssert softAssert, LoopGuard guard, String langText,
 			String detectedLanguage, String expectedLanguage, String detectedAttribute, String expectedAttribute) {
 		softAssertEquals(softAssert, guard, detectedAttribute, expectedAttribute, "Html lang attribute differs | language=" + langText);
-		if (isFlakyDetectionLanguage(langText)) {
+		boolean attributeMatch = java.util.Objects.equals(detectedAttribute, expectedAttribute);
+		if (ConfigManager.getBoolean("skipFlakyLanguageDetection", true) && isFlakyDetectionLanguage(langText)) {
 			log.info("[{}] Skipping language detection check for flaky language={}", ThreadContext.get("testName"), langText);
 			guard.count("detection skipped");
+			logLanguageCheck(langText, attributeMatch, detectedAttribute, expectedAttribute, "detection skipped (flaky), Lingua said " + detectedLanguage);
 			return;
 		}
 		softAssertEquals(softAssert, guard, detectedLanguage, expectedLanguage, "Lingua detection differs | language=" + langText);
+		boolean detectionMatch = java.util.Objects.equals(detectedLanguage, expectedLanguage);
+		logLanguageCheck(langText, attributeMatch && detectionMatch, detectedAttribute, expectedAttribute,
+				"detection " + detectedLanguage + (detectionMatch ? " = " : " != ") + expectedLanguage);
+	}
+
+	/** One log line per language for the Lingua tests, e.g. "Language check | Deutsch | match | lang 'de-DE' = 'de-DE' | detection GERMAN = GERMAN". */
+	private static void logLanguageCheck(String langText, boolean match, String detectedAttribute, String expectedAttribute, String detection) {
+		String line = "Language check | " + langText + " | " + (match ? "match" : "MISMATCH") + " | lang '" + detectedAttribute
+				+ "' " + (java.util.Objects.equals(detectedAttribute, expectedAttribute) ? "=" : "!=") + " '" + expectedAttribute + "' | " + detection;
+		if (match) {
+			log.info("[{}] {}", ThreadContext.get("testName"), line);
+		} else {
+			log.warn("[{}] {}", ThreadContext.get("testName"), line);
+		}
 	}
 
 
