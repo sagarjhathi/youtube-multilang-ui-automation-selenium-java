@@ -373,7 +373,8 @@ public class GenericUtility extends BasePage {
 
 	/** Side-menu text as compared: normalised, and without the entries YouTube shows inconsistently. */
 	public static String comparableSideMenuText(String text) {
-		return stripKeywords(text, "YouTube Music", "YouTube TV");
+		// "YouTube Labs" is untranslated and shown only on some runs, like Music and TV; keep it optional until it is seen on every run
+		return stripKeywords(text, "YouTube Music", "YouTube TV", "YouTube Labs");
 	}
 
 	private static boolean containsWord(String text, String word) {
@@ -437,13 +438,14 @@ public class GenericUtility extends BasePage {
 	/**
 	 * Language check for the Lingua tests: both the {@code <html lang>} attribute and the Lingua result must
 	 * match the expected values. For flaky-detection languages the Lingua result is ignored and only the
-	 * attribute is asserted.
+	 * attribute is asserted, but only when the text came from the side menu ({@code sideMenuText}); the settings
+	 * and filter texts are checked for every language.
 	 */
 	public void assertLanguageDetectedAndAttributeMatch(org.testng.asserts.SoftAssert softAssert, LoopGuard guard, String langText,
-			String detectedLanguage, String expectedLanguage, String detectedAttribute, String expectedAttribute) {
+			String detectedLanguage, String expectedLanguage, String detectedAttribute, String expectedAttribute, boolean sideMenuText) {
 		softAssertEquals(softAssert, guard, detectedAttribute, expectedAttribute, "Html lang attribute differs | language=" + langText);
 		boolean attributeMatch = java.util.Objects.equals(detectedAttribute, expectedAttribute);
-		if (ConfigManager.getBoolean("skipFlakyLanguageDetection", true) && isFlakyDetectionLanguage(langText)) {
+		if (sideMenuText && ConfigManager.getBoolean("skipFlakyLanguageDetection", true) && isFlakyDetectionLanguage(langText)) {
 			log.info("[{}] Skipping language detection check for flaky language={}", ThreadContext.get("testName"), langText);
 			guard.count("detection skipped");
 			logLanguageCheck(langText, attributeMatch, detectedAttribute, expectedAttribute, "detection skipped (flaky), Lingua said " + detectedLanguage);
@@ -467,19 +469,16 @@ public class GenericUtility extends BasePage {
 	}
 
 
-	/** Languages whose Lingua detection result is unreliable; the detection assertion is skipped for these. */
+	/**
+	 * Languages whose Lingua detection result is unreliable on the side-menu texts (short, mixed with English words);
+	 * the detection assertion is skipped for these in the two side-menu tests only. The other languages matched in every run.
+	 */
 	// non-ASCII chars written as (char) codes so the source compiles regardless of platform encoding
 	private static final List<String> FLAKY_DETECTION_LANGUAGES = List.of(
-			"Afrikaans",
-			"Az" + (char) 0x259 + "rbaycan",
-			"Bahasa Indonesia",
-			"Dansk",
-			"English (US)",
-			"Espa" + (char) 0xF1 + "ol (Espa" + (char) 0xF1 + "a)",
-			"Espa" + (char) 0xF1 + "ol (Latinoam" + (char) 0xE9 + "rica)",
-			"Espa" + (char) 0xF1 + "ol (US)",
-			"Hrvatski",
-			"Svenska");
+			"Az" + (char) 0x259 + "rbaycan", // detector returns TURKISH on the collapsed side menu
+			"Bahasa Indonesia", // detector returns ENGLISH on the side-menu texts
+			"Dansk", // detector returns DUTCH on the collapsed side menu
+			"Hrvatski"); // detector returns BOSNIAN on the collapsed side menu
 
 	public boolean isFlakyDetectionLanguage(String language) {
 		return language != null && FLAKY_DETECTION_LANGUAGES.contains(language.trim());

@@ -106,6 +106,22 @@ public class HypeLiveAlignmentTest {
 	}
 
 	@Test
+	public void youtubeLabsOnThePageOnlyIsOptional() {
+		String page = "Home Shorts Stream YouTube Premium YouTube Kids YouTube Labs History";
+		HypeLiveAlignment alignment = align(page, "Home Shorts Stream YouTube Premium YouTube Kids History");
+		assertPasses(alignment, page);
+		Assert.assertEquals(alignment.kind(), "Live");
+	}
+
+	@Test
+	public void youtubeLabsMissingFromThePageIsOptional() {
+		String page = "Home Shorts Stream YouTube Premium YouTube Kids History";
+		HypeLiveAlignment alignment = align(page, "Home Shorts Stream YouTube Premium YouTube Kids History");
+		assertPasses(alignment, page);
+		Assert.assertEquals(alignment.kind(), "Live");
+	}
+
+	@Test
 	public void languageMissingFromTheWordSheetFailsWhenTextsDiffer() {
 		String page = "Home Shorts Stream History";
 		HypeLiveAlignment alignment = GenericUtility.alignExpectedHypeLive(WORDS, "Unknown", page, "Home Shorts Boost History");

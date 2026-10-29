@@ -223,7 +223,7 @@ public class YtMasterTests extends BaseTest{
 
 				log.info("[{}] ApplicableLanguage==  "+applicableLanguage+"     "+"Detected Language ==  "+detectedLanguage+"  "+"Expected Language == "+expectedLanguage, ThreadContext.get("testName"));
 
-				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
+				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute, true);
 
 
 				landingPage.clickingSettingEllipsesButton();
@@ -442,7 +442,7 @@ public class YtMasterTests extends BaseTest{
 
 
 
-				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
+				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute, true);
 
 
 				landingPage.clickingSettingEllipsesButton();
@@ -537,7 +537,7 @@ public class YtMasterTests extends BaseTest{
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language attribute   "+detectedLanguageAttribute+"  "+"Expected Language attribute "+expectedLanguageAttribute);
 
-				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
+				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute, false);
 
 
 				// landingPage.clickingSettingEllipsesButton();
@@ -833,7 +833,7 @@ public class YtMasterTests extends BaseTest{
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language attribute   "+detectedLanguageAttribute+"  "+"Expected Language attribute "+expectedLanguageAttribute);
 
-				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute);
+				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute, false);
 
 				guard.passed(langText);
 			} catch (Exception e) {
