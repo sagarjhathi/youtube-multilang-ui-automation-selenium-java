@@ -36,7 +36,7 @@ public class YtMasterTests extends BaseTest{
 
 
 		FileReader verifyingSideMenuLanguageAsInSettingsDataReader=new FileReader();
-		verifyingSideMenuLanguageAsInSettingsDataReader.loadWorkbook("data/TEMP_verifyingSideMenuLanguageAsInSettings_promo.xlsx"); // TEMP: promo experiment, revert
+		verifyingSideMenuLanguageAsInSettingsDataReader.loadWorkbook("data/verifyingSideMenuLanguageAsInSettings.xlsx");
 		verifyingSideMenuLanguageAsInSettingsDataReader.loadSheet("verifyingSideMenuLanguageAsInSe");
 
 
