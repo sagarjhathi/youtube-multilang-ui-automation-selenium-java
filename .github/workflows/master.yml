@@ -96,7 +96,10 @@ jobs:
         working-directory: ${{ env.WORKDIR }}
 
 
+      # continue-on-error lets the steps below (upload, reports) run after a test failure.
+      # The last step of this job turns a failure back into a red shard. See docs/ci-failure-visibility.md
       - name: Run Maven Tests
+        id: tests
         working-directory: ${{ env.WORKDIR }}
         run: mvn test -Dgroups=${{ matrix.group }}
         continue-on-error: true
@@ -132,6 +135,21 @@ jobs:
           name: allure-results-${{ matrix.group }}
           path: ${{ env.WORKDIR }}/target/allure-results
           if-no-files-found: warn
+
+
+      # Last step on purpose: reports are already uploaded, so a red shard still gets published.
+      - name: Fail the shard if tests failed or none ran
+        if: always()
+        shell: pwsh
+        run: |
+          if ("${{ steps.tests.outcome }}" -ne "success") {
+            throw "Maven tests step ended with '${{ steps.tests.outcome }}' (see the test log and the reports)"
+          }
+          $results = "${{ env.WORKDIR }}/target/surefire-reports/testng-results.xml"
+          if (-not (Test-Path $results)) { throw "No testng-results.xml found, so no tests ran" }
+          $total = [int]([xml](Get-Content $results)).'testng-results'.total
+          if ($total -eq 0) { throw "0 tests ran for group ${{ matrix.group }}" }
+          Write-Host "$total tests ran and the Maven step passed"
 
 
           

@@ -135,6 +135,7 @@ This project demonstrates:
   - Manual dispatch
   - Nightly CRON
   - Four parallel shards (`side-menu-expanded`, `side-menu-collapsed`, `settings-region`, `global-filter`) + a single `publish` job
+- A shard turns red when its tests fail or none run, but only after its reports are uploaded, and the `publish` job still runs (see `docs/ci-failure-visibility.md`)
 - Artifact storage (the Extent upload runs even after earlier step failures and errors if the run folder is empty)
 - GitHub Pages hosting (report hub); the `gh-pages` push is retried up to 3 times
 
@@ -182,9 +183,9 @@ The framework adapts based on trigger source:
 
 | Trigger Type | Behavior |
 |-------------|---------|
-| Push / PR | Reduced language coverage |
-| Nightly CRON | Full language & region validation |
-| Manual | Developer-controlled |
+| Push / PR | Reduced: first 10 languages and 10 locations |
+| Nightly CRON | Full language & region validation (54 languages, 110 locations) |
+| Manual / local | Reduced by default; override with `-D` flags (see `docs/run-coverage.md`) |
 
 ---
 
