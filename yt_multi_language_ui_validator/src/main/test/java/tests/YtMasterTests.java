@@ -54,8 +54,6 @@ public class YtMasterTests extends BaseTest{
 		LanguagesRowCount = genericUtility.resolveLanguageIterationCount(LanguagesRowCount);
 
 
-		List<String[]> hypeLiveWordRows=GenericUtility.loadHypeLiveWordRows();
-
 		LoopGuard guard=new LoopGuard(softAssert);
 		for(int languageIndex=1;languageIndex<LanguagesRowCount && !guard.shouldStop();languageIndex++) {
 
@@ -64,9 +62,9 @@ public class YtMasterTests extends BaseTest{
 				System.out.println(langText+" lang text from the sheet   "+languageIndex);
 
 				ScreenshotUtilUpdated.capture(testName, langText);
-				
 
-				landingPage.getLanguageElementByName(langText).click();	
+
+				landingPage.getLanguageElementByName(langText).click();
 
 				landingPage.clickingSettingEllipsesButton();
 				landingPage.recoverSettingsMenuIfClosed();
@@ -95,15 +93,18 @@ public class YtMasterTests extends BaseTest{
 				for(WebElement sideMenuElement:listOfSideMenu) {
 					sideMenuTexts.add(sideMenuElement.getText());
 				}
-				// YouTube fills one slot with Hype, Live or nothing: the expected text is aligned to it only for the known words (see docs)
-				GenericUtility.HypeLiveAlignment alignment=GenericUtility.alignExpectedHypeLive(hypeLiveWordRows, langText, String.join(" ", sideMenuTexts), verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 1));
-				String expectedData=alignment.expected();
+				// the sheet lists every version of the menu YouTube may show (slot and Premium entry options); the page must equal one of them
+				List<String[]> acceptedTexts=GenericUtility.loadAcceptedSideMenuTexts(verifyingSideMenuLanguageAsInSettingsDataReader, languageIndex);
 				String actualData=GenericUtility.comparableSideMenuText(String.join(" ", sideMenuTexts));
+				int acceptedIndex=GenericUtility.indexOfAcceptedText(acceptedTexts, actualData);
+				// no match: compare with the usual (first) version so the failure shows the usual expected / received difference
+				String expectedData=acceptedTexts.get(acceptedIndex>=0?acceptedIndex:0)[0];
+				String version=acceptedIndex>=0?acceptedTexts.get(acceptedIndex)[1]:"none of the "+acceptedTexts.size()+" matches";
 
 
 				System.out.println("========="+expectedData+" =====  Expected data from the sheet");
-				GenericUtility.logComparison("Side menu", langText, actualData.trim().equals(expectedData.trim()), actualData.trim().length(), "slot: "+alignment.detail());
-				guard.count("slot "+alignment.kind());
+				GenericUtility.logComparison("Side menu", langText, acceptedIndex>=0, actualData.trim().length(), "version: "+version);
+				guard.count(acceptedIndex==0?"usual version":acceptedIndex>0?"other version":"unknown version");
 				GenericUtility.softAssertEquals(softAssert, guard, actualData.trim(),expectedData.trim(),"Side menu text differs | language="+langText);
 
 

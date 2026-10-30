@@ -96,11 +96,12 @@ This project demonstrates:
   - One retry of the same language, in code
   - Earlier checks kept, later languages still validated
   - Abort limits for environment vs element/code failures
-  - One summary line per loop (`passed X of Y`, retries, failures, skipped detection, Hype/Live slot counts)
-- **Hype / Live slot check**:
-  - YouTube shows Hype, Live or nothing in one side-menu slot, translated differently per language
-  - `HypeLiveWords.xlsx` names the two allowed words per language; the expected text is aligned only for those
-  - Anything else in the slot (for example "Gaming") still fails; the page text is never changed
+  - One summary line per loop (`passed X of Y`, retries, failures, skipped detection, usual / other / unknown version counts)
+- **Allowed side-menu versions**:
+  - YouTube shows the Hype word, the Live word or nothing in one slot, and sometimes a localized trial offer instead of "YouTube Premium"
+  - `verifyingSideMenuLanguageAsInSettings.xlsx` holds a base text with `{slot}` and `{premium}` plus the options of each (separated by ` || `, `(none)` = entry missing)
+  - The page text must equal one of the generated texts; anything else (for example "Gaming" in the slot) fails against the usual first version
+  - A new YouTube form is a one-cell data edit; offline checks: `mvn test -Dsurefire.suiteXmlFiles=src/main/test/java/runners/offline.xml`
 - **Stable menu read**:
   - The side menu is re-read every 500 ms until 3 reads in a row are identical, so a half-rendered menu is not compared
 - **Auditable passes**:

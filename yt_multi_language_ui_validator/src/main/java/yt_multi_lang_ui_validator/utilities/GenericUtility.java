@@ -2,7 +2,9 @@ package main.java.yt_multi_lang_ui_validator.utilities;
 
 import java.time.Duration; 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -210,128 +212,90 @@ public class GenericUtility extends BasePage {
 		return result.replaceAll("\\s+", " ").trim();
 	}
 
-	/** Sheet with the Hype and Live word of every language (columns: Applied Language, Hype, Live). */
-	private static final String HYPE_LIVE_WORDS_FILE = "data/HypeLiveWords.xlsx";
-	private static final String HYPE_LIVE_WORDS_SHEET = "HypeLive";
+	/** Separator between the options of one placeholder in a sheet cell, e.g. "Regstreeks || Ophef || (none)". */
+	private static final String OPTION_SEPARATOR = " || ";
 
-	/** Word characters for whole-word matching: letters, combining marks and digits (works for non-Latin scripts). */
-	private static final String WORD_CHAR = "[\\p{L}\\p{M}\\p{N}]";
+	/** Written in an options cell for "this entry is not shown"; it becomes an empty option. */
+	private static final String NO_ENTRY = "(none)";
 
-	/** Reads the Hype/Live word sheet. Each row is {language, hype, live}, normalised like the side-menu texts. */
-	public static List<String[]> loadHypeLiveWordRows() {
-		FileReader reader = new FileReader();
-		reader.loadWorkbook(HYPE_LIVE_WORDS_FILE);
-		reader.loadSheet(HYPE_LIVE_WORDS_SHEET);
-		List<String[]> rows = new ArrayList<>();
-		for (int row = 1; row < reader.getRowCount(); row++) {
-			rows.add(new String[] {
-					normalizeText(reader.getCellValue(row, 0)).trim(),
-					normalizeText(reader.getCellValue(row, 1)).trim(),
-					normalizeText(reader.getCellValue(row, 2)).trim() });
+	/**
+	 * Splits an options cell into its options, in the order written (the first one is the usual one).
+	 * Every option is trimmed and "(none)" becomes the empty string.
+	 */
+	public static List<String> splitOptions(String cell) {
+		List<String> options = new ArrayList<>();
+		String rest = cell;
+		int separatorAt = rest.indexOf(OPTION_SEPARATOR);
+		while (separatorAt >= 0) {
+			options.add(toOption(rest.substring(0, separatorAt)));
+			rest = rest.substring(separatorAt + OPTION_SEPARATOR.length());
+			separatorAt = rest.indexOf(OPTION_SEPARATOR);
 		}
-		reader.closeWorkbook();
-		return rows;
+		options.add(toOption(rest));
+		return options;
+	}
+
+	private static String toOption(String text) {
+		String option = text.trim();
+		return option.equals(NO_ENTRY) ? "" : option;
 	}
 
 	/**
-	 * Result of {@link #alignExpectedHypeLive}: the expected text to compare with, and what happened to the
-	 * Hype/Live slot, for the comparison log line and the summary.
+	 * Every version of the side menu that YouTube may show for one language. The base text holds a
+	 * {placeholder} for each part that varies; each placeholder has a list of options. Starting with the base
+	 * as the only text, every text so far is replaced by one copy per option of the next placeholder, so
+	 * 3 slot options x 2 premium options give 6 texts. Each text is then cleaned like the page text.
 	 *
-	 * @param expected the expected text to compare the page text with
-	 * @param kind     "Hype", "Live", "missing", "equal", "unknown language" or "not adjusted"
-	 * @param detail   readable form of the slot, e.g. "Live 'Regstreeks'" or "entry missing"
+	 * @param base    the language's text with the placeholders, e.g. "Home Shorts {slot} {premium} Kids"
+	 * @param options the options per placeholder name, in the order the placeholders are filled
+	 * @return for each allowed text {cleaned text, description of the options used}; the first one is the usual
+	 *         version. A missing entry (an empty option) is described as "(none)".
 	 */
-	public record HypeLiveAlignment(String expected, String kind, String detail) {
+	public static List<String[]> acceptedSideMenuTexts(String base, Map<String, List<String>> options) {
+		List<String> texts = new ArrayList<>();
+		List<String> descriptions = new ArrayList<>();
+		texts.add(base);
+		descriptions.add("");
+		for (Map.Entry<String, List<String>> placeholder : options.entrySet()) {
+			List<String> nextTexts = new ArrayList<>();
+			List<String> nextDescriptions = new ArrayList<>();
+			for (int index = 0; index < texts.size(); index++) {
+				for (String option : placeholder.getValue()) {
+					nextTexts.add(texts.get(index).replace("{" + placeholder.getKey() + "}", option));
+					String shown = option.isEmpty() ? NO_ENTRY : option;
+					String used = placeholder.getKey() + "=" + shown;
+					nextDescriptions.add(descriptions.get(index).isEmpty() ? used : descriptions.get(index) + " " + used);
+				}
+			}
+			texts = nextTexts;
+			descriptions = nextDescriptions;
+		}
+		List<String[]> accepted = new ArrayList<>();
+		for (int index = 0; index < texts.size(); index++) {
+			accepted.add(new String[] { comparableSideMenuText(texts.get(index)), descriptions.get(index) });
+		}
+		return accepted;
 	}
 
 	/**
-	 * YouTube fills one slot of the expanded side menu with the Hype entry, the Live entry or nothing, and the
-	 * words differ per language. The expected sheet holds one of the two words, so this makes the EXPECTED text
-	 * match what the page shows; the page text is never changed.
-	 * <ol>
-	 * <li>Compare as they are. Equal: nothing to change.</li>
-	 * <li>Take the language's Hype and Live word (an empty one is ignored) and find which of them are in the
-	 * expected text and in the page text, as whole words.</li>
-	 * <li>The expected text must contain exactly one of the two words and the page must not contain both,
-	 * otherwise nothing is changed.</li>
-	 * <li>The page has the OTHER word: the expected word is replaced by the page word, which keeps its
-	 * position.</li>
-	 * <li>The page has NEITHER word: the expected word is removed.</li>
-	 * <li>Anything else (another entry in the slot, a changed word elsewhere, a truncated menu, a language that is
-	 * not in the word rows): nothing is changed, so the assertion fails with the full texts.</li>
-	 * </ol>
-	 *
-	 * @param wordRows     rows of {@link #loadHypeLiveWordRows()}
-	 * @param actualText   side-menu text from the page
-	 * @param expectedText expected text from the sheet (holding the Hype or the Live word)
-	 * @return the expected text to compare {@link #comparableSideMenuText} of the page text with, and the slot
+	 * The allowed texts of one sheet row: column 1 holds the base text, columns 2 and 3 the options of
+	 * {slot} and {premium}.
 	 */
-	public static HypeLiveAlignment alignExpectedHypeLive(List<String[]> wordRows, String langText, String actualText, String expectedText) {
-		String actual = comparableSideMenuText(actualText);
-		String expected = comparableSideMenuText(expectedText);
-
-		String language = normalizeText(langText).trim();
-		String[] words = null;
-		for (String[] row : wordRows) {
-			if (row[0].equals(language)) {
-				words = row;
-				break;
-			}
-		}
-		if (words == null) {
-			return new HypeLiveAlignment(expected, "unknown language",
-					actual.equals(expected) ? "texts equal, language not in the word sheet" : "language not in the word sheet");
-		}
-
-		List<String> languageWords = new ArrayList<>();
-		for (int column = 1; column <= 2; column++) {
-			String word = words[column];
-			if (!word.isEmpty() && languageWords.stream().noneMatch(word::equalsIgnoreCase)) {
-				languageWords.add(word);
-			}
-		}
-		List<String> inExpected = new ArrayList<>();
-		List<String> inPage = new ArrayList<>();
-		for (String word : languageWords) {
-			if (containsWord(expected, word)) {
-				inExpected.add(word);
-			}
-			if (containsWord(actual, word)) {
-				inPage.add(word);
-			}
-		}
-
-		if (actual.equals(expected)) {
-			if (inPage.size() == 1) {
-				String pageWord = firstWordMatch(actual, inPage.get(0));
-				String kind = slotKind(words, inPage.get(0));
-				return new HypeLiveAlignment(expected, kind, kind + " '" + pageWord + "'");
-			}
-			return new HypeLiveAlignment(expected, inPage.isEmpty() ? "missing" : "equal", inPage.isEmpty() ? "entry missing, texts equal" : "texts equal");
-		}
-		if (inExpected.size() != 1) {
-			return new HypeLiveAlignment(expected, "not adjusted", "not adjusted, the expected text holds " + inExpected.size() + " of the 2 words");
-		}
-		if (inPage.size() > 1) {
-			return new HypeLiveAlignment(expected, "not adjusted", "not adjusted, the page shows both words " + inPage);
-		}
-
-		String expectedWord = inExpected.get(0);
-		if (inPage.isEmpty()) {
-			return new HypeLiveAlignment(replaceWord(expected, expectedWord, ""), "missing", "entry missing, '" + expectedWord + "' removed from the expected text");
-		}
-		if (inPage.get(0).equalsIgnoreCase(expectedWord)) {
-			return new HypeLiveAlignment(expected, "not adjusted", "not adjusted, the page shows the expected word '" + expectedWord + "' and differs elsewhere");
-		}
-		String pageWord = firstWordMatch(actual, inPage.get(0));
-		String kind = slotKind(words, inPage.get(0));
-		return new HypeLiveAlignment(replaceWord(expected, expectedWord, pageWord), kind,
-				kind + " '" + pageWord + "', expected '" + expectedWord + "' replaced by it");
+	public static List<String[]> loadAcceptedSideMenuTexts(FileReader reader, int row) {
+		Map<String, List<String>> options = new LinkedHashMap<>();
+		options.put("slot", splitOptions(reader.getCellValue(row, 2)));
+		options.put("premium", splitOptions(reader.getCellValue(row, 3)));
+		return acceptedSideMenuTexts(reader.getCellValue(row, 1), options);
 	}
 
-	/** "Hype" or "Live", depending on which column of the word row {@code word} is in. */
-	private static String slotKind(String[] words, String word) {
-		return word.equalsIgnoreCase(words[1]) ? "Hype" : "Live";
+	/** Index of the allowed text that equals the (already cleaned) page text, or -1 when none does. */
+	public static int indexOfAcceptedText(List<String[]> accepted, String pageText) {
+		for (int index = 0; index < accepted.size(); index++) {
+			if (accepted.get(index)[0].equals(pageText)) {
+				return index;
+			}
+		}
+		return -1;
 	}
 
 	/**
@@ -365,32 +329,10 @@ public class GenericUtility extends BasePage {
 		}
 	}
 
-	/** The text of the first whole-word match of {@code word} in {@code text}, as it is written there. */
-	private static String firstWordMatch(String text, String word) {
-		java.util.regex.Matcher matcher = wordPattern(word).matcher(text);
-		return matcher.find() ? matcher.group() : word;
-	}
-
 	/** Side-menu text as compared: normalised, and without the entries YouTube shows inconsistently. */
 	public static String comparableSideMenuText(String text) {
 		// "YouTube Labs" is untranslated and shown only on some runs, like Music and TV; keep it optional until it is seen on every run
 		return stripKeywords(text, "YouTube Music", "YouTube TV", "YouTube Labs");
-	}
-
-	private static boolean containsWord(String text, String word) {
-		return !word.isEmpty() && wordPattern(word).matcher(text).find();
-	}
-
-	/** Replaces the first whole-word occurrence of {@code word}; whitespace is collapsed afterwards. */
-	private static String replaceWord(String text, String word, String replacement) {
-		String replaced = wordPattern(word).matcher(text)
-				.replaceFirst(java.util.regex.Matcher.quoteReplacement(" " + replacement + " "));
-		return replaced.replaceAll("\\s+", " ").trim();
-	}
-
-	private static java.util.regex.Pattern wordPattern(String word) {
-		return java.util.regex.Pattern.compile("(?<!" + WORD_CHAR + ")" + java.util.regex.Pattern.quote(word) + "(?!" + WORD_CHAR + ")",
-				java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.UNICODE_CASE);
 	}
 
 
