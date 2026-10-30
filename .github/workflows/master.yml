@@ -122,7 +122,7 @@ jobs:
         # always() so a failed earlier step doesn't skip the upload; the RUN_FOLDER guard
         # avoids uploading the whole WORKDIR if no run_* folder was found.
         if: always() && env.RUN_FOLDER != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: extent-${{ matrix.group }}
           path: ${{ env.WORKDIR }}/${{ env.RUN_FOLDER }}
@@ -132,7 +132,7 @@ jobs:
 
       - name: Upload Allure results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: allure-results-${{ matrix.group }}
           path: ${{ env.WORKDIR }}/target/allure-results
@@ -202,14 +202,14 @@ jobs:
 
       # Each shard's Extent run folder lands in its own subfolder: shards/extent-<group>/
       - name: Download Extent reports (all shards)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: extent-*
           path: shards
 
       # Allure raw results have unique file names, so every shard is merged into one folder
       - name: Download Allure results (all shards)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: allure-results-*
           path: allure-results
