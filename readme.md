@@ -410,7 +410,7 @@ yt_multi_language_ui_validator/
     │   │   ├── base/            BaseTest, BasePage
     │   │   ├── driverManager/   DriverManager
     │   │   ├── config/          ConfigManager
-    │   │   ├── pages/           YtLandingPage, YtInnerPage
+    │   │   ├── pages/           YtLandingPage
     │   │   ├── safeActions/     SafeActions
     │   │   ├── utilities/       GenericUtility, WaitUtility, LoopGuard,
     │   │   │                    ScreenshotUtilUpdated, ImageCompressor
@@ -419,7 +419,6 @@ yt_multi_language_ui_validator/
     │   │   ├── logger/          LoggerUtility
     │   │   ├── pathManager/     PathManager
     │   │   ├── fileReader/      FileReader
-    │   │   ├── fileWriter/      ExcelFileWriter
     │   │   └── seleniumGrid/    GlobalGridUtility
     │   ├── resources/
     │   │   ├── data/*.xlsx
