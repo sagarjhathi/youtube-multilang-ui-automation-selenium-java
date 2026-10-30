@@ -35,7 +35,7 @@ jobs:
       IS_CRON: ${{ github.event_name == 'schedule'}}  # <-- "true" only for cron
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 1
           persist-credentials: true   # ✅ ensures GITHUB_TOKEN is kept for pushing
@@ -163,7 +163,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 1
 
@@ -236,7 +236,7 @@ jobs:
 
 
       - name: Checkout gh-pages
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           clean: false
           ref: gh-pages
