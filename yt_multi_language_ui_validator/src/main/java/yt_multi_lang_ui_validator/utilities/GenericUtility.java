@@ -2,6 +2,8 @@ package main.java.yt_multi_lang_ui_validator.utilities;
 
 import java.time.Duration; 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -266,7 +268,7 @@ public class GenericUtility extends BasePage {
 	 * @param expectedText expected text from the sheet (holding the Hype or the Live word)
 	 * @return the expected text to compare {@link #comparableSideMenuText} of the page text with, and the slot
 	 */
-	public static HypeLiveAlignment alignExpectedHypeLive(List<String[]> wordRows, String langText, String actualText, String expectedText) {
+	private static HypeLiveAlignment alignHypeLiveSlot(List<String[]> wordRows, String langText, String actualText, String expectedText) {
 		String actual = comparableSideMenuText(actualText);
 		String expected = comparableSideMenuText(expectedText);
 
@@ -327,6 +329,55 @@ public class GenericUtility extends BasePage {
 		String kind = slotKind(words, inPage.get(0));
 		return new HypeLiveAlignment(replaceWord(expected, expectedWord, pageWord), kind,
 				kind + " '" + pageWord + "', expected '" + expectedWord + "' replaced by it");
+	}
+
+	/** The plain label of the Premium entry; YouTube swaps it for a localized trial offer ("Try Premium for $0") for some regions and accounts. */
+	private static final String PREMIUM_LABEL = "YouTube Premium";
+	/** Longest trial offer, in words, that is accepted in place of the plain label. */
+	private static final int PREMIUM_OFFER_MAX_WORDS = 10;
+
+	/**
+	 * {@link #alignHypeLiveSlot} plus the Premium entry. The entry reads either "YouTube Premium" or a localized
+	 * trial offer, depending on the region and account of the browser, so the sheet and the page can legitimately
+	 * differ there. When that entry is the ONLY difference, the expected text is aligned to the page; any other
+	 * difference still fails with the full texts.
+	 */
+	public static HypeLiveAlignment alignExpectedHypeLive(List<String[]> wordRows, String langText, String actualText, String expectedText) {
+		HypeLiveAlignment slot = alignHypeLiveSlot(wordRows, langText, actualText, expectedText);
+		String aligned = alignPremiumEntry(comparableSideMenuText(actualText), slot.expected());
+		if (aligned.equals(slot.expected())) {
+			return slot;
+		}
+		return new HypeLiveAlignment(aligned, slot.kind(), slot.detail() + " | Premium entry differs only in the offer text, page text used");
+	}
+
+	/**
+	 * Returns {@code actual} when the two texts are identical except for the Premium entry, where one side holds the
+	 * plain label and the other a short offer of at most {@value #PREMIUM_OFFER_MAX_WORDS} words; otherwise returns
+	 * {@code expected} unchanged. The label must occur exactly once on the side that holds it.
+	 */
+	static String alignPremiumEntry(String actual, String expected) {
+		if (actualHoldsOnlyLabelDifference(actual, expected) || actualHoldsOnlyLabelDifference(expected, actual)) {
+			return actual;
+		}
+		return expected;
+	}
+
+	/** True when {@code withLabel} holds the plain label once and {@code other} has a short offer in its place and is equal around it. */
+	private static boolean actualHoldsOnlyLabelDifference(String withLabel, String other) {
+		List<String> label = Arrays.asList(PREMIUM_LABEL.split(" "));
+		List<String> a = Arrays.asList(withLabel.trim().split("\s+"));
+		List<String> o = Arrays.asList(other.trim().split("\s+"));
+		int at = Collections.indexOfSubList(a, label);
+		if (at < 0 || Collections.lastIndexOfSubList(a, label) != at) {
+			return false;
+		}
+		List<String> before = a.subList(0, at);
+		List<String> after = a.subList(at + label.size(), a.size());
+		int offerWords = o.size() - before.size() - after.size();
+		return offerWords >= 1 && offerWords <= PREMIUM_OFFER_MAX_WORDS
+				&& o.subList(0, before.size()).equals(before)
+				&& o.subList(o.size() - after.size(), o.size()).equals(after);
 	}
 
 	/** "Hype" or "Live", depending on which column of the word row {@code word} is in. */
