@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Offline" parallel="none">
+
+  <!-- No browser needed. Run: mvn test -Dsurefire.suiteXmlFiles=src/main/test/java/runners/offline.xml -->
+  <test name="Accepted side menu texts">
+    <classes>
+      <class name="main.test.java.tests.AcceptedSideMenuTextsTest"/>
+    </classes>
+  </test>
+
+</suite>
