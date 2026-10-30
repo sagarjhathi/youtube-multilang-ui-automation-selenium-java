@@ -153,6 +153,38 @@ jobs:
 
 
           
+  # No browser and no YouTube: checks the allowed side-menu versions kept in the data sheet (see
+  # src/main/test/java/tests/AcceptedSideMenuTextsTest.java). Runs once, not per shard, so a bad sheet edit
+  # fails here in a minute instead of as a confusing mismatch in a shard.
+  offline-checks:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      - name: Run offline checks
+        working-directory: ${{ env.WORKDIR }}
+        run: mvn -B test "-Dsurefire.suiteXmlFiles=src/main/test/java/runners/offline.xml"
+
+      - name: Fail if no offline test ran
+        shell: pwsh
+        run: |
+          $results = "${{ env.WORKDIR }}/target/surefire-reports/testng-results.xml"
+          if (-not (Test-Path $results)) { throw "No testng-results.xml found, so no offline tests ran" }
+          $total = [int]([xml](Get-Content $results)).'testng-results'.total
+          if ($total -eq 0) { throw "0 offline tests ran" }
+          Write-Host "$total offline tests ran and passed"
+
   publish:
     needs: test
     if: always()
