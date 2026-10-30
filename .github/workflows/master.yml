@@ -22,6 +22,8 @@ env:
 
 jobs:
   test:
+    # a wrong data sheet makes every shard result meaningless, so nothing runs unless the offline checks pass
+    needs: offline-checks
     runs-on: windows-latest
     timeout-minutes: 300
     strategy:
@@ -186,8 +188,9 @@ jobs:
           Write-Host "$total offline tests ran and passed"
 
   publish:
-    needs: test
-    if: always()
+    needs: [offline-checks, test]
+    # still publishes when shards fail, but not when the offline checks failed (the shards were then skipped)
+    if: always() && needs.offline-checks.result == 'success'
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -350,3 +353,21 @@ jobs:
           runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           timestamp=$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p IST")
           curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**Report Publish - ${{ job.status }}**\\n Tests job: ${{ needs.test.result }}\\n Trigger: ${{ github.event_name }}\\n Branch: ${{ github.ref_name }}\\n Time: $timestamp\\n [View Run]($runUrl)\"}" "$DISCORD_WEBHOOK"
+
+  # The shards and publish are skipped when the offline checks fail, and the publish job holds the result
+  # message, so this job is what tells Discord about that case.
+  notify-offline-failure:
+    needs: offline-checks
+    if: always() && needs.offline-checks.result != 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Notify Discord – Offline checks did not pass
+        continue-on-error: true
+        shell: bash
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          timestamp=$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p IST")
+          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**Offline checks - ${{ needs.offline-checks.result }}**\n Tests and report publish were skipped, the allowed side-menu data needs a fix\n Trigger: ${{ github.event_name }}\n Branch: ${{ github.ref_name }}\n Time: $timestamp\n [View Run]($runUrl)\"}" "$DISCORD_WEBHOOK"
