@@ -381,13 +381,14 @@ public class GenericUtility extends BasePage {
 	 * Language check for the Lingua tests: both the {@code <html lang>} attribute and the Lingua result must
 	 * match the expected values. For flaky-detection languages the Lingua result is ignored and only the
 	 * attribute is asserted, but only when the text came from the side menu ({@code sideMenuText}); the settings
-	 * and filter texts are checked for every language.
+	 * and filter texts are checked for every language. The collapsed and expanded side menus have their own
+	 * flaky lists ({@code collapsedMenu} picks one).
 	 */
 	public void assertLanguageDetectedAndAttributeMatch(org.testng.asserts.SoftAssert softAssert, LoopGuard guard, String langText,
-			String detectedLanguage, String expectedLanguage, String detectedAttribute, String expectedAttribute, boolean sideMenuText) {
+			String detectedLanguage, String expectedLanguage, String detectedAttribute, String expectedAttribute, boolean sideMenuText, boolean collapsedMenu) {
 		softAssertEquals(softAssert, guard, detectedAttribute, expectedAttribute, "Html lang attribute differs | language=" + langText);
 		boolean attributeMatch = java.util.Objects.equals(detectedAttribute, expectedAttribute);
-		if (sideMenuText && ConfigManager.getBoolean("skipFlakyLanguageDetection", true) && isFlakyDetectionLanguage(langText)) {
+		if (sideMenuText && ConfigManager.getBoolean("skipFlakyLanguageDetection", true) && isFlakyDetectionLanguage(langText, collapsedMenu)) {
 			log.info("[{}] Skipping language detection check for flaky language={}", ThreadContext.get("testName"), langText);
 			guard.count("detection skipped");
 			logLanguageCheck(langText, attributeMatch, detectedAttribute, expectedAttribute, "detection skipped (flaky), Lingua said " + detectedLanguage);
@@ -412,18 +413,22 @@ public class GenericUtility extends BasePage {
 
 
 	/**
-	 * Languages whose Lingua detection result is unreliable on the side-menu texts (short, mixed with English words);
-	 * the detection assertion is skipped for these in the two side-menu tests only. The other languages matched in every run.
+	 * Languages whose Lingua detection result is unreliable on the collapsed side-menu texts (short, mixed with English words);
+	 * the detection assertion is skipped for these in the collapsed side-menu test only. The other languages matched in every run.
 	 */
 	// non-ASCII chars written as (char) codes so the source compiles regardless of platform encoding
-	private static final List<String> FLAKY_DETECTION_LANGUAGES = List.of(
-			"Az" + (char) 0x259 + "rbaycan", // detector returns TURKISH on the collapsed side menu
-			"Bahasa Indonesia", // detector returns ENGLISH on the side-menu texts
-			"Dansk", // detector returns DUTCH on the collapsed side menu
-			"Hrvatski"); // detector returns BOSNIAN on the collapsed side menu
+	private static final List<String> FLAKY_DETECTION_LANGUAGES_COLLAPSED = List.of(
+			"Az" + (char) 0x259 + "rbaycan", // detector returns TURKISH
+			"Bahasa Indonesia", // detector returns ENGLISH
+			"Dansk", // detector returns DUTCH
+			"Hrvatski"); // detector returns BOSNIAN
 
-	public boolean isFlakyDetectionLanguage(String language) {
-		return language != null && FLAKY_DETECTION_LANGUAGES.contains(language.trim());
+	/** Same idea for the expanded side menu, where only Bahasa Indonesia is still misdetected (ENGLISH); the others matched. */
+	private static final List<String> FLAKY_DETECTION_LANGUAGES_EXPANDED = List.of("Bahasa Indonesia");
+
+	public boolean isFlakyDetectionLanguage(String language, boolean collapsedMenu) {
+		List<String> flaky = collapsedMenu ? FLAKY_DETECTION_LANGUAGES_COLLAPSED : FLAKY_DETECTION_LANGUAGES_EXPANDED;
+		return language != null && flaky.contains(language.trim());
 	}
 
 }
