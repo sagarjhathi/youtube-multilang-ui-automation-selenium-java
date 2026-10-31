@@ -282,10 +282,15 @@ public class GenericUtility extends BasePage {
 	 * {slot} and {premium}.
 	 */
 	public static List<String[]> loadAcceptedSideMenuTexts(FileReader reader, int row) {
+		return loadAcceptedSideMenuTexts(reader, row, reader.getCellValue(row, 1));
+	}
+
+	/** Same, with the base text given, so canary mode can change it before the allowed versions are built. */
+	public static List<String[]> loadAcceptedSideMenuTexts(FileReader reader, int row, String base) {
 		Map<String, List<String>> options = new LinkedHashMap<>();
 		options.put("slot", splitOptions(reader.getCellValue(row, 2)));
 		options.put("premium", splitOptions(reader.getCellValue(row, 3)));
-		return acceptedSideMenuTexts(reader.getCellValue(row, 1), options);
+		return acceptedSideMenuTexts(base, options);
 	}
 
 	/** Index of the allowed text that equals the (already cleaned) page text, or -1 when none does. */

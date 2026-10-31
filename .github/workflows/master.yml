@@ -8,6 +8,11 @@ on:
     branches:
       - "**"
   workflow_dispatch:
+    inputs:
+      canary:
+        description: "Canary run: one expected value in every test is made wrong on purpose, so every test must FAIL. Reports go to canary/ on gh-pages"
+        type: boolean
+        default: false
   schedule:
     - cron: "7 18 * * *"   # 11:37 PM IST daily
 
@@ -103,6 +108,9 @@ jobs:
       - name: Run Maven Tests
         id: tests
         working-directory: ${{ env.WORKDIR }}
+        env:
+          # empty unless the manual "canary" input is ticked, so CANARY=true in masterdata.properties still works
+          CANARY: ${{ inputs.canary && 'true' || '' }}
         run: mvn test -Dgroups=${{ matrix.group }}
         continue-on-error: true
        
@@ -144,6 +152,18 @@ jobs:
         if: always()
         shell: pwsh
         run: |
+          # Canary run: red is the expected result. Fail only if some test PASSED (it is not checking what it claims).
+          if ("${{ needs.offline-checks.outputs.canary }}" -eq "true") {
+            $results = "${{ env.WORKDIR }}/target/surefire-reports/testng-results.xml"
+            if (-not (Test-Path $results)) { throw "No testng-results.xml found, so no tests ran" }
+            $testng = ([xml](Get-Content $results)).'testng-results'
+            $total = [int]$testng.total
+            $passed = [int]$testng.passed
+            Write-Host "Canary: $($total - $passed) of $total tests failed (all $total must fail)"
+            if ($total -eq 0) { throw "0 tests ran for group ${{ matrix.group }}" }
+            if ($passed -gt 0) { throw "Canary: $passed test(s) passed in canary mode, so they are not checking what they claim" }
+            exit 0
+          }
           if ("${{ steps.tests.outcome }}" -ne "success") {
             throw "Maven tests step ended with '${{ steps.tests.outcome }}' (see the test log and the reports)"
           }
@@ -161,11 +181,24 @@ jobs:
   offline-checks:
     runs-on: windows-latest
     timeout-minutes: 15
+    outputs:
+      canary: ${{ steps.canary.outputs.value }}   # "true" for a canary run, read by the shards and by publish
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      # A canary run is a manual run with the "canary" input, or CANARY=true in masterdata.properties
+      - name: Detect canary run
+        id: canary
+        shell: bash
+        run: |
+          canary=false
+          if [ "${{ inputs.canary }}" = "true" ]; then canary=true; fi
+          if grep -Eq '^[[:space:]]*CANARY[[:space:]]*=[[:space:]]*true' "${{ env.WORKDIR }}/src/test/resources/masterdata.properties"; then canary=true; fi
+          echo "Canary run: $canary"
+          echo "value=$canary" >> "$GITHUB_OUTPUT"
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -243,14 +276,31 @@ jobs:
           path: gh-pages
 
 
+      # canary/ is kept, so a normal run does not delete the last canary reports
       - name: Clean gh-pages
+        if: needs.offline-checks.outputs.canary != 'true'
         shell: pwsh
         run: |
-          Get-ChildItem -Path gh-pages -Force | Where-Object { $_.Name -ne '.git' } | Remove-Item -Recurse -Force
+          Get-ChildItem -Path gh-pages -Force | Where-Object { $_.Name -notin '.git', 'canary' } | Remove-Item -Recurse -Force
 
 
-    
+      # Canary reports go to canary/ only. The real report folders and index.html are left untouched.
+      - name: Assemble canary reports
+        if: needs.offline-checks.outputs.canary == 'true'
+        shell: pwsh
+        run: |
+          if (Test-Path gh-pages/canary) { Remove-Item -Recurse -Force gh-pages/canary }
+          New-Item -ItemType Directory -Path gh-pages/canary -Force | Out-Null
+          foreach ($shard in Get-ChildItem -Path "shards" -Directory | Sort-Object Name) {
+            $name = $shard.Name -replace '^extent-', ''
+            Copy-Item -Recurse -Force $shard.FullName "gh-pages/canary/$name"
+          }
+          Copy-Item -Recurse -Force "allure-report" "gh-pages/canary/allure-report"
+
+
+
       - name: Assemble published site
+        if: needs.offline-checks.outputs.canary != 'true'
         shell: pwsh
         run: |
           $run = "run_$env:RUN_TIMESTAMP"

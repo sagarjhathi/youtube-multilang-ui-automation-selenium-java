@@ -52,6 +52,7 @@ This project demonstrates:
 - Running Tests
 - Engineering Decisions Explained
 - Extending the Framework
+- Canary Mode
 - Troubleshooting
 - Disclaimers
 - License
@@ -136,7 +137,7 @@ This project demonstrates:
   - Manual dispatch
   - Nightly CRON
   - Four parallel shards (`side-menu-expanded`, `side-menu-collapsed`, `settings-region`, `global-filter`) + a single `publish` job
-- A shard turns red when its tests fail or none run, but only after its reports are uploaded, and the `publish` job still runs (see `docs/ci-failure-visibility.md`)
+- A shard turns red when its tests fail or none run, but only after its reports are uploaded, and the `publish` job still runs
 - Artifact storage (the Extent upload runs even after earlier step failures and errors if the run folder is empty)
 - GitHub Pages hosting (report hub); the `gh-pages` push is retried up to 3 times
 
@@ -186,7 +187,7 @@ The framework adapts based on trigger source:
 |-------------|---------|
 | Push / PR | Reduced: first 10 languages and 10 locations |
 | Nightly CRON | Full language & region validation (54 languages, 110 locations) |
-| Manual / local | Reduced by default; override with `-D` flags (see `docs/run-coverage.md`) |
+| Manual / local | Reduced by default; override with `-D` flags (`-DrunForAllLanguages=true -DrunForAllCountries=true` runs everything) |
 
 ---
 
@@ -222,7 +223,6 @@ language fails (exception)
 
 Why it matters: on an uncontrolled live site, flakiness is normal. This keeps a nightly run useful by validating
 everything that can be validated, even when something fails, and by saying clearly what could not be.
-See `docs/project-challenges-live-site-automation.md` for the reasoning and trade-offs.
 
 ---
 
@@ -376,7 +376,13 @@ The framework uses Lingua to:
 - Validate `<html lang>` attribute
 - Detect localization regressions early
 
-This approach is far stronger than string comparison.
+This approach is far stronger than string comparison, but Lingua is probabilistic on short text, so the tests add safeguards:
+
+- Untranslated English words (YouTube, Shorts, Music...) are removed before detection.
+- Both Lingua's answer and the `<html lang>` attribute must match the expected values.
+- For a few languages where Lingua is known to guess wrong on the side menus, only `<html lang>` is checked.
+  Each skip is logged and counted in the test's summary line (`detection skipped: N`), so a green run does not hide it.
+  `skipFlakyLanguageDetection=false` checks every language.
 
 ---
 
@@ -519,10 +525,40 @@ Chosen for:
 ## ➕ Extending the Framework
 
 - Add new UI checks in `GenericUtility`
-- Extend Page Objects for new YouTube surfaces
-- Add new language mappings via Excel
+- Extend Page Objects (`YtLandingPage`) for new YouTube surfaces
+- Add a language: one new row in each language sheet under `resources/data/` (same position in all of them)
+- Add a test to `YtMasterTests` with one of the four feature groups, otherwise no CI shard runs it
 - Tune retries and waits centrally
 - Enable new browsers via `DriverManager`
+
+---
+
+## 🐤 Canary Mode
+
+A green test only proves something if it can also go red. In canary mode, **one expected value in every test is made
+wrong on purpose**, so every test has to **fail**. A test that still passes in canary mode is not really checking
+what it claims.
+
+- Only expected values are spoiled (`" CANARY"` is added), never what is read from the page.
+- Each check spoils a different row, so one bad row cannot hide behind another. Every spoil is logged:
+  `CANARY | row 3 | 'x' spoiled on purpose to 'x CANARY', this check has to fail`
+- The retry of a failed test is switched off, so a retried failure cannot turn into a pass.
+- Normal runs are not changed.
+
+**Run it locally** (from `yt_multi_language_ui_validator/`):
+
+```bash
+# PowerShell:  $env:CANARY = "true"
+# bash:        export CANARY=true
+mvn test -DrunForAllLanguages=false -DoverideLanguageCount=5 -DoverideCountriesCount=5
+```
+
+All tests must fail. The switch is the `CANARY` environment variable, or `CANARY=true` in `masterdata.properties`
+(the environment variable wins). Keep the run to 5 languages: the spoiled rows go up to the 5th language.
+
+**In CI:** start a manual run (`workflow_dispatch`) and tick **canary**. Red is then the expected result, so the shard
+step prints `Canary: N of M tests failed (all M must fail)` and fails only if some test passed. The reports are
+published to `canary/` on GitHub Pages and never replace the real reports.
 
 ---
 

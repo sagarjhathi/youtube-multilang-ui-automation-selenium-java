@@ -15,6 +15,7 @@ import main.java.yt_multi_lang_ui_validator.lingua.LinguaHelper;
 import main.java.yt_multi_lang_ui_validator.logger.LoggerUtility;
 import main.java.yt_multi_lang_ui_validator.pages.YtLandingPage;
 import main.java.yt_multi_lang_ui_validator.utilities.GenericUtility;
+import main.java.yt_multi_lang_ui_validator.utilities.Canary;
 import main.java.yt_multi_lang_ui_validator.utilities.LoopGuard;
 import main.java.yt_multi_lang_ui_validator.utilities.ScreenshotUtilUpdated;
 import main.java.yt_multi_lang_ui_validator.utilities.WaitUtility;
@@ -94,7 +95,8 @@ public class YtMasterTests extends BaseTest{
 					sideMenuTexts.add(sideMenuElement.getText());
 				}
 				// the sheet lists every version of the menu YouTube may show (slot and Premium entry options); the page must equal one of them
-				List<String[]> acceptedTexts=GenericUtility.loadAcceptedSideMenuTexts(verifyingSideMenuLanguageAsInSettingsDataReader, languageIndex);
+				String baseText=Canary.canary(verifyingSideMenuLanguageAsInSettingsDataReader.getCellValue(languageIndex, 1), languageIndex-1, 0);
+				List<String[]> acceptedTexts=GenericUtility.loadAcceptedSideMenuTexts(verifyingSideMenuLanguageAsInSettingsDataReader, languageIndex, baseText);
 				String actualData=GenericUtility.comparableSideMenuText(String.join(" ", sideMenuTexts));
 				int acceptedIndex=GenericUtility.indexOfAcceptedText(acceptedTexts, actualData);
 				// no match: compare with the usual (first) version so the failure shows the usual expected / received difference
@@ -212,10 +214,10 @@ public class YtMasterTests extends BaseTest{
 
 				String applicableLanguage=applicableExpectedLangReader.getCellValue(languageIndex, 0);
 				String detectedLanguage=LinguaHelper.detectLanguage(genericUtility.removeEnglishWordsForNonEnglish(sideMenuItems.toString(), langText));
-				String expectedLanguage=applicableExpectedLangReader.getCellValue(languageIndex, 1);
+				String expectedLanguage=Canary.canary(applicableExpectedLangReader.getCellValue(languageIndex, 1), languageIndex-1, 1);
 
 
-				String expectedLanguageAttribute=applicableExpectedAttributeReader.getCellValue(languageIndex, 1);
+				String expectedLanguageAttribute=Canary.canary(applicableExpectedAttributeReader.getCellValue(languageIndex, 1), languageIndex-1, 2);
 				GenericUtility.softAssertEquals(softAssert, guard, applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
 				String detectedLanguageAttribute=genericUtility.getLangAttribute();
 
@@ -317,7 +319,7 @@ public class YtMasterTests extends BaseTest{
 					}
 				}
 
-				String expectedData =	verifyingSideMenuCollapsedLangAsInSettingsDataReader.getCellValue(languageIndex, 1).trim();
+				String expectedData =	Canary.canary(verifyingSideMenuCollapsedLangAsInSettingsDataReader.getCellValue(languageIndex, 1).trim(), languageIndex-1, 0);
 				String actualData=sideMenuItems.toString();
 
 
@@ -430,10 +432,10 @@ public class YtMasterTests extends BaseTest{
 				String textForLingua=genericUtility.removeEnglishWordsForNonEnglish(sideMenuItems.toString(), langText);
 				String detectedLanguage=LinguaHelper.detectLanguage(textForLingua);
 				log.info("text sent to lingua is "+"      "+textForLingua);
-				String expectedLanguage=applicableExpectedReader.getCellValue(languageIndex, 1);
+				String expectedLanguage=Canary.canary(applicableExpectedReader.getCellValue(languageIndex, 1), languageIndex-1, 3);
 
 
-				String expectedLanguageAttribute=applicableExpectedAttributeReader.getCellValue(languageIndex, 1);
+				String expectedLanguageAttribute=Canary.canary(applicableExpectedAttributeReader.getCellValue(languageIndex, 1), languageIndex-1, 2);
 				GenericUtility.softAssertEquals(softAssert, guard, applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
 
 				String detectedLanguageAttribute=genericUtility.getLangAttribute();
@@ -528,11 +530,11 @@ public class YtMasterTests extends BaseTest{
 
 				String applicableLanguage=applicableExpectedLangReader.getCellValue(languageIndex, 0);
 				String detectedLanguage=LinguaHelper.detectLanguage(genericUtility.repeatTextForDetection(languageFromSettings, 4));
-				String expectedLanguage=applicableExpectedLangReader.getCellValue(languageIndex, 1);
+				String expectedLanguage=Canary.canary(applicableExpectedLangReader.getCellValue(languageIndex, 1), languageIndex-1, 1);
 
 
-				String expectedLanguageAttribute=applicableExpectedAttributeReader.getCellValue(languageIndex, 1);
-				GenericUtility.softAssertEquals(softAssert, guard, applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
+				String expectedLanguageAttribute=Canary.canary(applicableExpectedAttributeReader.getCellValue(languageIndex, 1), languageIndex-1, 2);
+				GenericUtility.softAssertEquals(softAssert, guard, Canary.canary(applicableExpectedAttributeReader.getCellValue(languageIndex, 0), languageIndex-1, 4), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
 				String detectedLanguageAttribute=genericUtility.getLangAttribute();
 
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
@@ -633,14 +635,15 @@ public class YtMasterTests extends BaseTest{
 
 
 				String applicableLocation=locationText;
-				String expectedCountryCode=reader.getCellValue(locationIndex+1, 1);
+				String sheetCountryCode=reader.getCellValue(locationIndex+1, 1);
+				String expectedCountryCode=Canary.canary(Canary.canary(sheetCountryCode, locationIndex, 0), locationIndex, 1);
 				String detectedCountryCode=landingPage.getCountryCode();
 
 				System.out.println("applicable location is ==  "+applicableLocation+" Expected location  =="+expectedCountryCode+"  detected country code"+detectedCountryCode);
 				boolean codeMatches=java.util.Objects.equals(detectedCountryCode, expectedCountryCode);
 				GenericUtility.logComparison("Country code", locationText, codeMatches, detectedCountryCode==null ? 0 : detectedCountryCode.length(), "code: '"+detectedCountryCode+"'");
 				GenericUtility.softAssertEquals(softAssert, guard, detectedCountryCode, expectedCountryCode,"Country code differs | location="+locationText);
-				if(expectedCountryCode.isEmpty()) {
+				if(sheetCountryCode.isEmpty()) {
 					// only the United States has no code, an empty expected code on any other row would pass a failed read
 					guard.count("no code expected");
 					GenericUtility.softAssertEquals(softAssert, guard, locationTextFromSheet, "United States", "Expected country code is empty for \""+locationText+"\", only \"United States\" has none.");
@@ -725,7 +728,7 @@ public class YtMasterTests extends BaseTest{
 				landingPage.closeGlobalFilterPopup();
 
 
-				String expectedData=verifyingGlobalFilterLandingPageDataReader.getCellValue(languageIndex, 1).trim();
+				String expectedData=Canary.canary(verifyingGlobalFilterLandingPageDataReader.getCellValue(languageIndex, 1).trim(), languageIndex-1, 0);
 				String actualValue=globalSettingText;
 
 
@@ -824,10 +827,10 @@ public class YtMasterTests extends BaseTest{
 
 				String applicableLanguage=applicableExpectedLangReader.getCellValue(languageIndex, 0);
 				String detectedLanguage=LinguaHelper.detectLanguage(genericUtility.removeEnglishWordsForNonEnglish(globalSettingText, langText));
-				String expectedLanguage=applicableExpectedLangReader.getCellValue(languageIndex, 1);
+				String expectedLanguage=Canary.canary(applicableExpectedLangReader.getCellValue(languageIndex, 1), languageIndex-1, 1);
 
 
-				String expectedLanguageAttribute=applicableExpectedAttributeReader.getCellValue(languageIndex, 1);
+				String expectedLanguageAttribute=Canary.canary(applicableExpectedAttributeReader.getCellValue(languageIndex, 1), languageIndex-1, 2);
 				GenericUtility.softAssertEquals(softAssert, guard, applicableExpectedAttributeReader.getCellValue(languageIndex, 0), langText, "Sheet rows out of sync | attribute sheet row "+languageIndex+" is not "+langText);
 				String detectedLanguageAttribute=genericUtility.getLangAttribute();
 
