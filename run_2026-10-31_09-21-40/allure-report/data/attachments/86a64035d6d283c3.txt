@@ -1,0 +1,686 @@
+09:19:04 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - No existing WebDriver found for current thread. Initializing a new ChromeDriver...
+09:19:09 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - WebDriverManager: chromedriver setup OK
+09:19:17 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - ChromeDriver initialized successfully for thread: 35
+09:19:17 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - SafeActions initialized with driver ChromeDriver: chrome on windows (b3675f19a7adf4ff1225e0887f635e5f)
+09:19:17 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Initialized YtLandingPage with driver: ChromeDriver: chrome on windows (b3675f19a7adf4ff1225e0887f635e5f)
+09:19:17 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - SafeActions initialized with driver ChromeDriver: chrome on windows (b3675f19a7adf4ff1225e0887f635e5f)
+09:19:20 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Opened YouTube landing page.
+09:19:20 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Clicking settings ellipses button...
+09:19:20 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:21 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:22 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Clicking language dropdown...
+09:19:22 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: (//div[@id='content-icon'])[2]
+09:19:22 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: (//div[@id='content-icon'])[2]
+09:19:24 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Execution is Not CRON Job Hence referring to normal keys from UtilData
+09:19:24 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Row count is == 11
+09:19:24 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Looking for language element with name: Afrikaans
+09:19:24 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Afrikaans']
+09:19:24 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Afrikaans']
+09:19:26 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:26 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:27 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:27 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Waiting until element is visible in viewport
+09:19:28 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Getting the setting ellipses options
+09:19:28 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-multi-page-menu-renderer
+09:19:28 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-multi-page-menu-renderer
+09:19:28 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is open, closing it...
+09:19:28 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:28 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:29 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - 
+========== LANGUAGE DETECTION ==========
+Detected Language : AFRIKAANS
+Input Text        : Jou data in YouTube
+Voorkoms: Lig
+Vertoontaal:
+Afrikaans
+Beperkmodus: Af
+Ligging:
+Verenigde State
+Kortpadsleutels
+Instellings
+Hulp
+Stuur terugvoer Jou data in YouTube
+Voorkoms: Lig
+Vertoontaal:
+Afrikaans
+Beperkmodus: Af
+Ligging:
+Verenigde State
+Kortpadsleutels
+Instellings
+Hulp
+Stuur terugvoer Jou data in YouTube
+Voorkoms: Lig
+Vertoontaal:
+Afrikaans
+Beperkmodus: Af
+Ligging:
+Verenigde State
+Kortpadsleutels
+Instellings
+Hulp
+Stuur terugvoer Jou data in YouTube
+Voorkoms: Lig
+Vertoontaal:
+Afrikaans
+Beperkmodus: Af
+Ligging:
+Verenigde State
+Kortpadsleutels
+Instellings
+Hulp
+Stuur terugvoer
+========================================
+09:19:29 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - getLangAttribute() - locating <html> and reading lang property
+09:19:29 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Language attribute read: af-ZA
+09:19:29 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Language check | Afrikaans | match | lang 'af-ZA' = 'af-ZA' | detection AFRIKAANS = AFRIKAANS
+09:19:29 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:29 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:29 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:30 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Clicking language dropdown...
+09:19:30 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: (//div[@id='content-icon'])[2]
+09:19:30 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: (//div[@id='content-icon'])[2]
+09:19:30 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Looking for language element with name: Azərbaycan
+09:19:30 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Azərbaycan']
+09:19:30 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Azərbaycan']
+09:19:31 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:31 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:32 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:33 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Waiting until element is visible in viewport
+09:19:33 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Getting the setting ellipses options
+09:19:33 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-multi-page-menu-renderer
+09:19:33 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-multi-page-menu-renderer
+09:19:33 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is open, closing it...
+09:19:33 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:33 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:34 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - 
+========== LANGUAGE DETECTION ==========
+Detected Language : AZERBAIJANI
+Input Text        : YouTube Datanız
+Görünüş: Açıq
+Displey dili:
+azərbaycan
+Limitli Rejim: Deaktiv
+Məkan:
+Amerika Birləşmiş Ştatları
+Klaviatura qısayolları
+Ayarlar
+Yardım
+Rəy göndərin YouTube Datanız
+Görünüş: Açıq
+Displey dili:
+azərbaycan
+Limitli Rejim: Deaktiv
+Məkan:
+Amerika Birləşmiş Ştatları
+Klaviatura qısayolları
+Ayarlar
+Yardım
+Rəy göndərin YouTube Datanız
+Görünüş: Açıq
+Displey dili:
+azərbaycan
+Limitli Rejim: Deaktiv
+Məkan:
+Amerika Birləşmiş Ştatları
+Klaviatura qısayolları
+Ayarlar
+Yardım
+Rəy göndərin YouTube Datanız
+Görünüş: Açıq
+Displey dili:
+azərbaycan
+Limitli Rejim: Deaktiv
+Məkan:
+Amerika Birləşmiş Ştatları
+Klaviatura qısayolları
+Ayarlar
+Yardım
+Rəy göndərin
+========================================
+09:19:34 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - getLangAttribute() - locating <html> and reading lang property
+09:19:34 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Language attribute read: az-Latn-AZ
+09:19:34 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Language check | Azərbaycan | match | lang 'az-Latn-AZ' = 'az-Latn-AZ' | detection AZERBAIJANI = AZERBAIJANI
+09:19:34 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:34 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:34 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:34 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Clicking language dropdown...
+09:19:34 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: (//div[@id='content-icon'])[2]
+09:19:34 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: (//div[@id='content-icon'])[2]
+09:19:35 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Looking for language element with name: Bahasa Indonesia
+09:19:35 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Bahasa Indonesia']
+09:19:35 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Bahasa Indonesia']
+09:19:36 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:36 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:36 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:37 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Waiting until element is visible in viewport
+09:19:38 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Getting the setting ellipses options
+09:19:38 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-multi-page-menu-renderer
+09:19:38 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-multi-page-menu-renderer
+09:19:38 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is open, closing it...
+09:19:38 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:38 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:38 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - 
+========== LANGUAGE DETECTION ==========
+Detected Language : INDONESIAN
+Input Text        : Data Anda di YouTube
+Tampilan: Terang
+Bahasa tampilan:
+Indonesia
+Mode Terbatas: Nonaktif
+Lokasi:
+Amerika Serikat
+Pintasan keyboard
+Setelan
+Bantuan
+Kirim masukan Data Anda di YouTube
+Tampilan: Terang
+Bahasa tampilan:
+Indonesia
+Mode Terbatas: Nonaktif
+Lokasi:
+Amerika Serikat
+Pintasan keyboard
+Setelan
+Bantuan
+Kirim masukan Data Anda di YouTube
+Tampilan: Terang
+Bahasa tampilan:
+Indonesia
+Mode Terbatas: Nonaktif
+Lokasi:
+Amerika Serikat
+Pintasan keyboard
+Setelan
+Bantuan
+Kirim masukan Data Anda di YouTube
+Tampilan: Terang
+Bahasa tampilan:
+Indonesia
+Mode Terbatas: Nonaktif
+Lokasi:
+Amerika Serikat
+Pintasan keyboard
+Setelan
+Bantuan
+Kirim masukan
+========================================
+09:19:38 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - getLangAttribute() - locating <html> and reading lang property
+09:19:38 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Language attribute read: id-ID
+09:19:38 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Language check | Bahasa Indonesia | match | lang 'id-ID' = 'id-ID' | detection INDONESIAN = INDONESIAN
+09:19:38 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:38 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:38 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:39 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Clicking language dropdown...
+09:19:39 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: (//div[@id='content-icon'])[2]
+09:19:39 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: (//div[@id='content-icon'])[2]
+09:19:39 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Looking for language element with name: Bosanski
+09:19:39 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Bosanski']
+09:19:39 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Bosanski']
+09:19:41 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:41 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:41 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Waiting until element is visible in viewport
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Getting the setting ellipses options
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-multi-page-menu-renderer
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-multi-page-menu-renderer
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is open, closing it...
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - 
+========== LANGUAGE DETECTION ==========
+Detected Language : BOSNIAN
+Input Text        : Vaši podaci na YouTubeu
+Izgled: svijetla tema
+Jezik prikaza:
+bosanski
+Ograničeni način rada: isključeno
+Lokacija:
+Sjedinjene Američke Države
+Prečice na tastaturi
+Postavke
+Pomoć
+Pošaljite povratne informacije Vaši podaci na YouTubeu
+Izgled: svijetla tema
+Jezik prikaza:
+bosanski
+Ograničeni način rada: isključeno
+Lokacija:
+Sjedinjene Američke Države
+Prečice na tastaturi
+Postavke
+Pomoć
+Pošaljite povratne informacije Vaši podaci na YouTubeu
+Izgled: svijetla tema
+Jezik prikaza:
+bosanski
+Ograničeni način rada: isključeno
+Lokacija:
+Sjedinjene Američke Države
+Prečice na tastaturi
+Postavke
+Pomoć
+Pošaljite povratne informacije Vaši podaci na YouTubeu
+Izgled: svijetla tema
+Jezik prikaza:
+bosanski
+Ograničeni način rada: isključeno
+Lokacija:
+Sjedinjene Američke Države
+Prečice na tastaturi
+Postavke
+Pomoć
+Pošaljite povratne informacije
+========================================
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - getLangAttribute() - locating <html> and reading lang property
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Language attribute read: bs-Latn-BA
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Language check | Bosanski | match | lang 'bs-Latn-BA' = 'bs-Latn-BA' | detection BOSNIAN = BOSNIAN
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:42 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:43 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Clicking language dropdown...
+09:19:43 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: (//div[@id='content-icon'])[2]
+09:19:43 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: (//div[@id='content-icon'])[2]
+09:19:43 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Looking for language element with name: Català
+09:19:43 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Català']
+09:19:43 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Català']
+09:19:45 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:45 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:45 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:46 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Waiting until element is visible in viewport
+09:19:46 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Getting the setting ellipses options
+09:19:46 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-multi-page-menu-renderer
+09:19:46 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-multi-page-menu-renderer
+09:19:46 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is open, closing it...
+09:19:46 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:47 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:47 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - 
+========== LANGUAGE DETECTION ==========
+Detected Language : CATALAN
+Input Text        : Les teves dades a YouTube
+Aparença: clar
+Idioma visible:
+català
+Mode restringit: desactivat
+Ubicació:
+Estats Units
+Tecles de drecera
+Configuració
+Ajuda
+Envia suggeriments Les teves dades a YouTube
+Aparença: clar
+Idioma visible:
+català
+Mode restringit: desactivat
+Ubicació:
+Estats Units
+Tecles de drecera
+Configuració
+Ajuda
+Envia suggeriments Les teves dades a YouTube
+Aparença: clar
+Idioma visible:
+català
+Mode restringit: desactivat
+Ubicació:
+Estats Units
+Tecles de drecera
+Configuració
+Ajuda
+Envia suggeriments Les teves dades a YouTube
+Aparença: clar
+Idioma visible:
+català
+Mode restringit: desactivat
+Ubicació:
+Estats Units
+Tecles de drecera
+Configuració
+Ajuda
+Envia suggeriments
+========================================
+09:19:47 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - getLangAttribute() - locating <html> and reading lang property
+09:19:47 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Language attribute read: ca-ES
+09:19:47 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Language check | Català | match | lang 'ca-ES' = 'ca-ES' | detection CATALAN = CATALAN
+09:19:47 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:47 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:47 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:48 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Clicking language dropdown...
+09:19:48 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: (//div[@id='content-icon'])[2]
+09:19:48 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: (//div[@id='content-icon'])[2]
+09:19:48 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Looking for language element with name: Dansk
+09:19:48 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Dansk']
+09:19:48 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Dansk']
+09:19:50 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:50 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:50 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:50 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Waiting until element is visible in viewport
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Getting the setting ellipses options
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-multi-page-menu-renderer
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-multi-page-menu-renderer
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is open, closing it...
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - 
+========== LANGUAGE DETECTION ==========
+Detected Language : DANISH
+Input Text        : Dine data på YouTube
+Udseende: Lyst
+Visningssprog:
+dansk
+Begrænset tilstand: Fra
+Lokation:
+USA
+Tastaturgenveje
+Indstillinger
+Hjælp
+Send feedback Dine data på YouTube
+Udseende: Lyst
+Visningssprog:
+dansk
+Begrænset tilstand: Fra
+Lokation:
+USA
+Tastaturgenveje
+Indstillinger
+Hjælp
+Send feedback Dine data på YouTube
+Udseende: Lyst
+Visningssprog:
+dansk
+Begrænset tilstand: Fra
+Lokation:
+USA
+Tastaturgenveje
+Indstillinger
+Hjælp
+Send feedback Dine data på YouTube
+Udseende: Lyst
+Visningssprog:
+dansk
+Begrænset tilstand: Fra
+Lokation:
+USA
+Tastaturgenveje
+Indstillinger
+Hjælp
+Send feedback
+========================================
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - getLangAttribute() - locating <html> and reading lang property
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Language attribute read: da-DK
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Language check | Dansk | match | lang 'da-DK' = 'da-DK' | detection DANISH = DANISH
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Clicking language dropdown...
+09:19:51 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: (//div[@id='content-icon'])[2]
+09:19:52 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: (//div[@id='content-icon'])[2]
+09:19:52 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Looking for language element with name: Deutsch
+09:19:52 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Deutsch']
+09:19:52 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Deutsch']
+09:19:53 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:53 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:53 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:54 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Waiting until element is visible in viewport
+09:19:54 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Getting the setting ellipses options
+09:19:54 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-multi-page-menu-renderer
+09:19:54 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-multi-page-menu-renderer
+09:19:54 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is open, closing it...
+09:19:54 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:55 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:55 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - 
+========== LANGUAGE DETECTION ==========
+Detected Language : GERMAN
+Input Text        : Meine Daten auf YouTube
+Darstellung: Hell
+Anzeigesprache:
+Deutsch
+Eingeschränkter Modus: Deaktiviert
+Ort:
+USA
+Tastenkombinationen
+Einstellungen
+Hilfe
+Feedback senden Meine Daten auf YouTube
+Darstellung: Hell
+Anzeigesprache:
+Deutsch
+Eingeschränkter Modus: Deaktiviert
+Ort:
+USA
+Tastenkombinationen
+Einstellungen
+Hilfe
+Feedback senden Meine Daten auf YouTube
+Darstellung: Hell
+Anzeigesprache:
+Deutsch
+Eingeschränkter Modus: Deaktiviert
+Ort:
+USA
+Tastenkombinationen
+Einstellungen
+Hilfe
+Feedback senden Meine Daten auf YouTube
+Darstellung: Hell
+Anzeigesprache:
+Deutsch
+Eingeschränkter Modus: Deaktiviert
+Ort:
+USA
+Tastenkombinationen
+Einstellungen
+Hilfe
+Feedback senden
+========================================
+09:19:55 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - getLangAttribute() - locating <html> and reading lang property
+09:19:55 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Language attribute read: de-DE
+09:19:55 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Language check | Deutsch | match | lang 'de-DE' = 'de-DE' | detection GERMAN = GERMAN
+09:19:55 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:55 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:55 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:55 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Clicking language dropdown...
+09:19:55 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: (//div[@id='content-icon'])[2]
+09:19:55 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: (//div[@id='content-icon'])[2]
+09:19:56 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Looking for language element with name: Eesti
+09:19:56 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Eesti']
+09:19:56 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='Eesti']
+09:19:57 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:57 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:57 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:58 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Waiting until element is visible in viewport
+09:19:58 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Getting the setting ellipses options
+09:19:58 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-multi-page-menu-renderer
+09:19:58 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-multi-page-menu-renderer
+09:19:58 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is open, closing it...
+09:19:58 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:58 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:59 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - 
+========== LANGUAGE DETECTION ==========
+Detected Language : ESTONIAN
+Input Text        : Teie andmed YouTube'is
+Välimus: hele
+Kuvamiskeel:
+eesti
+Piiratud režiim: väljas
+Asukoht:
+Ameerika Ühendriigid
+Klaviatuuri otseteed
+Seaded
+Abi
+Tagasiside saatmine Teie andmed YouTube'is
+Välimus: hele
+Kuvamiskeel:
+eesti
+Piiratud režiim: väljas
+Asukoht:
+Ameerika Ühendriigid
+Klaviatuuri otseteed
+Seaded
+Abi
+Tagasiside saatmine Teie andmed YouTube'is
+Välimus: hele
+Kuvamiskeel:
+eesti
+Piiratud režiim: väljas
+Asukoht:
+Ameerika Ühendriigid
+Klaviatuuri otseteed
+Seaded
+Abi
+Tagasiside saatmine Teie andmed YouTube'is
+Välimus: hele
+Kuvamiskeel:
+eesti
+Piiratud režiim: väljas
+Asukoht:
+Ameerika Ühendriigid
+Klaviatuuri otseteed
+Seaded
+Abi
+Tagasiside saatmine
+========================================
+09:19:59 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - getLangAttribute() - locating <html> and reading lang property
+09:19:59 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Language attribute read: et-EE
+09:19:59 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Language check | Eesti | match | lang 'et-EE' = 'et-EE' | detection ESTONIAN = ESTONIAN
+09:19:59 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:19:59 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:19:59 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:20:00 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Clicking language dropdown...
+09:20:00 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: (//div[@id='content-icon'])[2]
+09:20:00 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: (//div[@id='content-icon'])[2]
+09:20:00 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Looking for language element with name: English (India)
+09:20:00 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='English (India)']
+09:20:00 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='English (India)']
+09:20:01 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:20:01 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:20:02 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Waiting until element is visible in viewport
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Getting the setting ellipses options
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-multi-page-menu-renderer
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-multi-page-menu-renderer
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is open, closing it...
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - 
+========== LANGUAGE DETECTION ==========
+Detected Language : ENGLISH
+Input Text        : Your data in YouTube
+Appearance: Light
+Display language:
+English (India)
+Restricted Mode: Off
+Location:
+United States
+Keyboard shortcuts
+Settings
+Help
+Send feedback Your data in YouTube
+Appearance: Light
+Display language:
+English (India)
+Restricted Mode: Off
+Location:
+United States
+Keyboard shortcuts
+Settings
+Help
+Send feedback Your data in YouTube
+Appearance: Light
+Display language:
+English (India)
+Restricted Mode: Off
+Location:
+United States
+Keyboard shortcuts
+Settings
+Help
+Send feedback Your data in YouTube
+Appearance: Light
+Display language:
+English (India)
+Restricted Mode: Off
+Location:
+United States
+Keyboard shortcuts
+Settings
+Help
+Send feedback
+========================================
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - getLangAttribute() - locating <html> and reading lang property
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Language attribute read: en-IN
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Language check | English (India) | match | lang 'en-IN' = 'en-IN' | detection ENGLISH = ENGLISH
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:20:03 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:20:04 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Clicking language dropdown...
+09:20:04 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: (//div[@id='content-icon'])[2]
+09:20:04 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: (//div[@id='content-icon'])[2]
+09:20:04 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Looking for language element with name: English (UK)
+09:20:04 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='English (UK)']
+09:20:04 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='English (UK)']
+09:20:06 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:20:06 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:20:06 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:20:07 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Waiting until element is visible in viewport
+09:20:07 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Getting the setting ellipses options
+09:20:07 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-multi-page-menu-renderer
+09:20:07 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-multi-page-menu-renderer
+09:20:07 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is open, closing it...
+09:20:07 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:20:07 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:20:08 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - 
+========== LANGUAGE DETECTION ==========
+Detected Language : ENGLISH
+Input Text        : Your data in YouTube
+Appearance: Light
+Display language:
+British English
+Restricted Mode: Off
+Location:
+United States
+Keyboard shortcuts
+Settings
+Help
+Send feedback Your data in YouTube
+Appearance: Light
+Display language:
+British English
+Restricted Mode: Off
+Location:
+United States
+Keyboard shortcuts
+Settings
+Help
+Send feedback Your data in YouTube
+Appearance: Light
+Display language:
+British English
+Restricted Mode: Off
+Location:
+United States
+Keyboard shortcuts
+Settings
+Help
+Send feedback Your data in YouTube
+Appearance: Light
+Display language:
+British English
+Restricted Mode: Off
+Location:
+United States
+Keyboard shortcuts
+Settings
+Help
+Send feedback
+========================================
+09:20:08 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - getLangAttribute() - locating <html> and reading lang property
+09:20:08 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Language attribute read: en-GB
+09:20:08 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Language check | English (UK) | match | lang 'en-GB' = 'en-GB' | detection ENGLISH = ENGLISH
+09:20:08 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Settings menu is closed, opening it...
+09:20:08 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:20:08 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: //ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']
+09:20:08 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - Clicking language dropdown...
+09:20:08 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Trying to find element: By.xpath: (//div[@id='content-icon'])[2]
+09:20:08 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Element found and ready (attempt 1): By.xpath: (//div[@id='content-icon'])[2]
+09:20:09 [TestNG-test-Yt Master Tests-2] INFO  verifyingSettingOptionsLang_09-19-04 - [verifyingSettingOptionsLang_09-19-04] Summary | passed 10 of 10
