@@ -13,6 +13,10 @@ on:
         description: "Canary run: one expected value in every test is made wrong on purpose, so every test must FAIL. Reports go to canary/ on gh-pages"
         type: boolean
         default: false
+      failure_drill:
+        description: "Test of the failure report: the tests fail on purpose (the canary values are used), but the run is judged like a normal one, so every shard has to go red and the red box has to name the failed tests. Never use this on a normal run"
+        type: boolean
+        default: false
       lose_a_shard:
         description: "Test of the report check: the side-menu-collapsed shard fails on purpose before its tests start, so the red box on the report page has to name its tests. Never use this on a normal run"
         type: boolean
@@ -121,8 +125,10 @@ jobs:
         id: tests
         working-directory: ${{ env.WORKDIR }}
         env:
-          # empty unless the manual "canary" input is ticked, so CANARY=true in masterdata.properties still works
-          CANARY: ${{ inputs.canary && 'true' || '' }}
+          # empty unless the manual "canary" or "failure_drill" input is ticked, so CANARY=true in masterdata.properties still works.
+          # "failure_drill" spoils the same values as a canary run, but only this step knows about it: the rest of the run
+          # (the pass/fail judgement of the shard, the publish folder) treats it as a normal run.
+          CANARY: ${{ (inputs.canary || inputs.failure_drill) && 'true' || '' }}
         run: mvn test -Dgroups=${{ matrix.group }}
         continue-on-error: true
        
@@ -247,6 +253,11 @@ jobs:
     needs: [offline-checks, test]
     # still publishes when shards fail, but not when the offline checks failed (the shards were then skipped)
     if: always() && needs.offline-checks.result == 'success'
+    # One publish at a time: every publish force-pushes gh-pages, and GitHub Pages rejects a deployment that starts while
+    # the previous one is still running. Waiting runs are queued, not cancelled (only the newest waiting run is kept).
+    concurrency:
+      group: gh-pages-publish
+      cancel-in-progress: false
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -332,7 +343,9 @@ jobs:
   
 
 
+      # Pull requests only build the reports (the Allure report and the checks above); they never touch gh-pages.
       - name: Checkout gh-pages
+        if: github.event_name != 'pull_request'
         uses: actions/checkout@v4
         with:
           clean: false
@@ -342,7 +355,7 @@ jobs:
 
       # canary/ is kept, so a normal run does not delete the last canary reports
       - name: Clean gh-pages
-        if: needs.offline-checks.outputs.canary != 'true'
+        if: github.event_name != 'pull_request' && needs.offline-checks.outputs.canary != 'true'
         shell: pwsh
         run: |
           Get-ChildItem -Path gh-pages -Force | Where-Object { $_.Name -notin '.git', 'canary' } | Remove-Item -Recurse -Force
@@ -350,7 +363,7 @@ jobs:
 
       # Canary reports go to canary/ only. The real report folders and index.html are left untouched.
       - name: Assemble canary reports
-        if: needs.offline-checks.outputs.canary == 'true'
+        if: github.event_name != 'pull_request' && needs.offline-checks.outputs.canary == 'true'
         shell: pwsh
         run: |
           if (Test-Path gh-pages/canary) { Remove-Item -Recurse -Force gh-pages/canary }
@@ -364,7 +377,7 @@ jobs:
 
 
       - name: Assemble published site
-        if: needs.offline-checks.outputs.canary != 'true'
+        if: github.event_name != 'pull_request' && needs.offline-checks.outputs.canary != 'true'
         shell: pwsh
         run: |
           $run = "run_$env:RUN_TIMESTAMP"
@@ -436,6 +449,7 @@ jobs:
 
 
       - name: Deploy
+        if: github.event_name != 'pull_request'
         shell: pwsh
         working-directory: gh-pages
         run: |
