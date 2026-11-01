@@ -25,11 +25,11 @@ on:
         description: "Canary run: one expected value per test is made wrong, so every test must FAIL. Reports go to canary/ on gh-pages"
         type: boolean
         default: false
-      failure_drill:
+      check_failed_tests:
         description: "Health check: every test fails on purpose, the run is judged as a normal one (shards red, red box names the failed tests)"
         type: boolean
         default: false
-      lose_a_shard:
+      check_lost_shard:
         description: "Health check: the side-menu-collapsed shard fails before its tests start (red box has to name its tests)"
         type: boolean
         default: false
@@ -117,10 +117,10 @@ jobs:
     steps:
       # Health check, manual runs only: this shard stops before any test, like a cancelled shard.
       - name: Lose a shard on purpose
-        if: ${{ inputs.lose_a_shard && matrix.group == 'side-menu-collapsed' }}
+        if: ${{ inputs.check_lost_shard && matrix.group == 'side-menu-collapsed' }}
         shell: bash
         run: |
-          echo "::error::Shard side-menu-collapsed fails on purpose (lose_a_shard input), its tests will not run"
+          echo "::error::Shard side-menu-collapsed fails on purpose (check_lost_shard input), its tests will not run"
           exit 1
 
       - name: Checkout code
@@ -161,10 +161,10 @@ jobs:
         id: tests
         working-directory: ${{ env.WORKDIR }}
         env:
-          # Empty unless "canary" or "failure_drill" is ticked, so CANARY=true in masterdata.properties still works.
-          # failure_drill spoils the same values as a canary run, but only this step knows about it: the rest of
+          # Empty unless "canary" or "check_failed_tests" is ticked, so CANARY=true in masterdata.properties still works.
+          # check_failed_tests spoils the same values as a canary run, but only this step knows about it: the rest of
           # the run (the verdict of the shard, the publish folder) treats it as a normal run.
-          CANARY: ${{ (inputs.canary || inputs.failure_drill) && 'true' || '' }}
+          CANARY: ${{ (inputs.canary || inputs.check_failed_tests) && 'true' || '' }}
         run: mvn test -Dgroups=${{ matrix.group }}
         continue-on-error: true
 

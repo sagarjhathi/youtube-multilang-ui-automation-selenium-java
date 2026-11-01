@@ -583,10 +583,10 @@ A green report must not hide tests that never ran (a shard cancelled or failed b
 shards, the `publish` job checks that all 4 shards sent a report and that every test in `YtMasterTests` has a result.
 It also counts the tests that failed. If a test has no result or failed, a red box on the report hub page names it, and
 the run shows an error annotation and a summary. The `publish` job itself stays green and the reports are always
-published; the red shard is what makes the run red. To see it work, start a manual run with **lose_a_shard** ticked: the
+published; the red shard is what makes the run red. To see it work, start a manual run with **check_lost_shard** ticked: the
 `side-menu-collapsed` shard then fails before its tests start, and the box must name its two tests. Never use it on a normal run.
 
-**Failure drill:** a manual run with **failure_drill** ticked makes the tests fail the same way, but the run is judged
+**Failed-test check:** a manual run with **check_failed_tests** ticked makes the tests fail the same way, but the run is judged
 like a normal one. Every shard must go red with the "Maven tests step ended with 'failure'" message, and the reports must
 still be published. It replaces the published hub with a failed run, so run a normal one afterwards.
 
