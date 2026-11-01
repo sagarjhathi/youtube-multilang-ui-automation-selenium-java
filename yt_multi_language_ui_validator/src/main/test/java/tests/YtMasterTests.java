@@ -28,7 +28,7 @@ public class YtMasterTests extends BaseTest{
 	private static final  Logger log=LoggerUtility.getLogger(YtMasterTests.class);
 
 	@Test(groups = {"non-lingua", "side-menu-expanded"})
-	public void verifyingSideMenuLanguageAsInSettings() throws InterruptedException {
+	public void verifyingSideMenuText_Expanded() throws InterruptedException {
 
 
 
@@ -134,7 +134,7 @@ public class YtMasterTests extends BaseTest{
 
 
 	@Test(groups = {"lingua", "side-menu-expanded"})
-	public void verifyingSideMenuLanguageAsInSettingsLingua() throws InterruptedException {
+	public void verifyingSideMenuLanguage_Expanded() throws InterruptedException {
 
 
 
@@ -238,7 +238,7 @@ public class YtMasterTests extends BaseTest{
 
 
 	@Test(groups = {"non-lingua", "side-menu-collapsed"})
-	public void verifyingSideMenuCollapsedLangAsInSettings() throws InterruptedException, InvalidFormatException, IOException {
+	public void verifyingSideMenuText_Collapsed() throws InterruptedException, InvalidFormatException, IOException {
 
 
 		YtLandingPage landingPage=new YtLandingPage();
@@ -333,7 +333,7 @@ public class YtMasterTests extends BaseTest{
 
 
 	@Test(groups = {"lingua", "side-menu-collapsed"})
-	public void verifyingSideMenuCollapsedLangAsInSettingsLingua() throws InterruptedException, InvalidFormatException, IOException {
+	public void verifyingSideMenuLanguage_Collapsed() throws InterruptedException, InvalidFormatException, IOException {
 
 
 		YtLandingPage landingPage=new YtLandingPage();
@@ -438,7 +438,7 @@ public class YtMasterTests extends BaseTest{
 
 
 	@Test(groups = {"non-lingua", "settings-region"})
-	public void verifyingSettingOptionsLang() throws InterruptedException {
+	public void verifyingSettingsMenuLanguage() throws InterruptedException {
 
 
 
@@ -641,7 +641,7 @@ public class YtMasterTests extends BaseTest{
 
 
 	@Test(groups = {"non-lingua", "global-filter"})
-	public void verifyingGlobalFilterLandingPage() throws InterruptedException {
+	public void verifyingSearchFilterText() throws InterruptedException {
 
 
 		GenericUtility genericUtility=new GenericUtility();
@@ -729,7 +729,7 @@ public class YtMasterTests extends BaseTest{
 
 
 	@Test(groups = {"lingua", "global-filter"})
-	public void verifyingGlobalFilterLandingPageLingua() throws InterruptedException {
+	public void verifyingSearchFilterLanguage() throws InterruptedException {
 
 
 		GenericUtility genericUtility=new GenericUtility();

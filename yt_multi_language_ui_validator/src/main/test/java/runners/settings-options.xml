@@ -12,7 +12,7 @@
     <classes>
       <class name="main.test.java.tests.YtMasterTests">
         <methods>
-          <include name="verifyingSettingOptionsLang"/>
+          <include name="verifyingSettingsMenuLanguage"/>
         </methods>
       </class>
     </classes>

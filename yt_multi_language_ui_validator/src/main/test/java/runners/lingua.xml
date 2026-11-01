@@ -27,9 +27,9 @@
 
 	<methods>
 	
-	<include name="verifyingSideMenuLanguageAsInSettingsLingua"></include>
-	<include name="verifyingSideMenuCollapsedLangAsInSettingsLingua"></include>
-	<include name="verifyingGlobalFilterLandingPageLingua"></include>
+	<include name="verifyingSideMenuLanguage_Expanded"></include>
+	<include name="verifyingSideMenuLanguage_Collapsed"></include>
+	<include name="verifyingSearchFilterLanguage"></include>
 	
 	</methods>
 

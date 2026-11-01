@@ -393,11 +393,11 @@ Every `@Test` in `YtMasterTests` carries a TestNG group, which is also how CI sp
 
 | Group | Tests |
 |---|---|
-| `side-menu-expanded` (CI shard) | `verifyingSideMenuLanguageAsInSettings`, `verifyingSideMenuLanguageAsInSettingsLingua` |
-| `side-menu-collapsed` (CI shard) | `verifyingSideMenuCollapsedLangAsInSettings`, `verifyingSideMenuCollapsedLangAsInSettingsLingua` |
-| `settings-region` (CI shard) | `verifyingSettingOptionsLang`, `verifyingCountryCodeOnLogo_Algeria_to_Liechtenstein`, `verifyingCountryCodeOnLogo_Lithuania_to_Zimbabwe` |
-| `global-filter` (CI shard) | `verifyingGlobalFilterLandingPage`, `verifyingGlobalFilterLandingPageLingua` |
-| `lingua` | `verifyingSideMenuLanguageAsInSettingsLingua`, `verifyingSideMenuCollapsedLangAsInSettingsLingua`, `verifyingGlobalFilterLandingPageLingua` |
+| `side-menu-expanded` (CI shard) | `verifyingSideMenuText_Expanded`, `verifyingSideMenuLanguage_Expanded` |
+| `side-menu-collapsed` (CI shard) | `verifyingSideMenuText_Collapsed`, `verifyingSideMenuLanguage_Collapsed` |
+| `settings-region` (CI shard) | `verifyingSettingsMenuLanguage`, `verifyingCountryCodeOnLogo_Algeria_to_Liechtenstein`, `verifyingCountryCodeOnLogo_Lithuania_to_Zimbabwe` |
+| `global-filter` (CI shard) | `verifyingSearchFilterText`, `verifyingSearchFilterLanguage` |
+| `lingua` | `verifyingSideMenuLanguage_Expanded`, `verifyingSideMenuLanguage_Collapsed`, `verifyingSearchFilterLanguage` |
 | `non-lingua` | the other five tests |
 
 The `groups` Maven property (empty by default = run everything) is passed to surefire, so a group is selected with `-Dgroups=<group>`.
