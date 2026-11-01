@@ -13,6 +13,10 @@ on:
         description: "Canary run: one expected value in every test is made wrong on purpose, so every test must FAIL. Reports go to canary/ on gh-pages"
         type: boolean
         default: false
+      failure_drill:
+        description: "Failure drill: the tests fail on purpose (like canary) but the run is treated as a REAL failure, to check that a red shard is reported and its reports are still published. The published hub shows this run as failed"
+        type: boolean
+        default: false
   schedule:
     - cron: "7 18 * * *"   # 11:37 PM IST daily
 
@@ -109,8 +113,9 @@ jobs:
         id: tests
         working-directory: ${{ env.WORKDIR }}
         env:
-          # empty unless the manual "canary" input is ticked, so CANARY=true in masterdata.properties still works
-          CANARY: ${{ inputs.canary && 'true' || '' }}
+          # empty unless the manual "canary" or "failure_drill" input is ticked, so CANARY=true in masterdata.properties still works.
+          # The drill spoils the tests the same way, but only canary changes how the shard result is judged (see the last step).
+          CANARY: ${{ (inputs.canary || inputs.failure_drill) && 'true' || '' }}
         run: mvn test -Dgroups=${{ matrix.group }}
         continue-on-error: true
        

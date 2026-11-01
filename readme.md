@@ -577,6 +577,10 @@ All tests must fail. The switch is the `CANARY` environment variable, or `CANARY
 step prints `Canary: N of M tests failed (all M must fail)` and fails only if some test passed. The reports are
 published to `canary/` on GitHub Pages and never replace the real reports.
 
+**Failure drill:** a manual run with **failure_drill** ticked makes the tests fail the same way, but the run is judged
+like a normal one. Every shard must go red with the "Maven tests step ended with 'failure'" message, and the reports must
+still be published. It replaces the published hub with a failed run, so run a normal one afterwards.
+
 ---
 
 ## 🛠 Troubleshooting
