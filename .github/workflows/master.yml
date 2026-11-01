@@ -299,15 +299,29 @@ jobs:
                           ForEach-Object { (Get-Content $_.FullName -Raw | ConvertFrom-Json).name } | Sort-Object -Unique)
           $missing = @($expected | Where-Object { $withResult -notcontains $_ })
           $found = @($expected).Count - $missing.Count
-          Write-Host "Shards: $shardsFound of $shardsExpected | tests with a result: $found of $(@($expected).Count)"
+          # a test failed when none of its results passed (a retry that passes counts as passed)
+          $results = @(Get-ChildItem -Path allure-results -Filter '*-result.json' -ErrorAction SilentlyContinue |
+                       ForEach-Object { Get-Content $_.FullName -Raw | ConvertFrom-Json })
+          $failed = @($results | Group-Object name | Where-Object { -not ($_.Group | Where-Object { $_.status -eq 'passed' }) } | ForEach-Object { $_.Name })
+          Write-Host "Shards: $shardsFound of $shardsExpected | tests with a result: $found of $(@($expected).Count) | failed: $($failed.Count)"
 
-          if ($shardsFound -eq $shardsExpected -and $missing.Count -eq 0) {
+          $parts = @()
+          if ($missing.Count -gt 0 -or $shardsFound -ne $shardsExpected) {
+            $parts += "Only $found of $(@($expected).Count) tests have a result ($shardsFound of $shardsExpected shards sent a report). A shard was probably cancelled or failed before the tests started. Tests that did not run: $($missing -join ', ')."
+          }
+          if ($failed.Count -gt 0) {
+            $parts += "$($failed.Count) test(s) failed: $($failed -join ', ')."
+          }
+
+          if ($parts.Count -eq 0) {
             Set-Content -Path coverage-warning.html -Value ''
+            Set-Content -Path coverage-message.txt -Value ''
             "ok=true" >> $env:GITHUB_OUTPUT
           } else {
-            $list = $missing -join ', '
-            Write-Host "Did not run: $list"
-            Set-Content -Path coverage-warning.html -Value "<div class=`"warning`"><strong>Only $found of $(@($expected).Count) tests have a result in this report</strong> ($shardsFound of $shardsExpected shards sent a report). A shard was probably cancelled or failed before the tests started. Tests that did not run: $list</div>"
+            $text = $parts -join ' '
+            Write-Host $text
+            Set-Content -Path coverage-message.txt -Value $text
+            Set-Content -Path coverage-warning.html -Value "<div class=`"warning`"><strong>This run has problems</strong> $text</div>"
             "ok=false" >> $env:GITHUB_OUTPUT
           }
 
@@ -446,12 +460,15 @@ jobs:
           if (-not $pushed) { throw "git push to gh-pages failed after 3 attempts" }
 
 
-      - name: Fail the job when tests are missing
+      # Does not fail the job: the report is published either way and a red shard already makes the run red.
+      # It only puts the problem where people look: an error annotation and the job summary of the run.
+      - name: Show the test problems in the run
         if: ${{ !cancelled() && steps.coverage.outputs.ok == 'false' }}
         shell: pwsh
         run: |
-          Write-Host "::error::Some tests have no result in the report, see the red box on the report page"
-          exit 1
+          $message = (Get-Content -Path coverage-message.txt -Raw).Trim()
+          Write-Host "::error title=Tests missing or failed::$message"
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "### Tests missing or failed`n`n$message"
 
 
       - name: Notify Discord – Publish result

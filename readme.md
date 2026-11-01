@@ -581,8 +581,9 @@ published to `canary/` on GitHub Pages and never replace the real reports.
 
 A green report must not hide tests that never ran (a shard cancelled or failed before its tests started). After the
 shards, the `publish` job checks that all 4 shards sent a report and that every test in `YtMasterTests` has a result.
-If not, the tests with no result are listed in a red box on the report hub page, and the job is failed at the very end,
-after the reports are published. To see it work, start a manual run with **lose_a_shard** ticked: the
+It also counts the tests that failed. If a test has no result or failed, a red box on the report hub page names it, and
+the run shows an error annotation and a summary. The `publish` job itself stays green and the reports are always
+published; the red shard is what makes the run red. To see it work, start a manual run with **lose_a_shard** ticked: the
 `side-menu-collapsed` shard then fails before its tests start, and the box must name its two tests. Never use it on a normal run.
 
 **Failure drill:** a manual run with **failure_drill** ticked makes the tests fail the same way, but the run is judged
