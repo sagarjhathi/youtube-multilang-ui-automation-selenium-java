@@ -27,9 +27,9 @@ public class DataIntegrityTest {
 		Map<SheetLookup, List<String>> sheets = new LinkedHashMap<>();
 		sheets.put(DataSheets.expectedLanguage(), Arrays.asList("Expected Language"));
 		sheets.put(DataSheets.expectedAttribute(), Arrays.asList("Expected Attribute"));
-		sheets.put(DataSheets.sideMenuExpanded(), Arrays.asList("Expected Data", "slot", "premium"));
-		sheets.put(DataSheets.sideMenuCollapsed(), Arrays.asList("Expected Data"));
-		sheets.put(DataSheets.searchFilter(), Arrays.asList("Expected Data"));
+		sheets.put(DataSheets.sideMenuExpanded(), Arrays.asList("Expected Text", "slot", "premium"));
+		sheets.put(DataSheets.sideMenuCollapsed(), Arrays.asList("Expected Text"));
+		sheets.put(DataSheets.searchFilter(), Arrays.asList("Expected Text"));
 		return sheets;
 	}
 

@@ -101,7 +101,7 @@ This project demonstrates:
   - One summary line per loop (`passed X of Y`, retries, failures, skipped detection, usual / other / unknown version counts)
 - **Allowed side-menu versions**:
   - YouTube shows the Hype word, the Live word or nothing in one slot, and sometimes a localized trial offer instead of "YouTube Premium"
-  - `verifyingSideMenuLanguageAsInSettings.xlsx` holds a base text with `{slot}` and `{premium}` plus the options of each (separated by ` || `, `(none)` = entry missing)
+  - `expectedSideMenuExpanded.xlsx` holds a base text with `{slot}` and `{premium}` plus the options of each (separated by ` || `, `(none)` = entry missing)
   - The page text must equal one of the generated texts; anything else (for example "Gaming" in the slot) fails against the usual first version
   - A new YouTube form is a one-cell data edit; offline checks: `mvn test -Dsurefire.suiteXmlFiles=src/main/test/java/runners/offline.xml`
 - **Stable menu read**:
@@ -188,7 +188,7 @@ The framework adapts based on trigger source:
 |-------------|---------|
 | Push / PR | Reduced: first 10 languages and 10 locations |
 | Nightly CRON | Full language & region validation (54 languages, 110 locations) |
-| Manual / local | Reduced by default; override with `-D` flags (`-DrunForAllLanguages=true -DrunForAllCountries=true` runs everything) |
+| Manual / local | Reduced by default; override with `-D` flags (`-DrunForAllLanguages=true -DrunForAllLocations=true` runs everything) |
 
 ---
 
@@ -567,7 +567,7 @@ what it claims.
 ```bash
 # PowerShell:  $env:CANARY = "true"
 # bash:        export CANARY=true
-mvn test -DrunForAllLanguages=false -DoverideLanguageCount=5 -DoverideCountriesCount=5
+mvn test -DrunForAllLanguages=false -DlanguageCount=5 -DlocationCount=5
 ```
 
 All tests must fail. The switch is the `CANARY` environment variable, or `CANARY=true` in `masterdata.properties`

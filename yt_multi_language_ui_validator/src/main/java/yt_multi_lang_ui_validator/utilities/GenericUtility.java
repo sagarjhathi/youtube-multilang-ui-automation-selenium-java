@@ -134,7 +134,7 @@ public class GenericUtility extends BasePage {
 	}
 
 
-	/** Row-count override for the language-driven tests (masterdata.properties: runForAllLanguages / overideLanguageCount*). */
+	/** Row-count override for the language-driven tests (masterdata.properties: runForAllLanguages / languageCount, with the CI suffix on a scheduled run). */
 	public int languageRowsToRun(int fullRowCount) {
     	 boolean isCron = Boolean.parseBoolean(System.getenv("IS_CRON"));
 		
@@ -142,11 +142,10 @@ public class GenericUtility extends BasePage {
 		String suffix = isCron ? "CI" : "";
 
 		boolean runForAllLanguages = ConfigManager.getBoolean("runForAllLanguages" + suffix, false);
-		int defaultLanguageCount = ConfigManager.getInt("overideLanguageCountDefault" + suffix);
-		int overrideLanguageCount = ConfigManager.getInt("overideLanguageCount" + suffix, defaultLanguageCount);
+		int languageCount = ConfigManager.getInt("languageCount" + suffix, 5);
 
-		// the override is a number of languages and row 0 of the sheets is the header, so one more row is read
-		return countToRun(isCron, runForAllLanguages, overrideLanguageCount + 1, fullRowCount);
+		// the count is a number of languages and row 0 of the sheets is the header, so one more row is read
+		return countToRun(isCron, runForAllLanguages, languageCount + 1, fullRowCount);
 	}
 
 	/** How many of the languages in the master list this run checks: all of them, or the first N (see {@link #languageRowsToRun}). */
@@ -154,17 +153,16 @@ public class GenericUtility extends BasePage {
 		return languageRowsToRun(languageTotal + 1) - 1;
 	}
 
-	/** Row-count override for the country-driven tests (masterdata.properties: runForAllCountries / overideCountriesCount*). */
+	/** Row-count override for the location-driven tests (masterdata.properties: runForAllLocations / locationCount, with the CI suffix on a scheduled run). */
 	public int locationCountToRun(int fullRowCount) {
 		boolean isCron = Boolean.parseBoolean(System.getenv("IS_CRON"));
 	
 		String suffix = isCron ? "CI" : "";
 
-		boolean runForAllCountries = ConfigManager.getBoolean("runForAllCountries" + suffix, false);
-		int defaultCountriesCount = ConfigManager.getInt("overideCountriesCountDefault" + suffix);
-		int overrideCountriesCount = ConfigManager.getInt("overideCountriesCount" + suffix, defaultCountriesCount);
+		boolean runForAllLocations = ConfigManager.getBoolean("runForAllLocations" + suffix, false);
+		int locationCount = ConfigManager.getInt("locationCount" + suffix, 5);
 
-		return countToRun(isCron, runForAllCountries, overrideCountriesCount, fullRowCount);
+		return countToRun(isCron, runForAllLocations, locationCount, fullRowCount);
 	}
 
 	/**
@@ -295,7 +293,7 @@ public class GenericUtility extends BasePage {
 	}
 
 	/**
-	 * Same for a row found by language name. The base text is given (it is the row's "Expected Data"), so canary
+	 * Same for a row found by language name. The base text is given (it is the row's "Expected Text"), so canary
 	 * mode can change it before the allowed versions are built; the options are the row's "slot" and "premium".
 	 */
 	public static List<String[]> loadAcceptedSideMenuTexts(SheetLookup.SheetRow row, String base) {

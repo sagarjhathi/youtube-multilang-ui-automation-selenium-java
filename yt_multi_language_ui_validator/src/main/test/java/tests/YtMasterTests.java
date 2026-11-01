@@ -92,7 +92,7 @@ public class YtMasterTests extends BaseTest{
 				}
 				// the sheet lists every version of the menu YouTube may show (slot and Premium entry options); the page must equal one of them
 				SheetLookup.SheetRow sideMenuRow=DataSheets.sideMenuExpanded().get(langText);
-				String baseText=Canary.canary(sideMenuRow.get("Expected Data"), i, 0);
+				String baseText=Canary.canary(sideMenuRow.get("Expected Text"), i, 0);
 				List<String[]> acceptedTexts=GenericUtility.loadAcceptedSideMenuTexts(sideMenuRow, baseText);
 				String actualData=GenericUtility.comparableSideMenuText(String.join(" ", sideMenuTexts));
 				int acceptedIndex=GenericUtility.indexOfAcceptedText(acceptedTexts, actualData);
@@ -297,7 +297,7 @@ public class YtMasterTests extends BaseTest{
 					}
 				}
 
-				String expectedData =	Canary.canary(DataSheets.sideMenuCollapsed().get(langText).get("Expected Data"), i, 0);
+				String expectedData =	Canary.canary(DataSheets.sideMenuCollapsed().get(langText).get("Expected Text"), i, 0);
 				String actualData=sideMenuItems.toString();
 
 
@@ -697,7 +697,7 @@ public class YtMasterTests extends BaseTest{
 				landingPage.closeSearchFilter();
 
 
-				String expectedData=Canary.canary(DataSheets.searchFilter().get(langText).get("Expected Data"), i, 0);
+				String expectedData=Canary.canary(DataSheets.searchFilter().get(langText).get("Expected Text"), i, 0);
 				String actualValue=globalSettingText;
 
 

@@ -16,31 +16,31 @@ public class DataSheets {
 
 	/** Column "Expected Language", the language Lingua should detect. */
 	public static SheetLookup expectedLanguage() {
-		return SheetLookup.load("data/ApplicableLanguageExpectedLanguage.xlsx", "AppVExpectLanguages", "Applicable Language");
+		return SheetLookup.load("data/ApplicableLanguageExpectedLanguage.xlsx", "AppVExpectLanguages", "Language");
 	}
 
 	/** Column "Expected Attribute", the expected html lang. */
 	public static SheetLookup expectedAttribute() {
-		return SheetLookup.load("data/ApplicableLanguageExpectedAttibute.xlsx", "Attribute", "Applicable Language");
+		return SheetLookup.load("data/ApplicableLanguageExpectedAttibute.xlsx", "Attribute", "Language");
 	}
 
-	/** Columns "Expected Data" (base text with {slot} and {premium}), "slot" and "premium" (their options). */
+	/** Columns "Expected Text" (base text with {slot} and {premium}), "slot" and "premium" (their options). */
 	public static SheetLookup sideMenuExpanded() {
-		return SheetLookup.load("data/verifyingSideMenuLanguageAsInSettings.xlsx", "verifyingSideMenuLanguageAsInSe", "Applied Language");
+		return SheetLookup.load("data/expectedSideMenuExpanded.xlsx", "ExpectedSideMenuExpanded", "Language");
 	}
 
-	/** Column "Expected Data", the collapsed side menu text. */
+	/** Column "Expected Text", the collapsed side menu text. */
 	public static SheetLookup sideMenuCollapsed() {
-		return SheetLookup.load("data/verifyingSideMenuCollapsedLangAsInSettings.xlsx", "verifyingSideMenuCollapsedLangA", "Applied Language");
+		return SheetLookup.load("data/expectedSideMenuCollapsed.xlsx", "ExpectedSideMenuCollapsed", "Language");
 	}
 
-	/** Column "Expected Data", the search filter popup text. */
+	/** Column "Expected Text", the search filter popup text. */
 	public static SheetLookup searchFilter() {
-		return SheetLookup.load("data/verifyingGlobalFilterLandingPage.xlsx", "verifyingGlobalFilterLandingPag", "Applied Language");
+		return SheetLookup.load("data/expectedSearchFilter.xlsx", "ExpectedSearchFilter", "Language");
 	}
 
 	/** Keyed by country name, column "Country Code" (empty for the one country without a code). */
 	public static SheetLookup countries() {
-		return SheetLookup.load("data/Country_Name_Code.xlsx", "CountryNameCode", "Country Name");
+		return SheetLookup.load("data/countryCodes.xlsx", "CountryNameCode", "Country Name");
 	}
 }

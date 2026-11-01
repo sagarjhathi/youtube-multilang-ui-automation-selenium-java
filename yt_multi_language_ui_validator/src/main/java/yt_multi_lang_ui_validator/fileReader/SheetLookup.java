@@ -138,7 +138,7 @@ public class SheetLookup {
 		return rows.size();
 	}
 
-	/** The file and sheet, for messages, e.g. data/Country_Name_Code.xlsx (sheet 'CountryNameCode'). */
+	/** The file and sheet, for messages, e.g. data/countryCodes.xlsx (sheet 'CountryNameCode'). */
 	public String source() {
 		return where();
 	}

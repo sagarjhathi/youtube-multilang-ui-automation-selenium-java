@@ -11,13 +11,13 @@ import main.java.yt_multi_lang_ui_validator.fileReader.FileReader;
 import main.java.yt_multi_lang_ui_validator.utilities.GenericUtility;
 
 /**
- * Offline checks (no browser) of the allowed side-menu versions kept in data/verifyingSideMenuLanguageAsInSettings.xlsx.
+ * Offline checks (no browser) of the allowed side-menu versions kept in data/expectedSideMenuExpanded.xlsx.
  * Not part of the suite xml files; run with {@code mvn test -Dsurefire.suiteXmlFiles=src/main/test/java/runners/offline.xml}.
  */
 public class AcceptedSideMenuTextsTest {
 
-	private static final String SHEET_FILE = "data/verifyingSideMenuLanguageAsInSettings.xlsx";
-	private static final String SHEET_NAME = "verifyingSideMenuLanguageAsInSe";
+	private static final String SHEET_FILE = "data/expectedSideMenuExpanded.xlsx";
+	private static final String SHEET_NAME = "ExpectedSideMenuExpanded";
 
 	private static final String AFRIKAANS_START = "Tuis Kortvideo's Intekeninge Myne Geskiedenis Musiek Flieks en TV";
 	private static final String AFRIKAANS_END = "YouTube Kids Aangeegeskiedenis";
