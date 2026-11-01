@@ -395,7 +395,7 @@ Every `@Test` in `YtMasterTests` carries a TestNG group, which is also how CI sp
 |---|---|
 | `side-menu-expanded` (CI shard) | `verifyingSideMenuLanguageAsInSettings`, `verifyingSideMenuLanguageAsInSettingsLingua` |
 | `side-menu-collapsed` (CI shard) | `verifyingSideMenuCollapsedLangAsInSettings`, `verifyingSideMenuCollapsedLangAsInSettingsLingua` |
-| `settings-region` (CI shard) | `verifyingSettingOptionsLang`, `verifyCountryCodeAsBasedOnRegion` |
+| `settings-region` (CI shard) | `verifyingSettingOptionsLang`, `verifyingCountryCodeOnLogo_Algeria_to_Liechtenstein`, `verifyingCountryCodeOnLogo_Lithuania_to_Zimbabwe` |
 | `global-filter` (CI shard) | `verifyingGlobalFilterLandingPage`, `verifyingGlobalFilterLandingPageLingua` |
 | `lingua` | `verifyingSideMenuLanguageAsInSettingsLingua`, `verifyingSideMenuCollapsedLangAsInSettingsLingua`, `verifyingGlobalFilterLandingPageLingua` |
 | `non-lingua` | the other five tests |

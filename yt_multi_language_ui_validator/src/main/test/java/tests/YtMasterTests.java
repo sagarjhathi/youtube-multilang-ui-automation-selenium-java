@@ -525,8 +525,20 @@ public class YtMasterTests extends BaseTest{
 
 
 
+	// The two halves run in parallel in separate browsers. The names are written out by hand: first and last country of the half
+	// (111 countries: 56 and 55). DataIntegrityTest fails when the country sheet no longer matches them.
 	@Test(groups = {"non-lingua", "settings-region"})
-	public void verifyCountryCodeAsBasedOnRegion() throws InterruptedException {
+	public void verifyingCountryCodeOnLogo_Algeria_to_Liechtenstein() throws InterruptedException {
+		checkCountryCodes(true);
+	}
+
+	@Test(groups = {"non-lingua", "settings-region"})
+	public void verifyingCountryCodeOnLogo_Lithuania_to_Zimbabwe() throws InterruptedException {
+		checkCountryCodes(false);
+	}
+
+	/** Checks the country code on the logo for one half of the locations: [0, middle) or [middle, total), middle = ceil(total / 2). */
+	private void checkCountryCodes(boolean firstHalf) throws InterruptedException {
 
 
 		YtLandingPage landingPage=new YtLandingPage();
@@ -558,14 +570,22 @@ public class YtMasterTests extends BaseTest{
 
 
 
-		locationListSize = genericUtility.resolveCountryIterationCount(locationListSize);
+		int total = genericUtility.resolveCountryIterationCount(locationListSize);
+		int middle = (total + 1) / 2;
+		int start = firstHalf ? 0 : middle;
+		int end = firstHalf ? middle : total;
+		if(start >= end) {
+			log.info("[{}] Country codes, {} half: no locations ({} in total)", testName, firstHalf ? "first" : "second", total);
+			return;
+		}
+		log.info("[{}] Country codes, {} half: locations {} to {} of {}", testName, firstHalf ? "first" : "second", start, end-1, total);
 
 
 
 
 
 		LoopGuard guard=new LoopGuard(softAssert);
-		for(int locationIndex=0;locationIndex<locationListSize && !guard.shouldStop();locationIndex++) {
+		for(int locationIndex=start;locationIndex<end && !guard.shouldStop();locationIndex++) {
 			String locationText = "location #"+locationIndex;
 			try {
 				locationList=landingPage.getLocationList();
@@ -589,7 +609,7 @@ public class YtMasterTests extends BaseTest{
 
 				String applicableLocation=locationText;
 				String sheetCountryCode=DataSheets.countries().get(locationText).get("Country Code");
-				String expectedCountryCode=Canary.canary(Canary.canary(sheetCountryCode, locationIndex, 0), locationIndex, 1);
+				String expectedCountryCode=Canary.canary(Canary.canary(sheetCountryCode, locationIndex-start, 0), locationIndex-start, 1);
 				String detectedCountryCode=landingPage.getCountryCode();
 
 				System.out.println("applicable location is ==  "+applicableLocation+" Expected location  =="+expectedCountryCode+"  detected country code"+detectedCountryCode);
@@ -613,7 +633,7 @@ public class YtMasterTests extends BaseTest{
 				}
 			}
 		}
-		guard.logSummary(locationListSize);
+		guard.logSummary(end - start);
 
 		softAssert.assertAll();
 	}

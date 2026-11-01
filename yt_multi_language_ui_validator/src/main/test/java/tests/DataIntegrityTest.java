@@ -1,5 +1,9 @@
 package main.test.java.tests;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -113,5 +117,28 @@ public class DataIntegrityTest {
 		for (SheetLookup sheet : languageSheets().keySet()) {
 			Assert.assertEquals(sheet.size(), master.size(), sheet.source() + " has " + sheet.size() + " languages, LanguagesList.xlsx has " + master.size());
 		}
+	}
+
+	/**
+	 * D6: the two country tests are named after the first and last country of their half of the sheet (the first half is
+	 * ceil(n / 2) countries). When the sheet or the middle of the list changes, the names must be changed with it.
+	 */
+	@Test
+	public void countryTestNamesMatchTheSheet() throws IOException {
+		List<String> countries = DataSheets.countries().names();
+		int middle = (countries.size() + 1) / 2;
+		String[] expectedNames = {
+				"verifyingCountryCodeOnLogo_" + methodPart(countries.get(0)) + "_to_" + methodPart(countries.get(middle - 1)),
+				"verifyingCountryCodeOnLogo_" + methodPart(countries.get(middle)) + "_to_" + methodPart(countries.get(countries.size() - 1)) };
+		String source = new String(Files.readAllBytes(Paths.get("src/main/test/java/tests/YtMasterTests.java")), StandardCharsets.UTF_8);
+		for (String name : expectedNames) {
+			Assert.assertTrue(source.contains("public void " + name + "("),
+					"YtMasterTests.java has no test '" + name + "': the country sheet (" + DataSheets.countries().source() + ") or the middle of the list changed, rename the country test");
+		}
+	}
+
+	/** A country name as written in a method name: no spaces. */
+	private static String methodPart(String country) {
+		return country.replace(" ", "");
 	}
 }
