@@ -40,15 +40,15 @@ public class YtMasterTests extends BaseTest{
 		List<String> languages=DataSheets.languages().names();
 
 
-		landingPage.openingLandingPage();
+		landingPage.openLandingPage();
 
 
-		landingPage.clickingSettingEllipsesButton();
+		landingPage.toggleSettingsMenu();
 
-		landingPage.clickingLanguageDropdownButton();
+		landingPage.openLanguageList();
 
 		String testName = ThreadContext.get("logFileName");
-		int languageCount = genericUtility.resolveLanguageCount(languages.size());
+		int languageCount = genericUtility.languageCountToRun(languages.size());
 
 
 		LoopGuard guard=new LoopGuard(softAssert);
@@ -61,16 +61,16 @@ public class YtMasterTests extends BaseTest{
 				ScreenshotUtilUpdated.capture(testName, langText);
 
 
-				landingPage.getLanguageElementByName(langText).click();
+				landingPage.languageEntry(langText).click();
 
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
+				genericUtility.isElementInViewport(landingPage.languageRow);
 				ScreenshotUtilUpdated.capture(testName, langText);
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
 
-				List<WebElement> listOfSideMenu=landingPage.gettingSideMenuExpandedList();
+				List<WebElement> listOfSideMenu=landingPage.readExpandedSideMenuEntries();
 
 				StringBuilder sideMenuItems=new StringBuilder();
 				for(int sideMenuItem=0;sideMenuItem<listOfSideMenu.size();sideMenuItem++) {
@@ -107,9 +107,9 @@ public class YtMasterTests extends BaseTest{
 				GenericUtility.softAssertEquals(softAssert, guard, actualData.trim(),expectedData.trim(),"Side menu text differs | language="+langText);
 
 
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
-				landingPage.clickingLanguageDropdownButton();
+				landingPage.openLanguageList();
 
 
 				guard.passed(langText);
@@ -148,17 +148,17 @@ public class YtMasterTests extends BaseTest{
 
 
 
-		landingPage.openingLandingPage();
+		landingPage.openLandingPage();
 
 
 
 
-		landingPage.clickingSettingEllipsesButton();
+		landingPage.toggleSettingsMenu();
 
-		landingPage.clickingLanguageDropdownButton();
+		landingPage.openLanguageList();
 
 		String testName = ThreadContext.get("logFileName");
-		int languageCount = genericUtility.resolveLanguageCount(languages.size());
+		int languageCount = genericUtility.languageCountToRun(languages.size());
 
 
 
@@ -175,16 +175,16 @@ public class YtMasterTests extends BaseTest{
 
 
 
-				landingPage.getLanguageElementByName(langText).click();	
+				landingPage.languageEntry(langText).click();	
 
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
+				genericUtility.isElementInViewport(landingPage.languageRow);
 				ScreenshotUtilUpdated.capture(testName, langText);
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
 
-				List<WebElement> listOfSideMenu=landingPage.gettingSideMenuExpandedList();
+				List<WebElement> listOfSideMenu=landingPage.readExpandedSideMenuEntries();
 
 				StringBuilder sideMenuItems=new StringBuilder();
 				for(int sideMenuItem=0;sideMenuItem<listOfSideMenu.size();sideMenuItem++) {
@@ -205,7 +205,7 @@ public class YtMasterTests extends BaseTest{
 
 
 				String expectedLanguageAttribute=Canary.canary(DataSheets.expectedAttribute().get(langText).get("Expected Attribute"), i, 2);
-				String detectedLanguageAttribute=genericUtility.getLangAttribute();
+				String detectedLanguageAttribute=genericUtility.readHtmlLang();
 
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language attribute   "+detectedLanguageAttribute+"  "+"Expected Language attribute "+expectedLanguageAttribute);
@@ -215,9 +215,9 @@ public class YtMasterTests extends BaseTest{
 				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute, true, false);
 
 
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
-				landingPage.clickingLanguageDropdownButton();
+				landingPage.openLanguageList();
 
 
 				guard.passed(langText);
@@ -253,17 +253,17 @@ public class YtMasterTests extends BaseTest{
 
 
 
-		int languageCount = genericUtility.resolveLanguageCount(languages.size());
+		int languageCount = genericUtility.languageCountToRun(languages.size());
 		String testName = ThreadContext.get("logFileName");
 
-		landingPage.openingLandingPage();
-		landingPage.clickingLeftEllipses();
+		landingPage.openLandingPage();
+		landingPage.collapseSideMenuIfExpanded();
 
 
 
-		landingPage.clickingSettingEllipsesButton();
+		landingPage.toggleSettingsMenu();
 
-		landingPage.clickingLanguageDropdownButton();
+		landingPage.openLanguageList();
 
 
 
@@ -277,15 +277,15 @@ public class YtMasterTests extends BaseTest{
 				System.out.println(langText+"    "+(i+1));
 
 
-				landingPage.getLanguageElementByName(langText).click();
-				waitUtility.waitForElementReady(landingPage.sideMenuCollapsedList);
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.languageEntry(langText).click();
+				waitUtility.waitForElementReady(landingPage.collapsedSideMenuEntries);
+				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
+				genericUtility.isElementInViewport(landingPage.languageRow);
 				ScreenshotUtilUpdated.capture(testName, langText);
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
-				List<WebElement> listOfSideMenu=landingPage.gettingSideMenuCollapsedList();
+				List<WebElement> listOfSideMenu=landingPage.readCollapsedSideMenuEntries();
 
 				StringBuilder sideMenuItems=new StringBuilder();
 				for(int sideMenuItem=0;sideMenuItem<listOfSideMenu.size();sideMenuItem++) {
@@ -305,9 +305,9 @@ public class YtMasterTests extends BaseTest{
 				GenericUtility.softAssertEquals(softAssert, guard, actualData.trim(),expectedData.trim(),"Side menu text differs | language="+langText);
 
 
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
-				landingPage.clickingLanguageDropdownButton();
+				landingPage.openLanguageList();
 
 				guard.passed(langText);
 			} catch (Exception e) {
@@ -348,22 +348,22 @@ public class YtMasterTests extends BaseTest{
 
 
 
-		int languageCount = genericUtility.resolveLanguageCount(languages.size());
+		int languageCount = genericUtility.languageCountToRun(languages.size());
 		String testName = ThreadContext.get("logFileName");
-		landingPage.openingLandingPage();
+		landingPage.openLandingPage();
 
 
 
 
 
 		genericUtility.getWindowHeightWidth();
-		landingPage.clickingLeftEllipses();
+		landingPage.collapseSideMenuIfExpanded();
 
 
-		landingPage.clickingSettingEllipsesButton();
+		landingPage.toggleSettingsMenu();
 
 
-		landingPage.clickingLanguageDropdownButton();
+		landingPage.openLanguageList();
 
 
 
@@ -377,15 +377,15 @@ public class YtMasterTests extends BaseTest{
 				System.out.println(langText+"    "+(i+1));
 
 
-				landingPage.getLanguageElementByName(langText).click();
+				landingPage.languageEntry(langText).click();
 
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
+				genericUtility.isElementInViewport(landingPage.languageRow);
 				ScreenshotUtilUpdated.capture(testName, langText);
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
-				List<WebElement> listOfSideMenu=landingPage.gettingSideMenuCollapsedList();
+				List<WebElement> listOfSideMenu=landingPage.readCollapsedSideMenuEntries();
 
 				StringBuilder sideMenuItems=new StringBuilder();
 				for(int sideMenuItem=0;sideMenuItem<listOfSideMenu.size();sideMenuItem++) {
@@ -407,7 +407,7 @@ public class YtMasterTests extends BaseTest{
 
 				String expectedLanguageAttribute=Canary.canary(DataSheets.expectedAttribute().get(langText).get("Expected Attribute"), i, 2);
 
-				String detectedLanguageAttribute=genericUtility.getLangAttribute();
+				String detectedLanguageAttribute=genericUtility.readHtmlLang();
 
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language attribute   "+detectedLanguageAttribute+"  "+"Expected Language attribute "+expectedLanguageAttribute);
@@ -417,9 +417,9 @@ public class YtMasterTests extends BaseTest{
 				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute, true, true);
 
 
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
-				landingPage.clickingLanguageDropdownButton();
+				landingPage.openLanguageList();
 
 				guard.passed(langText);
 			} catch (Exception e) {
@@ -454,12 +454,12 @@ public class YtMasterTests extends BaseTest{
 		String testName= ThreadContext.get("testName");
 
 
-		int languageCount = genericUtility.resolveLanguageCount(languages.size());
+		int languageCount = genericUtility.languageCountToRun(languages.size());
 
-		landingPage.openingLandingPage();
-		landingPage.clickingSettingEllipsesButton();
+		landingPage.openLandingPage();
+		landingPage.toggleSettingsMenu();
 
-		landingPage.clickingLanguageDropdownButton();
+		landingPage.openLanguageList();
 
 
 
@@ -474,18 +474,18 @@ public class YtMasterTests extends BaseTest{
 				System.out.println(langText+"    "+(i+1));
 
 
-				landingPage.getLanguageElementByName(langText).click();
+				landingPage.languageEntry(langText).click();
 
-				// landingPage.clickingSettingEllipsesButton();
+				// landingPage.toggleSettingsMenu();
 				landingPage.openSettingsMenu();
-				genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
+				genericUtility.isElementInViewport(landingPage.languageRow);
 				ScreenshotUtilUpdated.capture(testName, langText);
-				// landingPage.clickingSettingEllipsesButton();
+				// landingPage.toggleSettingsMenu();
 				//
-				// landingPage.clickingSettingEllipsesButton();
+				// landingPage.toggleSettingsMenu();
 
-				String languageFromSettings=landingPage.getsettingEllipsesOptionsListLandingPage();
-				// landingPage.clickingSettingEllipsesButton();
+				String languageFromSettings=landingPage.readSettingsMenuText();
+				// landingPage.toggleSettingsMenu();
 				landingPage.closeSettingsMenu();
 
 
@@ -495,7 +495,7 @@ public class YtMasterTests extends BaseTest{
 
 
 				String expectedLanguageAttribute=Canary.canary(DataSheets.expectedAttribute().get(Canary.canary(langText, i, 4)).get("Expected Attribute"), i, 2);
-				String detectedLanguageAttribute=genericUtility.getLangAttribute();
+				String detectedLanguageAttribute=genericUtility.readHtmlLang();
 
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language attribute   "+detectedLanguageAttribute+"  "+"Expected Language attribute "+expectedLanguageAttribute);
@@ -503,9 +503,9 @@ public class YtMasterTests extends BaseTest{
 				genericUtility.assertLanguageDetectedAndAttributeMatch(softAssert, guard, langText, detectedLanguage, expectedLanguage, detectedLanguageAttribute, expectedLanguageAttribute, false, false);
 
 
-				// landingPage.clickingSettingEllipsesButton();
+				// landingPage.toggleSettingsMenu();
 				landingPage.openSettingsMenu();
-				landingPage.clickingLanguageDropdownButton();
+				landingPage.openLanguageList();
 
 
 				guard.passed(langText);
@@ -548,17 +548,17 @@ public class YtMasterTests extends BaseTest{
 
 
 
-		landingPage.openingLandingPage();
+		landingPage.openLandingPage();
 
-		landingPage.clickingSettingEllipsesButton();
+		landingPage.toggleSettingsMenu();
 
-		landingPage.clickingLocationDropdownUnderSettings();
-
-
+		landingPage.openLocationList();
 
 
-		List<WebElement> locationList=landingPage.getLocationList();
-		int locationListSize=locationList.size();
+
+
+		List<WebElement> locationRows=landingPage.readLocationRows();
+		int locationListSize=locationRows.size();
 		int sheetCount=DataSheets.countries().size();
 		if(sheetCount!=locationListSize) {
 			log.warn("[{}] Country sheet has {} rows but the page lists {} locations", ThreadContext.get("testName"), sheetCount, locationListSize);
@@ -570,7 +570,7 @@ public class YtMasterTests extends BaseTest{
 
 
 
-		int total = genericUtility.resolveCountryIterationCount(locationListSize);
+		int total = genericUtility.locationCountToRun(locationListSize);
 		int middle = (total + 1) / 2;
 		int start = firstHalf ? 0 : middle;
 		int end = firstHalf ? middle : total;
@@ -588,8 +588,8 @@ public class YtMasterTests extends BaseTest{
 		for(int locationIndex=start;locationIndex<end && !guard.shouldStop();locationIndex++) {
 			String locationText = "location #"+locationIndex;
 			try {
-				locationList=landingPage.getLocationList();
-				locationText = locationList.get(locationIndex).getText();
+				locationRows=landingPage.readLocationRows();
+				locationText = locationRows.get(locationIndex).getText();
 
 
 				System.out.println(locationText+"    "+locationIndex);
@@ -598,19 +598,19 @@ public class YtMasterTests extends BaseTest{
 
 
 
-				locationList.get(locationIndex).click();
+				locationRows.get(locationIndex).click();
 
-				landingPage.clickingSettingEllipsesButton();
-				genericUtility.isElementInViewport(landingPage.locationDropdownUnderSettings);
+				landingPage.toggleSettingsMenu();
+				genericUtility.isElementInViewport(landingPage.locationRow);
 				ScreenshotUtilUpdated.capture(testName, locationText);
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
 
 
 				String applicableLocation=locationText;
 				String sheetCountryCode=DataSheets.countries().get(locationText).get("Country Code");
 				String expectedCountryCode=Canary.canary(Canary.canary(sheetCountryCode, locationIndex-start, 0), locationIndex-start, 1);
-				String detectedCountryCode=landingPage.getCountryCode();
+				String detectedCountryCode=landingPage.readCountryCode();
 
 				System.out.println("applicable location is ==  "+applicableLocation+" Expected location  =="+expectedCountryCode+"  detected country code"+detectedCountryCode);
 				boolean codeMatches=java.util.Objects.equals(detectedCountryCode, expectedCountryCode);
@@ -622,9 +622,9 @@ public class YtMasterTests extends BaseTest{
 					GenericUtility.softAssertEquals(softAssert, guard, locationText, "United States", "Expected country code is empty for \""+locationText+"\", only \"United States\" has none.");
 				}
 
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
-				landingPage.clickingLocationDropdownUnderSettings();
+				landingPage.openLocationList();
 
 				guard.passed(locationText);
 			} catch (Exception e) {
@@ -653,11 +653,11 @@ public class YtMasterTests extends BaseTest{
 		List<String> languages=DataSheets.languages().names();
 
 
-		landingPage.openingLandingPage();
-		landingPage.givingInputUnderSearchBar("youtube");
-		genericUtility.clickEnter(landingPage.searchInputLandinfPage);
+		landingPage.openLandingPage();
+		landingPage.typeInSearchBox("youtube");
+		genericUtility.clickEnter(landingPage.searchBox);
 
-		int languageCount = genericUtility.resolveLanguageCount(languages.size());
+		int languageCount = genericUtility.languageCountToRun(languages.size());
 
 
 
@@ -671,30 +671,30 @@ public class YtMasterTests extends BaseTest{
 
 			String langText=languages.get(i);
 			try {
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
-				landingPage.clickingLanguageDropdownButton();
+				landingPage.openLanguageList();
 
 
 				System.out.println(langText+"    "+(i+1));
 
 
-				genericUtility.smoothScrollToElement(landingPage.getLanguageElementByNameBy(langText));
-				landingPage.getLanguageElementByName(langText).click();	
+				genericUtility.smoothScrollToElement(landingPage.languageEntryLocator(langText));
+				landingPage.languageEntry(langText).click();	
 
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
+				genericUtility.isElementInViewport(landingPage.languageRow);
 				ScreenshotUtilUpdated.capture(testName, langText);
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
 
 
-				landingPage.clickingGlobalFilterButton();
-				genericUtility.isElementInViewport(landingPage.globalFilterData);
+				landingPage.openSearchFilter();
+				genericUtility.isElementInViewport(landingPage.searchFilterPopup);
 				ScreenshotUtilUpdated.capture(testName, langText);
-				String globalSettingText=landingPage.getDataFromGlobalFilterPopup();
-				landingPage.closeGlobalFilterPopup();
+				String globalSettingText=landingPage.readSearchFilterText();
+				landingPage.closeSearchFilter();
 
 
 				String expectedData=Canary.canary(DataSheets.searchFilter().get(langText).get("Expected Data"), i, 0);
@@ -740,16 +740,16 @@ public class YtMasterTests extends BaseTest{
 		List<String> languages=DataSheets.languages().names();
 
 
-		int languageCount = genericUtility.resolveLanguageCount(languages.size());
+		int languageCount = genericUtility.languageCountToRun(languages.size());
 
 
 		String testName= ThreadContext.get("testName");
 
 
 
-		landingPage.openingLandingPage();
-		landingPage.givingInputUnderSearchBar("youtube");
-		genericUtility.clickEnter(landingPage.searchInputLandinfPage);
+		landingPage.openLandingPage();
+		landingPage.typeInSearchBox("youtube");
+		genericUtility.clickEnter(landingPage.searchBox);
 
 
 
@@ -760,29 +760,29 @@ public class YtMasterTests extends BaseTest{
 
 			String langText=languages.get(i);
 			try {
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
-				landingPage.clickingLanguageDropdownButton();
+				landingPage.openLanguageList();
 
 
 				System.out.println(langText+"    "+(i+1));
 
 
-				landingPage.getLanguageElementByName(langText).click();	
+				landingPage.languageEntry(langText).click();	
 
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				genericUtility.isElementInViewport(landingPage.languageDropdownUnderSettings);
+				genericUtility.isElementInViewport(landingPage.languageRow);
 				ScreenshotUtilUpdated.capture(testName, langText);
-				landingPage.clickingSettingEllipsesButton();
+				landingPage.toggleSettingsMenu();
 
 
 
-				landingPage.clickingGlobalFilterButton();
-				genericUtility.isElementInViewport(landingPage.globalFilterData);
+				landingPage.openSearchFilter();
+				genericUtility.isElementInViewport(landingPage.searchFilterPopup);
 				ScreenshotUtilUpdated.capture(testName, langText);
-				String globalSettingText=landingPage.getDataFromGlobalFilterPopup();
-				landingPage.closeGlobalFilterPopup();
+				String globalSettingText=landingPage.readSearchFilterText();
+				landingPage.closeSearchFilter();
 
 
 
@@ -793,7 +793,7 @@ public class YtMasterTests extends BaseTest{
 
 
 				String expectedLanguageAttribute=Canary.canary(DataSheets.expectedAttribute().get(langText).get("Expected Attribute"), i, 2);
-				String detectedLanguageAttribute=genericUtility.getLangAttribute();
+				String detectedLanguageAttribute=genericUtility.readHtmlLang();
 
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language   "+detectedLanguage+"  "+"Expected Language  "+expectedLanguage);
 				System.out.println("ApplicableLanguage  "+applicableLanguage+"     "+"Detected Language attribute   "+detectedLanguageAttribute+"  "+"Expected Language attribute "+expectedLanguageAttribute);
@@ -822,28 +822,28 @@ public class YtMasterTests extends BaseTest{
 	// Recovery steps used by LoopGuard after a failure: they bring the page back to the state each loop starts from.
 
 	private void reopenLanguageDropdown(YtLandingPage landingPage) throws InterruptedException {
-		landingPage.openingLandingPage();
-		landingPage.clickingSettingEllipsesButton();
-		landingPage.clickingLanguageDropdownButton();
+		landingPage.openLandingPage();
+		landingPage.toggleSettingsMenu();
+		landingPage.openLanguageList();
 	}
 
 	private void reopenCollapsedLanguageDropdown(YtLandingPage landingPage) throws InterruptedException {
-		landingPage.openingLandingPage();
-		landingPage.clickingLeftEllipses();
-		landingPage.clickingSettingEllipsesButton();
-		landingPage.clickingLanguageDropdownButton();
+		landingPage.openLandingPage();
+		landingPage.collapseSideMenuIfExpanded();
+		landingPage.toggleSettingsMenu();
+		landingPage.openLanguageList();
 	}
 
 	private void reopenLocationDropdown(YtLandingPage landingPage) throws InterruptedException {
-		landingPage.openingLandingPage();
-		landingPage.clickingSettingEllipsesButton();
-		landingPage.clickingLocationDropdownUnderSettings();
+		landingPage.openLandingPage();
+		landingPage.toggleSettingsMenu();
+		landingPage.openLocationList();
 	}
 
 	private void reopenSearchResults(YtLandingPage landingPage, GenericUtility genericUtility) throws InterruptedException {
-		landingPage.openingLandingPage();
-		landingPage.givingInputUnderSearchBar("youtube");
-		genericUtility.clickEnter(landingPage.searchInputLandinfPage);
+		landingPage.openLandingPage();
+		landingPage.typeInSearchBox("youtube");
+		genericUtility.clickEnter(landingPage.searchBox);
 	}
 
 }

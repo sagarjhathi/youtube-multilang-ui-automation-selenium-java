@@ -29,8 +29,8 @@ public class GenericUtility extends BasePage {
 	 SafeActions safeAct = new SafeActions(driver);
 		
 	
-	public String getLangAttribute() {
-        log.info("getLangAttribute() - locating <html> and reading lang property");
+	public String readHtmlLang() {
+        log.info("readHtmlLang() - locating <html> and reading lang property");
         try {
             WebElement html = driver.findElement(By.xpath("//html"));
             String langProp = html.getDomProperty("lang");
@@ -135,7 +135,7 @@ public class GenericUtility extends BasePage {
 
 
 	/** Row-count override for the language-driven tests (masterdata.properties: runForAllLanguages / overideLanguageCount*). */
-	public int resolveLanguageIterationCount(int fullRowCount) {
+	public int languageRowsToRun(int fullRowCount) {
     	 boolean isCron = Boolean.parseBoolean(System.getenv("IS_CRON"));
 		
 		
@@ -146,16 +146,16 @@ public class GenericUtility extends BasePage {
 		int overrideLanguageCount = ConfigManager.getInt("overideLanguageCount" + suffix, defaultLanguageCount);
 
 		// the override is a number of languages and row 0 of the sheets is the header, so one more row is read
-		return resolveIterationCount(isCron, runForAllLanguages, overrideLanguageCount + 1, fullRowCount);
+		return countToRun(isCron, runForAllLanguages, overrideLanguageCount + 1, fullRowCount);
 	}
 
-	/** How many of the languages in the master list this run checks: all of them, or the first N (see {@link #resolveLanguageIterationCount}). */
-	public int resolveLanguageCount(int languageTotal) {
-		return resolveLanguageIterationCount(languageTotal + 1) - 1;
+	/** How many of the languages in the master list this run checks: all of them, or the first N (see {@link #languageRowsToRun}). */
+	public int languageCountToRun(int languageTotal) {
+		return languageRowsToRun(languageTotal + 1) - 1;
 	}
 
 	/** Row-count override for the country-driven tests (masterdata.properties: runForAllCountries / overideCountriesCount*). */
-	public int resolveCountryIterationCount(int fullRowCount) {
+	public int locationCountToRun(int fullRowCount) {
 		boolean isCron = Boolean.parseBoolean(System.getenv("IS_CRON"));
 	
 		String suffix = isCron ? "CI" : "";
@@ -164,7 +164,7 @@ public class GenericUtility extends BasePage {
 		int defaultCountriesCount = ConfigManager.getInt("overideCountriesCountDefault" + suffix);
 		int overrideCountriesCount = ConfigManager.getInt("overideCountriesCount" + suffix, defaultCountriesCount);
 
-		return resolveIterationCount(isCron, runForAllCountries, overrideCountriesCount, fullRowCount);
+		return countToRun(isCron, runForAllCountries, overrideCountriesCount, fullRowCount);
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class GenericUtility extends BasePage {
 	 * fetches and names its own isCron/runForAll/override values so it's clear at each call
 	 * site exactly which masterdata.properties keys were read.
 	 */
-	private int resolveIterationCount(boolean isCron, boolean runForAll, int overrideCount, int fullRowCount) {
+	private int countToRun(boolean isCron, boolean runForAll, int overrideCount, int fullRowCount) {
 		log.info("[{}] Execution is {} Hence referring to {} keys from UtilData",
 				ThreadContext.get("testName"),
 				isCron ? "scheduled type /CRON Job on CI" : "Not CRON Job",
