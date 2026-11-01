@@ -52,6 +52,7 @@ This project demonstrates:
 - Running Tests
 - Engineering Decisions Explained
 - Extending the Framework
+- How the Data Is Read
 - Canary Mode
 - Troubleshooting
 - Disclaimers
@@ -530,6 +531,22 @@ Chosen for:
 - Add a test to `YtMasterTests` with one of the four feature groups, otherwise no CI shard runs it
 - Tune retries and waits centrally
 - Enable new browsers via `DriverManager`
+
+---
+
+## 🗃 How the Data Is Read
+
+- **One list of languages drives every language test:** `LanguagesList.xlsx`. The tests loop over it in order.
+- **Every expected value is looked up by name, not by row number.** For each language the test asks the other
+  sheets for that language (`DataSheets.expectedLanguage().get("Dansk").get("Expected Language")`). A sheet is
+  read once, kept as a name-to-row map, and columns are found by their header. The country test looks the code up by
+  the country name it reads from the page.
+- **A wrong sheet can no longer be compared silently.** A duplicate name stops at load. A missing name or column throws an
+  error that names the file, for example `data/ApplicableLanguageExpectedAttibute.xlsx (sheet 'Attribute') has no row for 'Dansk'`.
+- **Offline integrity tests** (`DataIntegrityTest`, no browser, run before the CI shards) check the sheets against each other:
+  every language of the master list is in each sheet exactly once, no sheet has an unknown language, no required cell is
+  blank, row counts match, and every country has a code except United States. Adding a language to one sheet and forgetting
+  another fails here in a minute instead of as a confusing mismatch in a shard.
 
 ---
 

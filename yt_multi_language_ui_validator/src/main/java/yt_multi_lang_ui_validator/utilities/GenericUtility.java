@@ -18,6 +18,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import main.java.yt_multi_lang_ui_validator.base.BasePage;
 import main.java.yt_multi_lang_ui_validator.config.ConfigManager;
 import main.java.yt_multi_lang_ui_validator.fileReader.FileReader;
+import main.java.yt_multi_lang_ui_validator.fileReader.SheetLookup;
 import main.java.yt_multi_lang_ui_validator.logger.LoggerUtility;
 import main.java.yt_multi_lang_ui_validator.safeActions.SafeActions;
 
@@ -146,6 +147,11 @@ public class GenericUtility extends BasePage {
 
 		// the override is a number of languages and row 0 of the sheets is the header, so one more row is read
 		return resolveIterationCount(isCron, runForAllLanguages, overrideLanguageCount + 1, fullRowCount);
+	}
+
+	/** How many of the languages in the master list this run checks: all of them, or the first N (see {@link #resolveLanguageIterationCount}). */
+	public int resolveLanguageCount(int languageTotal) {
+		return resolveLanguageIterationCount(languageTotal + 1) - 1;
 	}
 
 	/** Row-count override for the country-driven tests (masterdata.properties: runForAllCountries / overideCountriesCount*). */
@@ -282,14 +288,20 @@ public class GenericUtility extends BasePage {
 	 * {slot} and {premium}.
 	 */
 	public static List<String[]> loadAcceptedSideMenuTexts(FileReader reader, int row) {
-		return loadAcceptedSideMenuTexts(reader, row, reader.getCellValue(row, 1));
-	}
-
-	/** Same, with the base text given, so canary mode can change it before the allowed versions are built. */
-	public static List<String[]> loadAcceptedSideMenuTexts(FileReader reader, int row, String base) {
 		Map<String, List<String>> options = new LinkedHashMap<>();
 		options.put("slot", splitOptions(reader.getCellValue(row, 2)));
 		options.put("premium", splitOptions(reader.getCellValue(row, 3)));
+		return acceptedSideMenuTexts(reader.getCellValue(row, 1), options);
+	}
+
+	/**
+	 * Same for a row found by language name. The base text is given (it is the row's "Expected Data"), so canary
+	 * mode can change it before the allowed versions are built; the options are the row's "slot" and "premium".
+	 */
+	public static List<String[]> loadAcceptedSideMenuTexts(SheetLookup.SheetRow row, String base) {
+		Map<String, List<String>> options = new LinkedHashMap<>();
+		options.put("slot", splitOptions(row.get("slot")));
+		options.put("premium", splitOptions(row.get("premium")));
 		return acceptedSideMenuTexts(base, options);
 	}
 
