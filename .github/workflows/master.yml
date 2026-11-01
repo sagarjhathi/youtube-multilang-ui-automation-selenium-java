@@ -13,8 +13,8 @@ on:
         description: "Canary run: one expected value in every test is made wrong on purpose, so every test must FAIL. Reports go to canary/ on gh-pages"
         type: boolean
         default: false
-      failure_drill:
-        description: "Failure drill: the tests fail on purpose (like canary) but the run is treated as a REAL failure, to check that a red shard is reported and its reports are still published. The published hub shows this run as failed"
+      lose_a_shard:
+        description: "Test of the report check: the side-menu-collapsed shard fails on purpose before its tests start, so the red box on the report page has to name its tests. Never use this on a normal run"
         type: boolean
         default: false
   schedule:
@@ -43,6 +43,14 @@ jobs:
       REPORT_BASE: "/youtube-multi-lang-ui-validator-automation/"
       IS_CRON: ${{ github.event_name == 'schedule'}}  # <-- "true" only for cron
     steps:
+      # Only for a manual run with "lose_a_shard" ticked: this shard stops here, before any test, like a cancelled shard.
+      - name: Lose a shard on purpose
+        if: ${{ inputs.lose_a_shard && matrix.group == 'side-menu-collapsed' }}
+        shell: bash
+        run: |
+          echo "::error::Shard side-menu-collapsed fails on purpose (lose_a_shard input), its tests will not run"
+          exit 1
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -113,9 +121,8 @@ jobs:
         id: tests
         working-directory: ${{ env.WORKDIR }}
         env:
-          # empty unless the manual "canary" or "failure_drill" input is ticked, so CANARY=true in masterdata.properties still works.
-          # The drill spoils the tests the same way, but only canary changes how the shard result is judged (see the last step).
-          CANARY: ${{ (inputs.canary || inputs.failure_drill) && 'true' || '' }}
+          # empty unless the manual "canary" input is ticked, so CANARY=true in masterdata.properties still works
+          CANARY: ${{ inputs.canary && 'true' || '' }}
         run: mvn test -Dgroups=${{ matrix.group }}
         continue-on-error: true
        
@@ -188,6 +195,7 @@ jobs:
     timeout-minutes: 15
     outputs:
       canary: ${{ steps.canary.outputs.value }}   # "true" for a canary run, read by the shards and by publish
+      tests: ${{ steps.tests.outputs.names }}     # the tests the shards together must run, read by publish
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -204,6 +212,16 @@ jobs:
           if grep -Eq '^[[:space:]]*CANARY[[:space:]]*=[[:space:]]*true' "${{ env.WORKDIR }}/src/test/resources/masterdata.properties"; then canary=true; fi
           echo "Canary run: $canary"
           echo "value=$canary" >> "$GITHUB_OUTPUT"
+
+      # The names of the browser tests in the test class, comma separated. The publish job checks that each one has a result.
+      - name: List the tests the shards must run
+        id: tests
+        shell: bash
+        run: |
+          names=$(grep -oE 'public void verifying[A-Za-z_]+' "${{ env.WORKDIR }}/src/main/test/java/tests/YtMasterTests.java" | sed 's/public void //' | paste -sd, -)
+          if [ -z "$names" ]; then echo "::error::No test found in YtMasterTests.java"; exit 1; fi
+          echo "Tests: $names"
+          echo "names=$names" >> "$GITHUB_OUTPUT"
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -265,6 +283,33 @@ jobs:
           npm install -g allure-commandline
           allure generate allure-results --clean -o allure-report
 
+
+      # A green report must not hide lost tests (a shard that is cancelled or fails before its tests start leaves no results).
+      # Simple check: every shard has to send a report, and every test of the test class has to have a result. Only when
+      # something is missing, the missing tests are listed. The problem is written into a red box on the hub page;
+      # the job is failed at the very end, after the publish.
+      - name: Check that all shards ran and all tests completed
+        id: coverage
+        shell: pwsh
+        run: |
+          $shardsExpected = 4   # the groups in the matrix of the test job
+          $shardsFound = @(Get-ChildItem -Path shards -Directory -ErrorAction SilentlyContinue).Count
+          $expected = "${{ needs.offline-checks.outputs.tests }}".Split(',') | Where-Object { $_ }
+          $withResult = @(Get-ChildItem -Path allure-results -Filter '*-result.json' -ErrorAction SilentlyContinue |
+                          ForEach-Object { (Get-Content $_.FullName -Raw | ConvertFrom-Json).name } | Sort-Object -Unique)
+          $missing = @($expected | Where-Object { $withResult -notcontains $_ })
+          $found = @($expected).Count - $missing.Count
+          Write-Host "Shards: $shardsFound of $shardsExpected | tests with a result: $found of $(@($expected).Count)"
+
+          if ($shardsFound -eq $shardsExpected -and $missing.Count -eq 0) {
+            Set-Content -Path coverage-warning.html -Value ''
+            "ok=true" >> $env:GITHUB_OUTPUT
+          } else {
+            $list = $missing -join ', '
+            Write-Host "Did not run: $list"
+            Set-Content -Path coverage-warning.html -Value "<div class=`"warning`"><strong>Only $found of $(@($expected).Count) tests have a result in this report</strong> ($shardsFound of $shardsExpected shards sent a report). A shard was probably cancelled or failed before the tests started. Tests that did not run: $list</div>"
+            "ok=false" >> $env:GITHUB_OUTPUT
+          }
 
       - name: Enable long paths (Windows)
         shell: pwsh
@@ -350,12 +395,15 @@ jobs:
             '  .card-desc { font-size:13px; color:#6b7280; }'
             '  .badge { display:inline-block; font-size:11px; font-weight:600; color:#4338ca;'
             '           background:#eef2ff; border-radius:999px; padding:2px 10px; margin-bottom:8px; }'
+            '  .warning { background:#fdecea; color:#8a1c14; border:1px solid #f1b5b0; border-radius:10px;'
+            '             padding:14px 18px; margin:0 0 20px; font-size:14px; }'
             '</style>'
             '</head>'
             '<body>'
             '<div class="container">'
             '<h1>YouTube Multi-Language UI Validator (Java + Selenium) - Test Report Hub</h1>'
             "<div class='subtitle'>Run: $run</div>"
+            (Get-Content -Path coverage-warning.html -Raw)
 
             "<a class='card' href='$run/allure-report/index.html'>"
             '<span class="badge">MERGED</span>'
@@ -396,6 +444,14 @@ jobs:
             Start-Sleep -Seconds (10 * $attempt)
           }
           if (-not $pushed) { throw "git push to gh-pages failed after 3 attempts" }
+
+
+      - name: Fail the job when tests are missing
+        if: ${{ !cancelled() && steps.coverage.outputs.ok == 'false' }}
+        shell: pwsh
+        run: |
+          Write-Host "::error::Some tests have no result in the report, see the red box on the report page"
+          exit 1
 
 
       - name: Notify Discord – Publish result
