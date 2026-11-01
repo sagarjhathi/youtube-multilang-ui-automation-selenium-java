@@ -27,114 +27,49 @@ public class YtLandingPage  extends BasePage{
 	}
 
 
-	public By sideMenu=By.xpath("//div[@class='style-scope ytd-mini-guide-renderer']");
+	// ------------------------------------------------------------------
+	// Locators, grouped by place on the page
+	// ------------------------------------------------------------------
 
-	public By sideMenuExpandedList=By.xpath("//ytd-guide-entry-renderer[@class='style-scope ytd-guide-section-renderer']");
+	// top bar
+	public By settingsButton=By.xpath("//ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']");
 
-	public By settingEllipsesButton=By.xpath("//ytd-topbar-menu-button-renderer[@class='style-scope ytd-masthead style-default']");
+	public By sideMenuButton=By.xpath("//ytd-topbar-logo-renderer[@id='logo']/preceding-sibling::*[@id='guide-button']");
 
-	public By languageDropdownUnderSettings=By.xpath("(//div[@id='content-icon'])[2]");
+	public By searchBox=By.xpath("//input[@class='ytSearchboxComponentInput yt-searchbox-input title']");
 
-	public By languageList=By.xpath("//yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//ytd-compact-link-renderer");
+	public By countryCodeLabel=By.xpath("(//span[@id='country-code'])[1]");
 
-	public By ellipsesYtLandingPageTopLeft=By.xpath("//ytd-topbar-logo-renderer[@id='logo']/preceding-sibling::*[@id='guide-button']");
+	// side menu
+	public By expandedSideMenuEntries=By.xpath("//ytd-guide-entry-renderer[@class='style-scope ytd-guide-section-renderer']");
 
-	public By sideMenuCollapsedList=By.xpath("//ytd-mini-guide-renderer[@class='style-scope ytd-app']//ytd-mini-guide-entry-renderer");
+	public By collapsedSideMenuEntries=By.xpath("//ytd-mini-guide-renderer[@class='style-scope ytd-app']//ytd-mini-guide-entry-renderer");
 
-	public By countryCodeOnYtLogoLandingPage=By.xpath("(//span[@id='country-code'])[1]");
+	// settings menu
+	public By settingsMenu=By.xpath("//ytd-multi-page-menu-renderer");
 
-	public By settingEllipsesOptionsListLandingPage=By.xpath("//ytd-multi-page-menu-renderer");
+	/** The rows you see inside the open settings menu (Appearance, Language, Location...). Language independent. */
+	public By settingsMenuRows=By.xpath("//ytd-multi-page-menu-renderer//ytd-compact-link-renderer");
 
-	public By languageListUpdated=By.xpath("//ytd-multi-page-menu-renderer[@slot='dropdown-content']");
+	public By languageRow=By.xpath("(//div[@id='content-icon'])[2]");
 
-	public By searchInputLandinfPage=By.xpath("//input[@class='ytSearchboxComponentInput yt-searchbox-input title']");
+	public By locationRow=By.xpath("(//div[@id='content-icon'])[4]");
 
-	//Cannot use this directly as this banner wouldnt show if yt does not have a search histroy so to show these recommendation banner
-	public By horizontalScrollBarLandingPage=By.xpath("//div[@id='scroll-container']");
+	public By locationRows=By.xpath("//yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//ytd-compact-link-renderer");
 
-	public By locationDropdownUnderSettings=By.xpath("(//div[@id='content-icon'])[4]");
+	// search filter
+	public By searchFilterButton = By.xpath("//div[@id='filter-button']");
 
-	public By locationList=By.xpath("//yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//ytd-compact-link-renderer");
+	public By searchFilterPopup=By.xpath("//ytd-search-filter-options-dialog-renderer[@class='style-scope ytd-popup-container']");
 
-	public By globalFilterButton = By.xpath("//div[@id='filter-button']");
-
-	public By globalFilterData=By.xpath("//ytd-search-filter-options-dialog-renderer[@class='style-scope ytd-popup-container']");
-
-	public By closeButtonGlobalFilterPopup=By.xpath("//yt-icon[@icon='close']");
-
-
-
-
-
-	public WebElement getLanguageElementByName(String name) {
-		By locator=By.xpath("//yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='" + name + "']");
-		log.info("Looking for language element with name: {}", name);
-		WebElement safeElement = safeAct.safeFindElement(locator);
-		System.out.println(locator);
-		return safeElement;
-	}
-	
-	
-	public By getLanguageElementByNameBy(String name) {
-		By locator=By.xpath("//yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='" + name + "']");
-		safeAct.safeFindElement(locator);
-		log.info("Looking for language element with name: {}", name);
-		return locator;
-	}
-	
-	
-
-		
-
-	public void clickingUnderSearchInput() {
-		log.info("Clicking into the search bar...");
-		safeAct.safeFindElement(searchInputLandinfPage);
-		safeAct.safeClick(searchInputLandinfPage);
-	}
-
-	public void givingInputUnderSearchBar(String input) {
-		log.info("Giving input into the search bar with input as  = "+input);
-		safeAct.safeClick(searchInputLandinfPage);
-		safeAct.safeFindElement(searchInputLandinfPage).sendKeys(input);
-	}
+	public By searchFilterCloseButton=By.xpath("//yt-icon[@icon='close']");
 
 
-	public void clickingGlobalFilterButton() {
-		log.info("Clicking on global filter button in landing page..");
-		safeAct.safeClick(globalFilterButton);
-	}
+	// ------------------------------------------------------------------
+	// Open and close
+	// ------------------------------------------------------------------
 
-
-	public void clickingLocationDropdownUnderSettings() {
-		log.info("Clicking on location dropdown under settings..");
-		// Old code: clicked straight away, even if the settings menu had not opened
-		// safeAct.safeClick(locationDropdownUnderSettings);
-		recoverSettingsMenuIfClosed();
-		safeAct.safeClick(locationDropdownUnderSettings);
-
-	}
-
-
-
-
-
-	public void closeGlobalFilterPopup() {
-		log.info("Closing the global filter pop-up in landing page..");
-		safeAct.safeFindElement(closeButtonGlobalFilterPopup).click();
-	}
-
-
-	public List<WebElement> getLocationList() {
-		log.info("Fetching the location list ...");
-		List<WebElement>list=safeAct.safeFindElements(locationList);
-		list.removeIf(el -> el.getText().trim().isEmpty());
-		log.info("Fetched  the location list == "+list);
-		return list;
-
-	}
-
-
-	public void openingLandingPage() {
+	public void openLandingPage() {
 
 		String url=ConfigManager.get("Url");
 		driver.get(url);
@@ -142,29 +77,17 @@ public class YtLandingPage  extends BasePage{
 	}
 
 
-	public void clickingSettingEllipsesButton() throws InterruptedException {
+	/** One plain click on the settings button: opens the menu when it is closed and closes it when it is open. */
+	public void toggleSettingsMenu() throws InterruptedException {
 		log.info("Clicking settings ellipses button...");
-		safeAct.safeFindElement(settingEllipsesButton).click();
-	}
-
-	/** The rows you see inside the open settings menu (Appearance, Language, Location...). Language independent. */
-	public By settingsMenuRows=By.xpath("//ytd-multi-page-menu-renderer//ytd-compact-link-renderer");
-
-	/** The menu counts as open only while at least one of its rows is actually displayed on screen. */
-	private boolean isSettingsMenuOpen() {
-		try {
-			// return driver.findElements(settingEllipsesOptionsListLandingPage).stream().anyMatch(WebElement::isDisplayed);
-			return driver.findElements(settingsMenuRows).stream().anyMatch(WebElement::isDisplayed);
-		} catch (StaleElementReferenceException e) {
-			return false;
-		}
+		safeAct.safeFindElement(settingsButton).click();
 	}
 
 	/** Opens the settings menu only if it is closed, so repeated calls never toggle it shut. */
 	public void openSettingsMenu() {
 		if (!isSettingsMenuOpen()) {
 			log.info("Settings menu is closed, opening it...");
-			safeAct.safeFindElement(settingEllipsesButton).click();
+			safeAct.safeFindElement(settingsButton).click();
 		}
 		wait.until(d -> isSettingsMenuOpen());
 	}
@@ -173,7 +96,7 @@ public class YtLandingPage  extends BasePage{
 	public void closeSettingsMenu() {
 		if (isSettingsMenuOpen()) {
 			log.info("Settings menu is open, closing it...");
-			safeAct.safeFindElement(settingEllipsesButton).click();
+			safeAct.safeFindElement(settingsButton).click();
 		}
 		wait.until(d -> !isSettingsMenuOpen());
 	}
@@ -183,57 +106,118 @@ public class YtLandingPage  extends BasePage{
 	 * and a page refresh (the SafeActions retry) would only close the menu again. So the menu is given a moment to
 	 * show and, if it still has not, opened here.
 	 */
-	public void clickingLanguageDropdownButton() throws InterruptedException {
+	public void openLanguageList() throws InterruptedException {
 		log.info("Clicking language dropdown...");
 		// Old code: clicked straight away, so a missed ellipses click ended in "Find element failed after 3 attempts"
-		// safeAct.safeFindElement(languageDropdownUnderSettings).click();
+		// safeAct.safeFindElement(languageRow).click();
 		recoverSettingsMenuIfClosed();
-		safeAct.safeFindElement(languageDropdownUnderSettings).click();
+		safeAct.safeFindElement(languageRow).click();
 	}
 
-	/** Recovery step: call right after the ellipses click and before using a dropdown that lives inside the settings menu. */
-	public void recoverSettingsMenuIfClosed() {
-		if (!settingsMenuOpensWithin(3)) {
-			log.warn("Settings menu is not open, opening it before using a dropdown inside it");
-			openSettingsMenu();
+	public void openLocationList() {
+		log.info("Clicking on location dropdown under settings..");
+		// Old code: clicked straight away, even if the settings menu had not opened
+		// safeAct.safeClick(locationRow);
+		recoverSettingsMenuIfClosed();
+		safeAct.safeClick(locationRow);
+
+	}
+
+	/** Collapses the side menu. Does nothing if it is already collapsed; clicks once more if the first click was missed. */
+	public void collapseSideMenuIfExpanded() {
+		log.info("Clicking left ellipses in the landing page");
+		// Old code: always clicked once, with no check that the side menu really collapsed
+		// safeAct.safeFindElement(sideMenuButton).click();
+		if (isSideMenuCollapsed()) {
+			log.info("Side menu is already collapsed, no click needed");
+			return;
+		}
+		safeAct.safeFindElement(sideMenuButton).click();
+		if (!sideMenuCollapsesWithin(3)) {
+			log.warn("Side menu did not collapse, clicking left ellipses once more");
+			safeAct.safeFindElement(sideMenuButton).click();
 		}
 	}
 
-	private boolean settingsMenuOpensWithin(int seconds) {
+	/** The side menu is collapsed while its mini-guide entries are displayed. */
+	private boolean isSideMenuCollapsed() {
 		try {
-			new WebDriverWait(driver, Duration.ofSeconds(seconds)).until(d -> isSettingsMenuOpen());
+			return driver.findElements(collapsedSideMenuEntries).stream().anyMatch(WebElement::isDisplayed);
+		} catch (StaleElementReferenceException e) {
+			return false;
+		}
+	}
+
+	private boolean sideMenuCollapsesWithin(int seconds) {
+		try {
+			new WebDriverWait(driver, Duration.ofSeconds(seconds)).until(d -> isSideMenuCollapsed());
 			return true;
 		} catch (TimeoutException e) {
 			return false;
 		}
 	}
 
-	public List<WebElement> gettingLanguageList() throws InterruptedException{
-		log.info("Fetching available language list...");
-		List<WebElement> langList=safeAct.safeFindElements(languageList);
-		langList.removeIf(el -> el.getText().trim().isEmpty());
-		log.info("Found {} languages.", langList.size());
-		return langList;
+	public void typeInSearchBox(String input) {
+		log.info("Giving input into the search bar with input as  = "+input);
+		safeAct.safeClick(searchBox);
+		safeAct.safeFindElement(searchBox).sendKeys(input);
+	}
+
+	public void openSearchFilter() {
+		log.info("Clicking on global filter button in landing page..");
+		safeAct.safeClick(searchFilterButton);
+	}
+
+	public void closeSearchFilter() {
+		log.info("Closing the global filter pop-up in landing page..");
+		safeAct.safeFindElement(searchFilterCloseButton).click();
 	}
 
 
-	public String getsettingEllipsesOptionsListLandingPage() {
-		log.info("Getting the setting ellipses options");
-		String str=safeAct.safeFindElement(settingEllipsesOptionsListLandingPage).getText().trim();
-		return str;
+	// ------------------------------------------------------------------
+	// Pick
+	// ------------------------------------------------------------------
+
+	public WebElement languageEntry(String name) {
+		By locator=By.xpath("//yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='" + name + "']");
+		log.info("Looking for language element with name: {}", name);
+		WebElement safeElement = safeAct.safeFindElement(locator);
+		System.out.println(locator);
+		return safeElement;
 	}
 
 
-	public List<WebElement> gettingSideMenuExpandedList() throws InterruptedException{
+	public By languageEntryLocator(String name) {
+		By locator=By.xpath("//yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//yt-formatted-string[@id='label' and text()='" + name + "']");
+		safeAct.safeFindElement(locator);
+		log.info("Looking for language element with name: {}", name);
+		return locator;
+	}
+
+
+	// ------------------------------------------------------------------
+	// Read
+	// ------------------------------------------------------------------
+
+	public List<WebElement> readLocationRows() {
+		log.info("Fetching the location list ...");
+		List<WebElement>list=safeAct.safeFindElements(locationRows);
+		list.removeIf(el -> el.getText().trim().isEmpty());
+		log.info("Fetched  the location list == "+list);
+		return list;
+
+	}
+
+	public List<WebElement> readExpandedSideMenuEntries() throws InterruptedException{
 		log.info("Fetching the side menu in expanded view");
-		List<WebElement> sideMenuList=readUntilStable(() -> safeAct.safeFindElements(sideMenuExpandedList));
+		List<WebElement> sideMenuList=readUntilStable(() -> safeAct.safeFindElements(expandedSideMenuEntries));
 		return sideMenuList;
 	}
 
 
-	public List<WebElement> gettingSideMenuCollapsedList() throws InterruptedException{
+	public List<WebElement> readCollapsedSideMenuEntries() throws InterruptedException{
 		log.info("Fetching the side menu in collapsed view");
-		List<WebElement> sideMenuList=readUntilStable(() -> safeAct.safeFindElements(sideMenuCollapsedList));
+		List<WebElement> sideMenuList=readUntilStable(() -> safeAct.safeFindElements(collapsedSideMenuEntries));
 		return sideMenuList;
 	}
 
@@ -282,67 +266,83 @@ public class YtLandingPage  extends BasePage{
 		return text.toString();
 	}
 
+	public String readSettingsMenuText() {
+		log.info("Getting the setting ellipses options");
+		String str=safeAct.safeFindElement(settingsMenu).getText().trim();
+		return str;
+	}
 
-	/** The side menu is collapsed while its mini-guide entries are displayed. */
-	private boolean isSideMenuCollapsed() {
-		try {
-			return driver.findElements(sideMenuCollapsedList).stream().anyMatch(WebElement::isDisplayed);
-		} catch (StaleElementReferenceException e) {
-			return false;
+	public String readSearchFilterText() {
+		log.info("Fetching the data from the global filter in landing page");
+		String str=safeAct.safeFindElement(searchFilterPopup).getText().trim();
+		return str;
+	}
+
+	public String readCountryCode() {
+		log.info("Retrieving country code from YouTube logo...");
+		String code= safeAct.safeFindElement(countryCodeLabel).getText();
+		log.info("Detected country code: {}", code);
+		return code;
+	}
+
+
+	// ------------------------------------------------------------------
+	// Recover
+	// ------------------------------------------------------------------
+
+	/** Recovery step: call right after the ellipses click and before using a dropdown that lives inside the settings menu. */
+	public void recoverSettingsMenuIfClosed() {
+		if (!settingsMenuOpensWithin(3)) {
+			log.warn("Settings menu is not open, opening it before using a dropdown inside it");
+			openSettingsMenu();
 		}
 	}
 
-	private boolean sideMenuCollapsesWithin(int seconds) {
+	private boolean settingsMenuOpensWithin(int seconds) {
 		try {
-			new WebDriverWait(driver, Duration.ofSeconds(seconds)).until(d -> isSideMenuCollapsed());
+			new WebDriverWait(driver, Duration.ofSeconds(seconds)).until(d -> isSettingsMenuOpen());
 			return true;
 		} catch (TimeoutException e) {
 			return false;
 		}
 	}
 
-	/** Collapses the side menu. Does nothing if it is already collapsed; clicks once more if the first click was missed. */
-	public void clickingLeftEllipses() {
-		log.info("Clicking left ellipses in the landing page");
-		// Old code: always clicked once, with no check that the side menu really collapsed
-		// safeAct.safeFindElement(ellipsesYtLandingPageTopLeft).click();
-		if (isSideMenuCollapsed()) {
-			log.info("Side menu is already collapsed, no click needed");
-			return;
-		}
-		safeAct.safeFindElement(ellipsesYtLandingPageTopLeft).click();
-		if (!sideMenuCollapsesWithin(3)) {
-			log.warn("Side menu did not collapse, clicking left ellipses once more");
-			safeAct.safeFindElement(ellipsesYtLandingPageTopLeft).click();
+	/** The menu counts as open only while at least one of its rows is actually displayed on screen. */
+	private boolean isSettingsMenuOpen() {
+		try {
+			// return driver.findElements(settingsMenu).stream().anyMatch(WebElement::isDisplayed);
+			return driver.findElements(settingsMenuRows).stream().anyMatch(WebElement::isDisplayed);
+		} catch (StaleElementReferenceException e) {
+			return false;
 		}
 	}
 
 
+	// ------------------------------------------------------------------
+	// Not used by any test (kept as it was, listed for a later cleanup)
+	// ------------------------------------------------------------------
 
+	public By sideMenu=By.xpath("//div[@class='style-scope ytd-mini-guide-renderer']");
 
+	public By languageList=By.xpath("//yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//ytd-compact-link-renderer");
 
+	public By languageListUpdated=By.xpath("//ytd-multi-page-menu-renderer[@slot='dropdown-content']");
 
-	public String getDataFromGlobalFilterPopup() {
-		log.info("Fetching the data from the global filter in landing page");
-		String str=safeAct.safeFindElement(globalFilterData).getText().trim();
-		return str;
+	//Cannot use this directly as this banner wouldnt show if yt does not have a search histroy so to show these recommendation banner
+	public By horizontalScrollBarLandingPage=By.xpath("//div[@id='scroll-container']");
+
+	public void clickingUnderSearchInput() {
+		log.info("Clicking into the search bar...");
+		safeAct.safeFindElement(searchBox);
+		safeAct.safeClick(searchBox);
 	}
 
-
-
-
-
-	public String getCountryCode() {
-		log.info("Retrieving country code from YouTube logo...");
-		String code= safeAct.safeFindElement(countryCodeOnYtLogoLandingPage).getText();
-		log.info("Detected country code: {}", code);
-		return code;
+	public List<WebElement> gettingLanguageList() throws InterruptedException{
+		log.info("Fetching available language list...");
+		List<WebElement> langList=safeAct.safeFindElements(languageList);
+		langList.removeIf(el -> el.getText().trim().isEmpty());
+		log.info("Found {} languages.", langList.size());
+		return langList;
 	}
-
-
-
-
 
 }
-
-

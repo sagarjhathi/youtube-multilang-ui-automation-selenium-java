@@ -6,6 +6,8 @@
   <test name="Accepted side menu texts">
     <classes>
       <class name="main.test.java.tests.AcceptedSideMenuTextsTest"/>
+      <class name="main.test.java.tests.CanaryTest"/>
+      <class name="main.test.java.tests.DataIntegrityTest"/>
     </classes>
   </test>
 

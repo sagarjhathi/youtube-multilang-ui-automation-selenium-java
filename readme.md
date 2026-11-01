@@ -52,6 +52,8 @@ This project demonstrates:
 - Running Tests
 - Engineering Decisions Explained
 - Extending the Framework
+- How the Data Is Read
+- Canary Mode
 - Troubleshooting
 - Disclaimers
 - License
@@ -99,7 +101,7 @@ This project demonstrates:
   - One summary line per loop (`passed X of Y`, retries, failures, skipped detection, usual / other / unknown version counts)
 - **Allowed side-menu versions**:
   - YouTube shows the Hype word, the Live word or nothing in one slot, and sometimes a localized trial offer instead of "YouTube Premium"
-  - `verifyingSideMenuLanguageAsInSettings.xlsx` holds a base text with `{slot}` and `{premium}` plus the options of each (separated by ` || `, `(none)` = entry missing)
+  - `expectedSideMenuExpanded.xlsx` holds a base text with `{slot}` and `{premium}` plus the options of each (separated by ` || `, `(none)` = entry missing)
   - The page text must equal one of the generated texts; anything else (for example "Gaming" in the slot) fails against the usual first version
   - A new YouTube form is a one-cell data edit; offline checks: `mvn test -Dsurefire.suiteXmlFiles=src/main/test/java/runners/offline.xml`
 - **Stable menu read**:
@@ -136,7 +138,7 @@ This project demonstrates:
   - Manual dispatch
   - Nightly CRON
   - Four parallel shards (`side-menu-expanded`, `side-menu-collapsed`, `settings-region`, `global-filter`) + a single `publish` job
-- A shard turns red when its tests fail or none run, but only after its reports are uploaded, and the `publish` job still runs (see `docs/ci-failure-visibility.md`)
+- A shard turns red when its tests fail or none run, but only after its reports are uploaded, and the `publish` job still runs
 - Artifact storage (the Extent upload runs even after earlier step failures and errors if the run folder is empty)
 - GitHub Pages hosting (report hub); the `gh-pages` push is retried up to 3 times
 
@@ -186,7 +188,7 @@ The framework adapts based on trigger source:
 |-------------|---------|
 | Push / PR | Reduced: first 10 languages and 10 locations |
 | Nightly CRON | Full language & region validation (54 languages, 110 locations) |
-| Manual / local | Reduced by default; override with `-D` flags (see `docs/run-coverage.md`) |
+| Manual / local | Reduced by default; override with `-D` flags (`-DrunForAllLanguages=true -DrunForAllLocations=true` runs everything) |
 
 ---
 
@@ -222,7 +224,6 @@ language fails (exception)
 
 Why it matters: on an uncontrolled live site, flakiness is normal. This keeps a nightly run useful by validating
 everything that can be validated, even when something fails, and by saying clearly what could not be.
-See `docs/project-challenges-live-site-automation.md` for the reasoning and trade-offs.
 
 ---
 
@@ -376,7 +377,13 @@ The framework uses Lingua to:
 - Validate `<html lang>` attribute
 - Detect localization regressions early
 
-This approach is far stronger than string comparison.
+This approach is far stronger than string comparison, but Lingua is probabilistic on short text, so the tests add safeguards:
+
+- Untranslated English words (YouTube, Shorts, Music...) are removed before detection.
+- Both Lingua's answer and the `<html lang>` attribute must match the expected values.
+- For a few languages where Lingua is known to guess wrong on the side menus, only `<html lang>` is checked.
+  Each skip is logged and counted in the test's summary line (`detection skipped: N`), so a green run does not hide it.
+  `skipFlakyLanguageDetection=false` checks every language.
 
 ---
 
@@ -386,11 +393,11 @@ Every `@Test` in `YtMasterTests` carries a TestNG group, which is also how CI sp
 
 | Group | Tests |
 |---|---|
-| `side-menu-expanded` (CI shard) | `verifyingSideMenuLanguageAsInSettings`, `verifyingSideMenuLanguageAsInSettingsLingua` |
-| `side-menu-collapsed` (CI shard) | `verifyingSideMenuCollapsedLangAsInSettings`, `verifyingSideMenuCollapsedLangAsInSettingsLingua` |
-| `settings-region` (CI shard) | `verifyingSettingOptionsLang`, `verifyCountryCodeAsBasedOnRegion` |
-| `global-filter` (CI shard) | `verifyingGlobalFilterLandingPage`, `verifyingGlobalFilterLandingPageLingua` |
-| `lingua` | `verifyingSideMenuLanguageAsInSettingsLingua`, `verifyingSideMenuCollapsedLangAsInSettingsLingua`, `verifyingGlobalFilterLandingPageLingua` |
+| `side-menu-expanded` (CI shard) | `verifyingSideMenuText_Expanded`, `verifyingSideMenuLanguage_Expanded` |
+| `side-menu-collapsed` (CI shard) | `verifyingSideMenuText_Collapsed`, `verifyingSideMenuLanguage_Collapsed` |
+| `settings-region` (CI shard) | `verifyingSettingsMenuLanguage`, `verifyingCountryCodeOnLogo_Algeria_to_Liechtenstein`, `verifyingCountryCodeOnLogo_Lithuania_to_Zimbabwe` |
+| `global-filter` (CI shard) | `verifyingSearchFilterText`, `verifyingSearchFilterLanguage` |
+| `lingua` | `verifyingSideMenuLanguage_Expanded`, `verifyingSideMenuLanguage_Collapsed`, `verifyingSearchFilterLanguage` |
 | `non-lingua` | the other five tests |
 
 The `groups` Maven property (empty by default = run everything) is passed to surefire, so a group is selected with `-Dgroups=<group>`.
@@ -519,10 +526,69 @@ Chosen for:
 ## ➕ Extending the Framework
 
 - Add new UI checks in `GenericUtility`
-- Extend Page Objects for new YouTube surfaces
-- Add new language mappings via Excel
+- Extend Page Objects (`YtLandingPage`) for new YouTube surfaces
+- Add a language: one new row in each language sheet under `resources/data/` (same position in all of them)
+- Add a test to `YtMasterTests` with one of the four feature groups, otherwise no CI shard runs it
 - Tune retries and waits centrally
 - Enable new browsers via `DriverManager`
+
+---
+
+## 🗃 How the Data Is Read
+
+- **One list of languages drives every language test:** `LanguagesList.xlsx`. The tests loop over it in order.
+- **Every expected value is looked up by name, not by row number.** For each language the test asks the other
+  sheets for that language (`DataSheets.expectedLanguage().get("Dansk").get("Expected Language")`). A sheet is
+  read once, kept as a name-to-row map, and columns are found by their header. The country test looks the code up by
+  the country name it reads from the page.
+- **A wrong sheet can no longer be compared silently.** A duplicate name stops at load. A missing name or column throws an
+  error that names the file, for example `data/ApplicableLanguageExpectedAttibute.xlsx (sheet 'Attribute') has no row for 'Dansk'`.
+- **Offline integrity tests** (`DataIntegrityTest`, no browser, run before the CI shards) check the sheets against each other:
+  every language of the master list is in each sheet exactly once, no sheet has an unknown language, no required cell is
+  blank, row counts match, and every country has a code except United States. Adding a language to one sheet and forgetting
+  another fails here in a minute instead of as a confusing mismatch in a shard.
+
+---
+
+## 🐤 Canary Mode
+
+A green test only proves something if it can also go red. In canary mode, **one expected value in every test is made
+wrong on purpose**, so every test has to **fail**. A test that still passes in canary mode is not really checking
+what it claims.
+
+- Only expected values are spoiled (`" CANARY"` is added), never what is read from the page.
+- Each check spoils a different row, so one bad row cannot hide behind another. Every spoil is logged:
+  `CANARY | row 3 | 'x' spoiled on purpose to 'x CANARY', this check has to fail`
+- The retry of a failed test is switched off, so a retried failure cannot turn into a pass.
+- Normal runs are not changed.
+
+**Run it locally** (from `yt_multi_language_ui_validator/`):
+
+```bash
+# PowerShell:  $env:CANARY = "true"
+# bash:        export CANARY=true
+mvn test -DrunForAllLanguages=false -DlanguageCount=5 -DlocationCount=5
+```
+
+All tests must fail. The switch is the `CANARY` environment variable, or `CANARY=true` in `masterdata.properties`
+(the environment variable wins). Keep the run to 5 languages: the spoiled rows go up to the 5th language.
+
+**In CI:** start a manual run (`workflow_dispatch`) and tick **canary**. Red is then the expected result, so the shard
+step prints `Canary: N of M tests failed (all M must fail)` and fails only if some test passed. The reports are
+published to `canary/` on GitHub Pages and never replace the real reports.
+
+### Lost tests in CI
+
+A green report must not hide tests that never ran (a shard cancelled or failed before its tests started). After the
+shards, the `publish` job checks that all 4 shards sent a report and that every test in `YtMasterTests` has a result.
+It also counts the tests that failed. If a test has no result or failed, a red box on the report hub page names it, and
+the run shows an error annotation and a summary. The `publish` job itself stays green and the reports are always
+published; the red shard is what makes the run red. To see it work, start a manual run with **check_lost_shard** ticked: the
+`side-menu-collapsed` shard then fails before its tests start, and the box must name its two tests. Never use it on a normal run.
+
+**Failed-test check:** a manual run with **check_failed_tests** ticked makes the tests fail the same way, but the run is judged
+like a normal one. Every shard must go red with the "Maven tests step ended with 'failure'" message, and the reports must
+still be published. It replaces the published hub with a failed run, so run a normal one afterwards.
 
 ---
 

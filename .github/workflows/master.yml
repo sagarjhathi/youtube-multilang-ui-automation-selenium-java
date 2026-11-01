@@ -1,3 +1,15 @@
+# How this pipeline runs (details in docs/ci-failure-visibility.md):
+#
+#   offline-checks  ->  test (4 shards, one per TestNG group)  ->  publish
+#
+#   offline-checks  no browser: checks the data sheets. If it fails nothing else runs.
+#   test            one shard per group. A failing test makes its shard red, but the reports are still uploaded.
+#   publish         merges the reports of all shards, adds the problems to the hub page and the run summary, and
+#                   deploys to gh-pages. It runs even when shards failed, and it stays green. The red shard is
+#                   what makes the run red.
+#
+# Manual runs (Actions > CI Pipeline > Run workflow) have three switches, see the descriptions below.
+
 name: CI Pipeline
 
 on:
@@ -8,164 +20,65 @@ on:
     branches:
       - "**"
   workflow_dispatch:
+    inputs:
+      canary:
+        description: "Canary run: one expected value per test is made wrong, so every test must FAIL. Reports go to canary/ on gh-pages"
+        type: boolean
+        default: false
+      check_failed_tests:
+        description: "Health check: every test fails on purpose, the run is judged as a normal one (shards red, red box names the failed tests)"
+        type: boolean
+        default: false
+      check_lost_shard:
+        description: "Health check: the side-menu-collapsed shard fails before its tests start (red box has to name its tests)"
+        type: boolean
+        default: false
   schedule:
     - cron: "7 18 * * *"   # 11:37 PM IST daily
 
 permissions:
-  contents: write   # ✅ allow pushing index.html back to repo
+  contents: write   # publish pushes the reports to the gh-pages branch
 
 env:
   JAVA_DISTRIBUTION: temurin
   JAVA_VERSION: 24
-  WORKDIR: yt_multi_language_ui_validator 
-  ARTIFACT_RETENTION_DAYS: 7
+  WORKDIR: yt_multi_language_ui_validator
 
 jobs:
-  test:
-    # a wrong data sheet makes every shard result meaningless, so nothing runs unless the offline checks pass
-    needs: offline-checks
-    runs-on: windows-latest
-    timeout-minutes: 300
-    strategy:
-      fail-fast: false   # one shard failing shouldn't cancel the others
-      matrix:
-        group: [side-menu-expanded, side-menu-collapsed, settings-region, global-filter]
-    env:
-      REPORT_BASE: "/youtube-multi-lang-ui-validator-automation/"
-      IS_CRON: ${{ github.event_name == 'schedule'}}  # <-- "true" only for cron
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          persist-credentials: true   # ✅ ensures GITHUB_TOKEN is kept for pushing
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-          java-version: ${{ env.JAVA_VERSION }}
-          cache: maven
-
-      - name: Cache Maven target and .m2 repo (optional)
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.m2/repository
-            ${{ env.WORKDIR }}/target
-          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-${{ runner.os }}-
-
-      - name: Print environment info
-        shell: bash
-        run: |
-          echo "Java version:"
-          java -version
-          echo "Maven version:"
-          mvn -v
-          echo "Working directory: ${{ env.WORKDIR }}"
-          echo "Runner OS: $RUNNER_OS"
-
-      - name: Notify Discord – Start of Test
-        if: always()
-        shell: bash
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        run: |
-          runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          timestamp=$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p IST")
-          actor="${{ github.actor }}"
-          branch="${{ github.ref_name }}"
-          job_name="${{ github.job }}"
-
-          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**CI Test Started - $job_name**\\n Triggered by: $actor\\n Branch: $branch\\n Start Time: $timestamp\\n [View Run]($runUrl)\"}" "$DISCORD_WEBHOOK"
-
-
-      - name: Set RUN_TIMESTAMP (Windows runner)
-        id: set_ts
-        shell: pwsh
-        run: |
-          # produce format yyyy-MM-dd_HH-mm-ss (matches local format)
-          $ts = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'
-          Write-Host "RUN_TIMESTAMP = $ts"
-          # export to GITHUB_ENV for subsequent steps
-          Add-Content -Path $env:GITHUB_ENV -Value "RUN_TIMESTAMP=$ts"
-
-
-      - name: Build project
-        run: mvn clean compile
-        working-directory: ${{ env.WORKDIR }}
-
-
-      # continue-on-error lets the steps below (upload, reports) run after a test failure.
-      # The last step of this job turns a failure back into a red shard. See docs/ci-failure-visibility.md
-      - name: Run Maven Tests
-        id: tests
-        working-directory: ${{ env.WORKDIR }}
-        run: mvn test -Dgroups=${{ matrix.group }}
-        continue-on-error: true
-       
-
-      - name: Find latest run folder
-        id: find_run
-        shell: pwsh
-        run: |
-          $runFolder = Get-ChildItem -Path "${{ env.WORKDIR }}" -Directory -Filter "run_*" |
-                       Sort-Object LastWriteTime -Descending |
-                       Select-Object -First 1
-      
-          echo "RUN_FOLDER=$($runFolder.Name)" >> $env:GITHUB_ENV
-
-
-      - name: Upload test artifacts
-        # always() so a failed earlier step doesn't skip the upload; the RUN_FOLDER guard
-        # avoids uploading the whole WORKDIR if no run_* folder was found.
-        if: always() && env.RUN_FOLDER != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: extent-${{ matrix.group }}
-          path: ${{ env.WORKDIR }}/${{ env.RUN_FOLDER }}
-          retention-days: 30
-          if-no-files-found: error
-
-
-      - name: Upload Allure results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-results-${{ matrix.group }}
-          path: ${{ env.WORKDIR }}/target/allure-results
-          if-no-files-found: warn
-
-
-      # Last step on purpose: reports are already uploaded, so a red shard still gets published.
-      - name: Fail the shard if tests failed or none ran
-        if: always()
-        shell: pwsh
-        run: |
-          if ("${{ steps.tests.outcome }}" -ne "success") {
-            throw "Maven tests step ended with '${{ steps.tests.outcome }}' (see the test log and the reports)"
-          }
-          $results = "${{ env.WORKDIR }}/target/surefire-reports/testng-results.xml"
-          if (-not (Test-Path $results)) { throw "No testng-results.xml found, so no tests ran" }
-          $total = [int]([xml](Get-Content $results)).'testng-results'.total
-          if ($total -eq 0) { throw "0 tests ran for group ${{ matrix.group }}" }
-          Write-Host "$total tests ran and the Maven step passed"
-
-
-          
-  # No browser and no YouTube: checks the allowed side-menu versions kept in the data sheet (see
-  # src/main/test/java/tests/AcceptedSideMenuTextsTest.java). Runs once, not per shard, so a bad sheet edit
-  # fails here in a minute instead of as a confusing mismatch in a shard.
+  # ---------------------------------------------------------------------------------------------------------------
+  # 1. No browser, no YouTube. Runs once, so a bad data sheet fails here in a minute instead of as a confusing
+  #    mismatch in every shard.
+  # ---------------------------------------------------------------------------------------------------------------
   offline-checks:
     runs-on: windows-latest
     timeout-minutes: 15
+    outputs:
+      canary: ${{ steps.canary.outputs.value }}   # "true" for a canary run, read by the shards and by publish
+      tests: ${{ steps.tests.outputs.names }}     # the tests the shards together must run, read by publish
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
+
+      # A canary run is a manual run with the "canary" input, or CANARY=true in masterdata.properties
+      - name: Detect canary run
+        id: canary
+        shell: bash
+        run: |
+          canary=false
+          if [ "${{ inputs.canary }}" = "true" ]; then canary=true; fi
+          if grep -Eq '^[[:space:]]*CANARY[[:space:]]*=[[:space:]]*true' "${{ env.WORKDIR }}/src/test/resources/masterdata.properties"; then canary=true; fi
+          echo "Canary run: $canary"
+          echo "value=$canary" >> "$GITHUB_OUTPUT"
+
+      # The names of the browser tests, comma separated. publish checks that each one has a result.
+      - name: List the tests the shards must run
+        id: tests
+        shell: bash
+        run: |
+          names=$(grep -oE 'public void verifying[A-Za-z_]+' "${{ env.WORKDIR }}/src/main/test/java/tests/YtMasterTests.java" | sed 's/public void //' | paste -sd, -)
+          if [ -z "$names" ]; then echo "::error::No test found in YtMasterTests.java"; exit 1; fi
+          echo "Tests: $names"
+          echo "names=$names" >> "$GITHUB_OUTPUT"
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -187,14 +100,143 @@ jobs:
           if ($total -eq 0) { throw "0 offline tests ran" }
           Write-Host "$total offline tests ran and passed"
 
+  # ---------------------------------------------------------------------------------------------------------------
+  # 2. The browser tests, one shard per group.
+  # ---------------------------------------------------------------------------------------------------------------
+  test:
+    needs: offline-checks
+    runs-on: windows-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false   # one shard failing must not cancel the others
+      matrix:
+        group: [side-menu-expanded, side-menu-collapsed, settings-region, global-filter]
+    env:
+      REPORT_BASE: "/youtube-multi-lang-ui-validator-automation/"
+      IS_CRON: ${{ github.event_name == 'schedule' }}   # "true" only for the nightly run
+    steps:
+      # Health check, manual runs only: this shard stops before any test, like a cancelled shard.
+      - name: Lose a shard on purpose
+        if: ${{ inputs.check_lost_shard && matrix.group == 'side-menu-collapsed' }}
+        shell: bash
+        run: |
+          echo "::error::Shard side-menu-collapsed fails on purpose (check_lost_shard input), its tests will not run"
+          exit 1
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      - name: Notify Discord – Start of Test
+        if: always()
+        shell: bash
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          timestamp=$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p IST")
+          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**CI Test Started - ${{ github.job }}**\\n Triggered by: ${{ github.actor }}\\n Branch: ${{ github.ref_name }}\\n Start Time: $timestamp\\n [View Run]($runUrl)\"}" "$DISCORD_WEBHOOK"
+
+      # The tests read RUN_TIMESTAMP for the name of their run folder (same format as a local run)
+      - name: Set RUN_TIMESTAMP
+        shell: pwsh
+        run: |
+          $ts = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'
+          Write-Host "RUN_TIMESTAMP = $ts"
+          Add-Content -Path $env:GITHUB_ENV -Value "RUN_TIMESTAMP=$ts"
+
+      - name: Build project
+        run: mvn clean compile
+        working-directory: ${{ env.WORKDIR }}
+
+      # continue-on-error: a failing test must not skip the upload steps below.
+      # The last step of this job turns the failure back into a red shard.
+      - name: Run Maven Tests
+        id: tests
+        working-directory: ${{ env.WORKDIR }}
+        env:
+          # Empty unless "canary" or "check_failed_tests" is ticked, so CANARY=true in masterdata.properties still works.
+          # check_failed_tests spoils the same values as a canary run, but only this step knows about it: the rest of
+          # the run (the verdict of the shard, the publish folder) treats it as a normal run.
+          CANARY: ${{ (inputs.canary || inputs.check_failed_tests) && 'true' || '' }}
+        run: mvn test -Dgroups=${{ matrix.group }}
+        continue-on-error: true
+
+      - name: Find latest run folder
+        shell: pwsh
+        run: |
+          $runFolder = Get-ChildItem -Path "${{ env.WORKDIR }}" -Directory -Filter "run_*" |
+                       Sort-Object LastWriteTime -Descending |
+                       Select-Object -First 1
+          echo "RUN_FOLDER=$($runFolder.Name)" >> $env:GITHUB_ENV
+
+      # always(), so a failed step before does not skip the upload. The RUN_FOLDER check avoids uploading
+      # the whole WORKDIR when no run_* folder was found.
+      - name: Upload test artifacts
+        if: always() && env.RUN_FOLDER != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: extent-${{ matrix.group }}
+          path: ${{ env.WORKDIR }}/${{ env.RUN_FOLDER }}
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.group }}
+          path: ${{ env.WORKDIR }}/target/allure-results
+          if-no-files-found: warn
+
+      # Last step on purpose: the reports are already uploaded, so a red shard still gets published.
+      - name: Fail the shard if tests failed or none ran
+        if: always()
+        shell: pwsh
+        run: |
+          $canary = "${{ needs.offline-checks.outputs.canary }}" -eq "true"
+          # a normal run is red as soon as the Maven step failed, whatever the result file says
+          if (-not $canary -and "${{ steps.tests.outcome }}" -ne "success") {
+            throw "Maven tests step ended with '${{ steps.tests.outcome }}' (see the test log and the reports)"
+          }
+
+          $results = "${{ env.WORKDIR }}/target/surefire-reports/testng-results.xml"
+          if (-not (Test-Path $results)) { throw "No testng-results.xml found, so no tests ran" }
+          $testng = ([xml](Get-Content $results)).'testng-results'
+          $total = [int]$testng.total
+          $passed = [int]$testng.passed
+          if ($total -eq 0) { throw "0 tests ran for group ${{ matrix.group }}" }
+
+          # Canary run: red is the expected result. Fail only when a test PASSED (it checks nothing).
+          if ($canary) {
+            Write-Host "Canary: $($total - $passed) of $total tests failed (all $total must fail)"
+            if ($passed -gt 0) { throw "Canary: $passed test(s) passed in canary mode, so they are not checking what they claim" }
+            exit 0
+          }
+          Write-Host "$total tests ran and the Maven step passed"
+
+  # ---------------------------------------------------------------------------------------------------------------
+  # 3. Merge the reports, show the problems, deploy to gh-pages. Runs when shards failed, but not when the
+  #    offline checks failed (the shards were then skipped).
+  # ---------------------------------------------------------------------------------------------------------------
   publish:
     needs: [offline-checks, test]
-    # still publishes when shards fail, but not when the offline checks failed (the shards were then skipped)
     if: always() && needs.offline-checks.result == 'success'
+    # One publish at a time: every publish force-pushes gh-pages, and GitHub Pages rejects a deployment that starts
+    # while the previous one is still running. A waiting run is queued (only the newest waiting run is kept).
+    concurrency:
+      group: gh-pages-publish
+      cancel-in-progress: false
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
-      - name: Set RUN_TIMESTAMP (Windows runner)
+      - name: Set RUN_TIMESTAMP
         shell: pwsh
         run: |
           $ts = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'
@@ -207,7 +249,7 @@ jobs:
           pattern: extent-*
           path: shards
 
-      # Allure raw results have unique file names, so every shard is merged into one folder
+      # Allure result files have unique names, so all shards are merged into one folder
       - name: Download Allure results (all shards)
         uses: actions/download-artifact@v4
         with:
@@ -215,124 +257,159 @@ jobs:
           path: allure-results
           merge-multiple: true
 
-      - name: Set up Node (for Allure CLI)
-        if: always()
+      - name: Set up Node (for the Allure CLI)
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
 
       - name: Generate merged Allure report
         run: |
           npm install -g allure-commandline
           allure generate allure-results --clean -o allure-report
 
+      # A green report must not hide lost or failed tests. Needs all 4 shards to have sent a report and every test
+      # of the test class to have a result. Writes the problems (if any) to coverage-message.txt, which feeds the red
+      # box on the hub page and the run summary. Never fails.
+      - name: Check that all shards ran and all tests passed
+        id: coverage
+        shell: pwsh
+        run: |
+          $shardsExpected = 4   # the groups in the matrix of the test job
+          $shardsFound = @(Get-ChildItem -Path shards -Directory -ErrorAction SilentlyContinue).Count
+          $expected = @("${{ needs.offline-checks.outputs.tests }}".Split(',') | Where-Object { $_ })
+
+          $results = @(Get-ChildItem -Path allure-results -Filter '*-result.json' -ErrorAction SilentlyContinue |
+                       ForEach-Object { Get-Content $_.FullName -Raw | ConvertFrom-Json })
+          $byTest = @($results | Group-Object name)
+          $missing = @($expected | Where-Object { $byTest.Name -notcontains $_ })
+          # a test failed when none of its results passed (a retry that passes counts as passed)
+          $failed = @($byTest | Where-Object { -not ($_.Group | Where-Object { $_.status -eq 'passed' }) } | ForEach-Object { $_.Name })
+          $found = $expected.Count - $missing.Count
+          Write-Host "Shards: $shardsFound of $shardsExpected | tests with a result: $found of $($expected.Count) | failed: $($failed.Count)"
+
+          $problems = @()
+          if ($missing.Count -gt 0 -or $shardsFound -ne $shardsExpected) {
+            $problems += "Only $found of $($expected.Count) tests have a result ($shardsFound of $shardsExpected shards sent a report). A shard was probably cancelled or failed before the tests started. Tests that did not run: $($missing -join ', ')."
+          }
+          if ($failed.Count -gt 0) {
+            $problems += "$($failed.Count) test(s) failed: $($failed -join ', ')."
+          }
+          Set-Content -Path coverage-message.txt -Value ($problems -join ' ')
+          if ($problems.Count -gt 0) { Write-Host ($problems -join ' ') }
 
       - name: Enable long paths (Windows)
         shell: pwsh
         run: git config --global core.longpaths true
 
-  
-
-
+      # From here on, a pull request only builds the reports: it never touches gh-pages.
       - name: Checkout gh-pages
+        if: github.event_name != 'pull_request'
         uses: actions/checkout@v4
         with:
           clean: false
           ref: gh-pages
           path: gh-pages
 
-
+      # canary/ is kept, so a normal run does not delete the last canary reports
       - name: Clean gh-pages
+        if: github.event_name != 'pull_request' && needs.offline-checks.outputs.canary != 'true'
         shell: pwsh
         run: |
-          Get-ChildItem -Path gh-pages -Force | Where-Object { $_.Name -ne '.git' } | Remove-Item -Recurse -Force
+          Get-ChildItem -Path gh-pages -Force | Where-Object { $_.Name -notin '.git', 'canary' } | Remove-Item -Recurse -Force
 
+      # A canary run publishes to canary/ only. The real reports and index.html stay as they are.
+      - name: Assemble canary reports
+        if: github.event_name != 'pull_request' && needs.offline-checks.outputs.canary == 'true'
+        shell: pwsh
+        run: |
+          if (Test-Path gh-pages/canary) { Remove-Item -Recurse -Force gh-pages/canary }
+          New-Item -ItemType Directory -Path gh-pages/canary -Force | Out-Null
+          foreach ($shard in Get-ChildItem -Path "shards" -Directory | Sort-Object Name) {
+            $name = $shard.Name -replace '^extent-', ''
+            Copy-Item -Recurse -Force $shard.FullName "gh-pages/canary/$name"
+          }
+          Copy-Item -Recurse -Force "allure-report" "gh-pages/canary/allure-report"
 
-    
       - name: Assemble published site
+        if: github.event_name != 'pull_request' && needs.offline-checks.outputs.canary != 'true'
         shell: pwsh
         run: |
           $run = "run_$env:RUN_TIMESTAMP"
           $runPath = "gh-pages/$run"
           New-Item -ItemType Directory -Path $runPath -Force | Out-Null
 
-          # Each shard's reports/logs/screenshots folder is moved as a whole, untouched -
-          # its ExtentReport.html uses ../logs and ../screenshots relative links, so the
-          # three subfolders inside it must stay exactly as the shard produced them.
-          # One folder + one report card per shard that actually produced an artifact.
-          $shardCards = @()
+          # One folder and one card per shard that sent a report. A shard folder is copied as a whole: its
+          # ExtentReport.html links to ../logs and ../screenshots, so those folders must stay where they are.
+          $cards = ''
           foreach ($shard in Get-ChildItem -Path "shards" -Directory | Sort-Object Name) {
             $name = $shard.Name -replace '^extent-', ''
             Copy-Item -Recurse -Force $shard.FullName "$runPath/$name"
-            $shardCards += "<a class='card' href='$run/$name/reports/ExtentReport.html'>"
-            $shardCards += "<div class='card-title'>$name</div>"
-            $shardCards += '<div class="card-desc">Extent report for this shard</div>'
-            $shardCards += '</a>'
+            $cards += "<a class='card' href='$run/$name/reports/ExtentReport.html'><div class='card-title'>$name</div><div class='card-desc'>Extent report for this shard</div></a>`n"
           }
           Copy-Item -Recurse -Force "allure-report" "$runPath/allure-report"
 
-          $indexPath = "gh-pages/index.html"
-          $lines = @(
-            '<!DOCTYPE html>'
-            '<html lang="en">'
-            '<head>'
-            '<meta charset="UTF-8">'
-            '<meta name="viewport" content="width=device-width, initial-scale=1">'
-            '<title>Test Report Hub - Java + Selenium</title>'
-            '<style>'
-            '  body { margin:0; padding:48px 20px; background:#f5f6f8;'
-            '         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;'
-            '         color:#1a1a2e; }'
-            '  .container { max-width:680px; margin:0 auto; }'
-            '  h1 { font-size:24px; margin:0 0 4px 0; }'
-            '  .subtitle { color:#6b7280; font-size:14px; margin-bottom:32px; }'
-            '  .card { display:block; background:#ffffff; border:1px solid #e5e7eb; border-radius:10px;'
-            '          padding:18px 20px; margin-bottom:12px; text-decoration:none; color:inherit;'
-            '          transition:box-shadow .15s ease, border-color .15s ease; }'
-            '  .card:hover { box-shadow:0 4px 14px rgba(0,0,0,.08); border-color:#c7d2fe; }'
-            '  .card-title { font-size:16px; font-weight:600; margin-bottom:4px; }'
-            '  .card-desc { font-size:13px; color:#6b7280; }'
-            '  .badge { display:inline-block; font-size:11px; font-weight:600; color:#4338ca;'
-            '           background:#eef2ff; border-radius:999px; padding:2px 10px; margin-bottom:8px; }'
-            '</style>'
-            '</head>'
-            '<body>'
-            '<div class="container">'
-            '<h1>YouTube Multi-Language UI Validator (Java + Selenium) - Test Report Hub</h1>'
-            "<div class='subtitle'>Run: $run</div>"
+          # red box with the problems from the coverage check, empty when there are none
+          $message = (Get-Content -Path coverage-message.txt -Raw).Trim()
+          $warning = ''
+          if ($message) { $warning = "<div class='warning'><strong>This run has problems</strong> $message</div>" }
 
-            "<a class='card' href='$run/allure-report/index.html'>"
-            '<span class="badge">MERGED</span>'
-            '<div class="card-title">Allure report</div>'
-            '<div class="card-desc">All shards combined in one dashboard</div>'
-            '</a>'
-
-            $shardCards
-
-            '</div>'
-            '</body>'
-            '</html>'
-          )
-          Set-Content -Path $indexPath -Value $lines
-
-
+          $page = @"
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Test Report Hub - Java + Selenium</title>
+          <style>
+            body { margin:0; padding:48px 20px; background:#f5f6f8; color:#1a1a2e;
+                   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+            .container { max-width:680px; margin:0 auto; }
+            h1 { font-size:24px; margin:0 0 4px 0; }
+            .subtitle { color:#6b7280; font-size:14px; margin-bottom:32px; }
+            .card { display:block; background:#ffffff; border:1px solid #e5e7eb; border-radius:10px;
+                    padding:18px 20px; margin-bottom:12px; text-decoration:none; color:inherit;
+                    transition:box-shadow .15s ease, border-color .15s ease; }
+            .card:hover { box-shadow:0 4px 14px rgba(0,0,0,.08); border-color:#c7d2fe; }
+            .card-title { font-size:16px; font-weight:600; margin-bottom:4px; }
+            .card-desc { font-size:13px; color:#6b7280; }
+            .badge { display:inline-block; font-size:11px; font-weight:600; color:#4338ca;
+                     background:#eef2ff; border-radius:999px; padding:2px 10px; margin-bottom:8px; }
+            .warning { background:#fdecea; color:#8a1c14; border:1px solid #f1b5b0; border-radius:10px;
+                       padding:14px 18px; margin:0 0 20px; font-size:14px; }
+          </style>
+          </head>
+          <body>
+          <div class="container">
+          <h1>YouTube Multi-Language UI Validator (Java + Selenium) - Test Report Hub</h1>
+          <div class="subtitle">Run: $run</div>
+          $warning
+          <a class="card" href="$run/allure-report/index.html">
+          <span class="badge">MERGED</span>
+          <div class="card-title">Allure report</div>
+          <div class="card-desc">All shards combined in one dashboard</div>
+          </a>
+          $cards
+          </div>
+          </body>
+          </html>
+          "@
+          Set-Content -Path gh-pages/index.html -Value $page
 
       - name: Deploy
+        if: github.event_name != 'pull_request'
         shell: pwsh
         working-directory: gh-pages
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
 
-          # Reset gh-pages to a single fresh commit each run instead of committing on top
-          # of prior history - otherwise every run's report/screenshots pile up forever
-          # even though only the latest commit is ever actually served.
+          # One fresh commit each run instead of committing on top of the old history, otherwise every run's
+          # reports and screenshots pile up forever although only the latest commit is served.
           git checkout --orphan gh-pages-deploy
           git add -A
           git commit -m "Update report"
 
-          # Retry the push to ride out transient GitHub/network errors.
+          # Retry the push to ride out transient GitHub or network errors.
           $pushed = $false
           foreach ($attempt in 1..3) {
             git push origin gh-pages-deploy:gh-pages --force
@@ -342,6 +419,17 @@ jobs:
           }
           if (-not $pushed) { throw "git push to gh-pages failed after 3 attempts" }
 
+      # Does not fail the job (the report is published either way, and a red shard already makes the run red).
+      # It only puts the problems where people look: an error annotation and the summary of the run.
+      - name: Show the test problems in the run
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          $message = (Get-Content -Path coverage-message.txt -Raw).Trim()
+          if ($message) {
+            Write-Host "::error title=Tests missing or failed::$message"
+            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "### Tests missing or failed`n`n$message"
+          }
 
       - name: Notify Discord – Publish result
         if: always()
@@ -354,8 +442,8 @@ jobs:
           timestamp=$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p IST")
           curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**Report Publish - ${{ job.status }}**\\n Tests job: ${{ needs.test.result }}\\n Trigger: ${{ github.event_name }}\\n Branch: ${{ github.ref_name }}\\n Time: $timestamp\\n [View Run]($runUrl)\"}" "$DISCORD_WEBHOOK"
 
-  # The shards and publish are skipped when the offline checks fail, and the publish job holds the result
-  # message, so this job is what tells Discord about that case.
+  # The shards and publish are skipped when the offline checks fail, and the publish job holds the result message,
+  # so this job is what tells Discord about that case.
   notify-offline-failure:
     needs: offline-checks
     if: always() && needs.offline-checks.result != 'success'

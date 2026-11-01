@@ -5,6 +5,7 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 
 import main.java.yt_multi_lang_ui_validator.logger.LoggerUtility;
+import main.java.yt_multi_lang_ui_validator.utilities.Canary;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,11 @@ public class RetryFailedTest implements IRetryAnalyzer {
 
     @Override
     public boolean retry(ITestResult result) {
+        if (Canary.isCanary()) {
+            log.info("[{}] Canary mode: test retry is off, a retried failure must not turn into a pass", ThreadContext.get("testName"));
+            return false;
+        }
+
         Throwable cause = result.getThrowable();
 
         if (retryCount < maxRetryCount && (cause == null || isRetryable(cause))) {
