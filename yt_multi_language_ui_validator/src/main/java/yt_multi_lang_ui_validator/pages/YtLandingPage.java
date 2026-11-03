@@ -317,32 +317,4 @@ public class YtLandingPage  extends BasePage{
 		}
 	}
 
-
-	// ------------------------------------------------------------------
-	// Not used by any test (kept as it was, listed for a later cleanup)
-	// ------------------------------------------------------------------
-
-	public By sideMenu=By.xpath("//div[@class='style-scope ytd-mini-guide-renderer']");
-
-	public By languageList=By.xpath("//yt-multi-page-menu-section-renderer[@class='style-scope ytd-multi-page-menu-renderer']//ytd-compact-link-renderer");
-
-	public By languageListUpdated=By.xpath("//ytd-multi-page-menu-renderer[@slot='dropdown-content']");
-
-	//Cannot use this directly as this banner wouldnt show if yt does not have a search histroy so to show these recommendation banner
-	public By horizontalScrollBarLandingPage=By.xpath("//div[@id='scroll-container']");
-
-	public void clickingUnderSearchInput() {
-		log.info("Clicking into the search bar...");
-		safeAct.safeFindElement(searchBox);
-		safeAct.safeClick(searchBox);
-	}
-
-	public List<WebElement> gettingLanguageList() throws InterruptedException{
-		log.info("Fetching available language list...");
-		List<WebElement> langList=safeAct.safeFindElements(languageList);
-		langList.removeIf(el -> el.getText().trim().isEmpty());
-		log.info("Found {} languages.", langList.size());
-		return langList;
-	}
-
 }

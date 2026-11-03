@@ -46,8 +46,6 @@ This project demonstrates:
 - Execution Flow
 - Language Intelligence (Lingua)
 - Test Grouping
-- CI & Reporting Intelligence
-- Discord Notifications
 - Folder Structure
 - Running Tests
 - Engineering Decisions Explained
@@ -144,7 +142,7 @@ This project demonstrates:
 
 ### Notifications
 - **Discord Webhooks**
-  - Start & completion alerts
+  - Start alert from each shard
   - Publish-result alert from the `publish` job (status + test job result), so a missing nightly message means the run or publish never happened
   - Status indicators
   - Direct links to reports
@@ -187,15 +185,15 @@ The framework adapts based on trigger source:
 | Trigger Type | Behavior |
 |-------------|---------|
 | Push / PR | Reduced: first 10 languages and 10 locations |
-| Nightly CRON | Full language & region validation (54 languages, 110 locations) |
+| Nightly CRON | Full language & region validation (53 languages, 111 locations) |
 | Manual / local | Reduced by default; override with `-D` flags (`-DrunForAllLanguages=true -DrunForAllLocations=true` runs everything) |
 
 ---
 
 ### 🛡 Failure-Tolerant Loops (Retry With Retain)
 
-Every test walks through up to 54 languages (or locations) on a live site that can hiccup at any point.
-A plain `try/catch` around the whole loop means one exception on language 21 throws away languages 22 to 54.
+Every test walks through up to 53 languages (or 111 locations) on a live site that can hiccup at any point.
+A plain `try/catch` around the whole loop means one exception on language 21 throws away languages 22 to 53.
 
 `LoopGuard` fixes that with a **retry-with-retain** flow, one language at a time:
 
@@ -319,6 +317,7 @@ flowchart LR
     A --> B2[Shard: side-menu-collapsed]
     A --> B3[Shard: settings-region]
     A --> B4[Shard: global-filter]
+    B1 --> C
     B2 --> C
     B3 --> C
     B4 --> C
@@ -326,7 +325,6 @@ flowchart LR
     B2 --> G
     B3 --> G
     B4 --> G
-    B2 --> G
     C --> P[Publish job]
     P --> M[Merged Allure Report]
     P --> D[Per-shard Extent Reports]
@@ -398,7 +396,7 @@ Every `@Test` in `YtMasterTests` carries a TestNG group, which is also how CI sp
 | `settings-region` (CI shard) | `verifyingSettingsMenuLanguage`, `verifyingCountryCodeOnLogo_Algeria_to_Liechtenstein`, `verifyingCountryCodeOnLogo_Lithuania_to_Zimbabwe` |
 | `global-filter` (CI shard) | `verifyingSearchFilterText`, `verifyingSearchFilterLanguage` |
 | `lingua` | `verifyingSideMenuLanguage_Expanded`, `verifyingSideMenuLanguage_Collapsed`, `verifyingSearchFilterLanguage` |
-| `non-lingua` | the other five tests |
+| `non-lingua` | the other six tests |
 
 The `groups` Maven property (empty by default = run everything) is passed to surefire, so a group is selected with `-Dgroups=<group>`.
 
@@ -420,25 +418,27 @@ yt_multi_language_ui_validator/
     │   │   ├── config/          ConfigManager
     │   │   ├── pages/           YtLandingPage
     │   │   ├── safeActions/     SafeActions
-    │   │   ├── utilities/       GenericUtility, WaitUtility, LoopGuard,
+    │   │   ├── utilities/       GenericUtility, WaitUtility, LoopGuard, Canary,
     │   │   │                    ScreenshotUtilUpdated, ImageCompressor
     │   │   ├── lingua/          LinguaHelper
     │   │   ├── reporting/       ReportManager, Attachers, TestListenerUpdated
     │   │   ├── logger/          LoggerUtility
     │   │   ├── pathManager/     PathManager
-    │   │   ├── fileReader/      FileReader
+    │   │   ├── fileReader/      FileReader, DataSheets, SheetLookup
     │   │   └── seleniumGrid/    GlobalGridUtility
     │   ├── resources/
     │   │   ├── data/*.xlsx
     │   │   └── log4j2.xml
     │   └── test/java/
-    │       ├── tests/           YtMasterTests
+    │       ├── tests/           YtMasterTests, plus the offline tests (no browser):
+    │       │                    AcceptedSideMenuTextsTest, CanaryTest, DataIntegrityTest
     │       ├── retry/           RetryFailedTest, RetryListener
-    │       └── runners/         testng.xml, lingua.xml
+    │       └── runners/         testng.xml, lingua.xml, settings-options.xml, offline.xml
     └── test/resources/
         └── masterdata.properties
 
 .github/workflows/master.yml
+.github/pages/index.html     (template of the report hub page)
 ```
 
 ---
@@ -471,7 +471,7 @@ mvn clean test -Dgroups=non-lingua
 mvn clean test -Dgroups=side-menu-expanded   # or side-menu-collapsed, settings-region, global-filter
 ```
 
-Run these from the `yt_multi_language_ui_validator/` folder. CI runs the same two commands as parallel shards.
+Run these from the `yt_multi_language_ui_validator/` folder. CI runs `mvn clean compile` and then `mvn test -Dgroups=<group>` for each of the four shard groups, as parallel shards.
 
 ---
 

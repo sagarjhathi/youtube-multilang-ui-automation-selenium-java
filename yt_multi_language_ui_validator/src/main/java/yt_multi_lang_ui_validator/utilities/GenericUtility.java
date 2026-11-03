@@ -1,6 +1,5 @@
 package main.java.yt_multi_lang_ui_validator.utilities;
 
-import java.time.Duration; 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import main.java.yt_multi_lang_ui_validator.base.BasePage;
 import main.java.yt_multi_lang_ui_validator.config.ConfigManager;
@@ -48,10 +46,6 @@ public class GenericUtility extends BasePage {
 
 	
 	
-	
-	public void maximizeDisplay() {
-		driver.manage().window().maximize();
-	}
 	
 	
 
@@ -98,41 +92,8 @@ public class GenericUtility extends BasePage {
     }  
     
     
- public void scrollByPixel(int x, int y) {
-    	
-		log.info("[{}] Within scrollByPixel method", ThreadContext.get("testName"));
-        ((JavascriptExecutor) driver).executeScript("window.scrollBy(arguments[0], arguments[1]);", x, y);
-     
-    }
  
  
- 
- 
- public boolean isElementInViewport(By locator){
-	    log.info("[{}] Waiting until element is visible in viewport", ThreadContext.get("testName"));
-
-	    try {
-	        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-	        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-
-	        JavascriptExecutor js = (JavascriptExecutor) driver;
-	        return (Boolean) js.executeScript(
-	            "var elem = arguments[0],                 " +
-	            "  box = elem.getBoundingClientRect(),    " +
-	            "  cx = box.left + box.width / 2,         " +
-	            "  cy = box.top + box.height / 2,         " +
-	            "  e = document.elementFromPoint(cx, cy); " +
-	            "for (; e; e = e.parentElement) {         " +
-	            "  if (e === elem)                        " +
-	            "    return true;                         " +
-	            "}                                        " +
-	            "return false;", element);
-
-	    } catch (Exception e) {
-	        return false;
-	    }
-	}
-
 
 	/** Row-count override for the language-driven tests (masterdata.properties: runForAllLanguages / languageCount, with the CI suffix on a scheduled run). */
 	public int languageRowsToRun(int fullRowCount) {

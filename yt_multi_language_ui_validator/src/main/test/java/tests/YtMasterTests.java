@@ -58,15 +58,14 @@ public class YtMasterTests extends BaseTest{
 			try {
 				System.out.println(langText+" lang text from the sheet   "+(i+1));
 
-				ScreenshotUtilUpdated.capture(testName, langText);
+				ScreenshotUtilUpdated.capture();
 
 
 				landingPage.languageEntry(langText).click();
 
 				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				genericUtility.isElementInViewport(landingPage.languageRow);
-				ScreenshotUtilUpdated.capture(testName, langText);
+				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 
@@ -179,8 +178,7 @@ public class YtMasterTests extends BaseTest{
 
 				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				genericUtility.isElementInViewport(landingPage.languageRow);
-				ScreenshotUtilUpdated.capture(testName, langText);
+				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 
@@ -281,8 +279,7 @@ public class YtMasterTests extends BaseTest{
 				waitUtility.waitForElementReady(landingPage.collapsedSideMenuEntries);
 				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				genericUtility.isElementInViewport(landingPage.languageRow);
-				ScreenshotUtilUpdated.capture(testName, langText);
+				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 				List<WebElement> listOfSideMenu=landingPage.readCollapsedSideMenuEntries();
@@ -381,8 +378,7 @@ public class YtMasterTests extends BaseTest{
 
 				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				genericUtility.isElementInViewport(landingPage.languageRow);
-				ScreenshotUtilUpdated.capture(testName, langText);
+				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 				List<WebElement> listOfSideMenu=landingPage.readCollapsedSideMenuEntries();
@@ -478,8 +474,7 @@ public class YtMasterTests extends BaseTest{
 
 				// landingPage.toggleSettingsMenu();
 				landingPage.openSettingsMenu();
-				genericUtility.isElementInViewport(landingPage.languageRow);
-				ScreenshotUtilUpdated.capture(testName, langText);
+				ScreenshotUtilUpdated.capture();
 				// landingPage.toggleSettingsMenu();
 				//
 				// landingPage.toggleSettingsMenu();
@@ -601,8 +596,7 @@ public class YtMasterTests extends BaseTest{
 				locationRows.get(locationIndex).click();
 
 				landingPage.toggleSettingsMenu();
-				genericUtility.isElementInViewport(landingPage.locationRow);
-				ScreenshotUtilUpdated.capture(testName, locationText);
+				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 
@@ -684,15 +678,13 @@ public class YtMasterTests extends BaseTest{
 
 				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				genericUtility.isElementInViewport(landingPage.languageRow);
-				ScreenshotUtilUpdated.capture(testName, langText);
+				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 
 
 				landingPage.openSearchFilter();
-				genericUtility.isElementInViewport(landingPage.searchFilterPopup);
-				ScreenshotUtilUpdated.capture(testName, langText);
+				ScreenshotUtilUpdated.capture();
 				String globalSettingText=landingPage.readSearchFilterText();
 				landingPage.closeSearchFilter();
 
@@ -772,15 +764,13 @@ public class YtMasterTests extends BaseTest{
 
 				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				genericUtility.isElementInViewport(landingPage.languageRow);
-				ScreenshotUtilUpdated.capture(testName, langText);
+				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 
 
 				landingPage.openSearchFilter();
-				genericUtility.isElementInViewport(landingPage.searchFilterPopup);
-				ScreenshotUtilUpdated.capture(testName, langText);
+				ScreenshotUtilUpdated.capture();
 				String globalSettingText=landingPage.readSearchFilterText();
 				landingPage.closeSearchFilter();
 

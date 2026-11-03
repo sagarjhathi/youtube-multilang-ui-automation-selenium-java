@@ -30,32 +30,17 @@ public class TestListenerUpdated implements ITestListener{
     @Override
     public void onTestFailure(ITestResult result) {
 
-        Object isRetry = result.getAttribute("retry");
+        ReportManager.getTest().fail(result.getThrowable());
+        Attachers.attachAllLogFolders(ThreadContext.get("testName"));
+        Attachers.attachAllImageFolders(ThreadContext.get("testName"));
 
-        if (isRetry != null) {
-            ReportManager.getTest().warning("Test Failed → Retrying...");
-            Attachers.attachAllLogFolders(ThreadContext.get("testName"));
-            Attachers.attachAllImageFolders(ThreadContext.get("testName"));
-        } else {
-            ReportManager.getTest().fail(result.getThrowable());
-            Attachers.attachAllLogFolders(ThreadContext.get("testName"));
-            Attachers.attachAllImageFolders(ThreadContext.get("testName"));
-        }
-        
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
 
-        Object isRetry = result.getAttribute("retry");
-
-        if (isRetry != null) {
-            ReportManager.getTest().warning("Retry Attempt");
-            ReportManager.getTest().warning(result.getThrowable());
-        } else {
-            ReportManager.getTest().skip("Test Skipped");
-            ReportManager.getTest().fail(result.getThrowable());
-        }
+        ReportManager.getTest().skip("Test Skipped");
+        ReportManager.getTest().fail(result.getThrowable());
         Attachers.attachAllLogFolders(ThreadContext.get("testName"));
         Attachers.attachAllImageFolders(ThreadContext.get("testName"));
     }

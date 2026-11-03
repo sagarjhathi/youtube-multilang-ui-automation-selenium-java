@@ -23,9 +23,7 @@ public class ScreenshotUtilUpdated {
 	private  final static Logger log = LoggerUtility.getLogger(ScreenshotUtilUpdated.class);
 
 	
-	WebDriver driver;
-	
-	 public static String capture(String... names) {
+	 public static String capture() {
 	        WebDriver driver = DriverManager.getDriver(); // ✅ get from ThreadLocal
 	     //   String inputNames=String.join("_", names);
 	        try {

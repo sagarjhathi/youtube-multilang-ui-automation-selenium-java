@@ -11,7 +11,6 @@ import main.java.yt_multi_lang_ui_validator.base.BasePage;
 import main.java.yt_multi_lang_ui_validator.logger.LoggerUtility;
 
 import java.time.Duration;
-import java.util.List;
 
 public class WaitUtility extends BasePage {
 
@@ -50,29 +49,10 @@ public class WaitUtility extends BasePage {
 	 	       }
 	        }
 	       
-	        log.info("[{}]Attempts ==",+attempts+ "  "+ThreadContext.get("testName"));
+	        log.info("[{}]Attempts == {}", ThreadContext.get("testName"), attempts);
 	        attempts++;
 	    }
 	    throw new org.openqa.selenium.TimeoutException("Element not ready after retries: " + by);
-	}
-
-	/** Click by locator when element is ready. JS fallback included. */
-	public void clickWhenReady(By by) {
-	    WebElement el = waitForElementReady(by);
-	    try {
-	        el.click();
-	    } catch (Throwable t) {
-	        // JS fallback if native click fails (overlay/animation)
-	        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", el);
-	    }
-	}
-
-	/** Convenience: get visible list (fresh find) */
-	public List<WebElement> findVisibleElements(By by) {
-	    wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(by));
-	    List<WebElement> els = driver.findElements(by);
-	    els.removeIf(e -> e.getText() == null || e.getText().trim().isEmpty());
-	    return els;
 	}
 	
 }
