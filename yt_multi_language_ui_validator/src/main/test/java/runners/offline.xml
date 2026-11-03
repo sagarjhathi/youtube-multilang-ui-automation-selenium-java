@@ -8,6 +8,9 @@
       <class name="main.test.java.tests.AcceptedSideMenuTextsTest"/>
       <class name="main.test.java.tests.CanaryTest"/>
       <class name="main.test.java.tests.DataIntegrityTest"/>
+      <class name="main.test.java.tests.LoopGuardTest"/>
+      <!-- the next test needs headless Chrome, it starts it itself -->
+      <class name="main.test.java.tests.SafeActionsTest"/>
     </classes>
   </test>
 
