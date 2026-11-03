@@ -14,10 +14,6 @@ public class PathManager {
 	        runFolderPath = path;
 	    }
 
-	    public static String getRunFolderPath() {
-	        return runFolderPath;
-	    }
-
 	    
 	    public static String getRunFolder() {
 	        return runFolderPath;

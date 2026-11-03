@@ -106,7 +106,7 @@ jobs:
   test:
     needs: offline-checks
     runs-on: windows-latest
-    timeout-minutes: 300
+    timeout-minutes: 60
     strategy:
       fail-fast: false   # one shard failing must not cancel the others
       matrix:

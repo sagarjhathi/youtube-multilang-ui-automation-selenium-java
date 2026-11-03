@@ -1,5 +1,6 @@
 package main.java.yt_multi_lang_ui_validator.driverManager;
 
+import java.time.Duration;
 import java.util.Locale;
 
 import org.apache.logging.log4j.Logger;
@@ -32,6 +33,10 @@ public class DriverManager {
 			try {            	
 				String browser = ConfigManager.get("browser", "chrome");
 				if (browser != null) browser = browser.trim().toLowerCase(Locale.ENGLISH);
+
+				// selenium waits 300 s for a page load by default, so one hung driver.get blocks the test for 5 minutes
+				Duration pageLoadTimeout = Duration.ofSeconds(ConfigManager.getInt("page.load.timeout", 120));
+				Duration scriptTimeout = Duration.ofSeconds(ConfigManager.getInt("script.timeout", 60));
 
 				switch (browser) {
 				case "firefox": {
@@ -68,6 +73,8 @@ public class DriverManager {
 						if (!local.isBlank()) System.setProperty("webdriver.gecko.driver", local);
 					}
 
+					firefoxOptions.setPageLoadTimeout(pageLoadTimeout);
+					firefoxOptions.setScriptTimeout(scriptTimeout);
 					WebDriver firefoxDriver = new org.openqa.selenium.firefox.FirefoxDriver(firefoxOptions);
 
 					if(ConfigManager.getBoolean("firefox.runOnGrid", false)) {
@@ -123,6 +130,8 @@ public class DriverManager {
 					log.info("Trying local fallback with == System.setProperty(\"SE_MSEDGEDRIVER_MIRROR_URL\", \"https://msedgedriver.microsoft.com\")");
 
 
+					edgeOptions.setPageLoadTimeout(pageLoadTimeout);
+					edgeOptions.setScriptTimeout(scriptTimeout);
 					WebDriver edgeDriver = new org.openqa.selenium.edge.EdgeDriver(edgeOptions);
 					if(ConfigManager.getBoolean("edge.runOnGrid", false)) {
 						edgeDriver=GlobalGridUtility.createRemoteEdgeDriver(ConfigManager.get("gridHubUrl"), edgeOptions);
@@ -181,6 +190,8 @@ public class DriverManager {
 						if (!local.isBlank()) System.setProperty("webdriver.chrome.driver", local);
 					}
 
+					options.setPageLoadTimeout(pageLoadTimeout);
+					options.setScriptTimeout(scriptTimeout);
 					WebDriver chromeDriver = new org.openqa.selenium.chrome.ChromeDriver(options);
 
 					if(ConfigManager.getBoolean("chrome.runOnGrid", false)) {

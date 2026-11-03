@@ -1,6 +1,8 @@
 package main.java.yt_multi_lang_ui_validator.lingua;
 
-import com.github.pemistahl.lingua.api.*; 
+import com.github.pemistahl.lingua.api.Language;
+import com.github.pemistahl.lingua.api.LanguageDetector;
+import com.github.pemistahl.lingua.api.LanguageDetectorBuilder;
 
 import main.java.yt_multi_lang_ui_validator.logger.LoggerUtility;
 

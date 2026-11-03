@@ -99,7 +99,7 @@ public class SafeActions{
 	                log.warn("[{}] Error while finding element (attempt {}): {} -> {}", ThreadContext.get("testName"), attempt, locator, e.toString());
 	            }
 
-	            refreshIfNeeded(attempt);
+	            refreshIfNeeded(attempt, attempts);
 	        }
 
 	        log.error("[{}] Element not found after {} attempts: {}", ThreadContext.get("testName"), attempts, locator);
@@ -128,7 +128,7 @@ public class SafeActions{
 	                log.warn("[{}] Attempt {} failed to find elements: {} -> {}", ThreadContext.get("testName"), attempt, locator, e.toString());
 	            }
 
-	            refreshIfNeeded(attempt);
+	            refreshIfNeeded(attempt, attempts);
 	        }
 
 	        log.error("[{}] No elements ready after {} attempts: {}", ThreadContext.get("testName"), attempts, locator);
@@ -193,7 +193,7 @@ public class SafeActions{
 	            }
 
 	            // Refresh the page only after multiple failed attempts
-	            refreshIfNeeded(attempt);
+	            refreshIfNeeded(attempt, attempts);
 	        }
 
 	        log.error("[{}] Failed to click element after {} attempts: {}", ThreadContext.get("testName"), attempts, locator);
@@ -202,9 +202,9 @@ public class SafeActions{
 
 	    
 	    
-	    protected void refreshIfNeeded(int attempt) {
-	        // refresh only after multiple failed attempts
-	        if (attempt >= 2) {
+	    protected void refreshIfNeeded(int attempt, int totalAttempts) {
+	        // refresh only after multiple failed attempts, and only if another attempt follows
+	        if (attempt >= 2 && attempt < totalAttempts) {
 	            try {
 	                log.warn("[{}] Attempt {} failed — refreshing the page to recover...", 
 	                         ThreadContext.get("testName"), attempt);

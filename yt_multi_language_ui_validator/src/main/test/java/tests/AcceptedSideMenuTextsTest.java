@@ -12,7 +12,7 @@ import main.java.yt_multi_lang_ui_validator.utilities.GenericUtility;
 
 /**
  * Offline checks (no browser) of the allowed side-menu versions kept in data/expectedSideMenuExpanded.xlsx.
- * Not part of the suite xml files; run with {@code mvn test -Dsurefire.suiteXmlFiles=src/main/test/java/runners/offline.xml}.
+ * Listed in offline.xml; run with {@code mvn test -Dsurefire.suiteXmlFiles=src/main/test/java/runners/offline.xml}.
  */
 public class AcceptedSideMenuTextsTest {
 
