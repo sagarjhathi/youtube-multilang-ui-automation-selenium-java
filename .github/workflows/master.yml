@@ -1,4 +1,4 @@
-# How this pipeline runs (details in docs/ci-failure-visibility.md):
+# How this pipeline runs:
 #
 #   offline-checks  ->  test (4 shards, one per TestNG group)  ->  publish
 #
@@ -112,7 +112,6 @@ jobs:
       matrix:
         group: [side-menu-expanded, side-menu-collapsed, settings-region, global-filter]
     env:
-      REPORT_BASE: "/youtube-multi-lang-ui-validator-automation/"
       IS_CRON: ${{ github.event_name == 'schedule' }}   # "true" only for the nightly run
     steps:
       # Health check, manual runs only: this shard stops before any test, like a cancelled shard.
@@ -133,15 +132,18 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: maven
 
+      # continue-on-error: a missing secret (pull request from a fork, Dependabot) or an unreachable webhook must
+      # not turn the shard red before its tests start.
       - name: Notify Discord – Start of Test
         if: always()
+        continue-on-error: true
         shell: bash
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           timestamp=$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p IST")
-          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**CI Test Started - ${{ github.job }}**\\n Triggered by: ${{ github.actor }}\\n Branch: ${{ github.ref_name }}\\n Start Time: $timestamp\\n [View Run]($runUrl)\"}" "$DISCORD_WEBHOOK"
+          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**CI Test Started - ${{ matrix.group }}**\\n Triggered by: ${{ github.actor }}\\n Branch: ${{ github.ref_name }}\\n Start Time: $timestamp\\n [View Run]($runUrl)\"}" "$DISCORD_WEBHOOK"
 
       # The tests read RUN_TIMESTAMP for the name of their run folder (same format as a local run)
       - name: Set RUN_TIMESTAMP
@@ -260,7 +262,7 @@ jobs:
       - name: Set up Node (for the Allure CLI)
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Generate merged Allure report
         run: |
@@ -413,7 +415,19 @@ jobs:
         run: |
           runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           timestamp=$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p IST")
-          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**Report Publish - ${{ job.status }}**\\n Tests job: ${{ needs.test.result }}\\n Trigger: ${{ github.event_name }}\\n Branch: ${{ github.ref_name }}\\n Time: $timestamp\\n [View Run]($runUrl)\"}" "$DISCORD_WEBHOOK"
+
+          # The problems found by the coverage check (empty when there are none), kept to one short plain line.
+          problems=$(head -c 300 coverage-message.txt 2>/dev/null | tr -d '\r\n' | sed 's/["\\]//g')
+          problemLine=""
+          if [ -n "$problems" ]; then problemLine="\\n Problems: $problems"; fi
+
+          # The hub page is only published by a push or a manual run, and a canary run does not replace it.
+          reportLine=""
+          if [ "${{ github.event_name }}" != "pull_request" ] && [ "${{ needs.offline-checks.outputs.canary }}" != "true" ]; then
+            reportLine="\\n [Report hub](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/)"
+          fi
+
+          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**Report Publish - ${{ job.status }}**\\n Tests job: ${{ needs.test.result }}$problemLine\\n Trigger: ${{ github.event_name }}\\n Branch: ${{ github.ref_name }}\\n Time: $timestamp\\n [View Run]($runUrl)$reportLine\"}" "$DISCORD_WEBHOOK"
 
   # The shards and publish are skipped when the offline checks fail, and the publish job holds the result message,
   # so this job is what tells Discord about that case.
@@ -431,4 +445,4 @@ jobs:
         run: |
           runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           timestamp=$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p IST")
-          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**Offline checks - ${{ needs.offline-checks.result }}**\n Tests and report publish were skipped, the allowed side-menu data needs a fix\n Trigger: ${{ github.event_name }}\n Branch: ${{ github.ref_name }}\n Time: $timestamp\n [View Run]($runUrl)\"}" "$DISCORD_WEBHOOK"
+          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**Offline checks - ${{ needs.offline-checks.result }}**\n Tests and report publish were skipped, the offline checks (data sheets and logic tests) need a fix\n Trigger: ${{ github.event_name }}\n Branch: ${{ github.ref_name }}\n Time: $timestamp\n [View Run]($runUrl)\"}" "$DISCORD_WEBHOOK"
