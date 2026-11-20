@@ -8,6 +8,10 @@
 #                   deploys to gh-pages. It runs even when shards failed, and it stays green. The red shard is
 #                   what makes the run red.
 #
+# Discord messages (webhook in the repository secret DISCORD_WEBHOOK): each shard says when it starts, publish says
+# how the run ended (with the problems and the report hub link), and a separate job reports a failed offline-checks.
+# A Discord problem never fails a job.
+#
 # Manual runs (Actions > CI Pipeline > Run workflow) have three switches, see the descriptions below.
 
 name: CI Pipeline
@@ -57,7 +61,7 @@ jobs:
       tests: ${{ steps.tests.outputs.names }}     # the tests the shards together must run, read by publish
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # A canary run is a manual run with the "canary" input, or CANARY=true in masterdata.properties
       - name: Detect canary run
@@ -81,7 +85,7 @@ jobs:
           echo "names=$names" >> "$GITHUB_OUTPUT"
 
       - name: Set up JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
@@ -123,10 +127,10 @@ jobs:
           exit 1
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
@@ -182,7 +186,7 @@ jobs:
       # the whole WORKDIR when no run_* folder was found.
       - name: Upload test artifacts
         if: always() && env.RUN_FOLDER != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: extent-${{ matrix.group }}
           path: ${{ env.WORKDIR }}/${{ env.RUN_FOLDER }}
@@ -191,7 +195,7 @@ jobs:
 
       - name: Upload Allure results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: allure-results-${{ matrix.group }}
           path: ${{ env.WORKDIR }}/target/allure-results
@@ -246,21 +250,21 @@ jobs:
 
       # Each shard's Extent run folder lands in its own subfolder: shards/extent-<group>/
       - name: Download Extent reports (all shards)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: extent-*
           path: shards
 
       # Allure result files have unique names, so all shards are merged into one folder
       - name: Download Allure results (all shards)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: allure-results-*
           path: allure-results
           merge-multiple: true
 
       - name: Set up Node (for the Allure CLI)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
 
@@ -307,14 +311,14 @@ jobs:
       # only the hub page template, in its own folder so the downloaded reports are not touched
       - name: Checkout hub page template
         if: github.event_name != 'pull_request' && needs.offline-checks.outputs.canary != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           sparse-checkout: .github/pages
           path: source
 
       - name: Checkout gh-pages
         if: github.event_name != 'pull_request'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           clean: false
           ref: gh-pages
