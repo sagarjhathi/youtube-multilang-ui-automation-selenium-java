@@ -1,0 +1,899 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title></title>
+<link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/gh/extent-framework/extent-github-cdn@b00a2d0486596e73dd7326beacf352c639623a0e/commons/img/logo.png">
+<link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/extent-framework/extent-github-cdn@b00a2d0486596e73dd7326beacf352c639623a0e/commons/img/logo.png">
+<link href="https://cdn.jsdelivr.net/gh/extent-framework/extent-github-cdn@ce8b10435bcbae260c334c0d0c6b61d2c19b6168/spark/css/spark-style.css" rel="stylesheet" />
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/gh/extent-framework/extent-github-cdn@7cc78ce/spark/js/jsontree.js"></script>
+<style type="text/css"></style></head><body class="spa -report dark">
+  <div class="app">
+    <div class="layout">
+<div class="header navbar">
+<div class="vheader">
+<div class="nav-logo">
+<a href="#">
+<div class="logo" style="background-image: url('https://cdn.jsdelivr.net/gh/extent-framework/extent-github-cdn@b00a2d0486596e73dd7326beacf352c639623a0e/commons/img/logo.png')"></div>
+</a>
+</div>
+<ul class="nav-left">
+<li class="search-box">
+<a class="search-toggle" href="#">
+<i class="search-icon fa fa-search"></i>
+<i class="search-icon-close fa fa-close"></i>
+</a>
+</li>
+<li class="search-input"><input id="search-tests" class="form-control" type="text" placeholder="Search..."></li>
+</ul>
+<ul class="nav-right">
+<li class="m-r-10">
+<a href="#"><span class="badge badge-primary"></span></a>
+</li>
+<li class="m-r-10">
+<a href="#"><span class="badge badge-primary">Nov 1, 2026 10:14:55 AM</span></a>
+</li>
+</ul>
+</div>
+</div><div class="side-nav">
+<div class="side-nav-inner">
+<ul class="side-nav-menu">
+<li class="nav-item dropdown" onclick="toggleView('test-view')">
+<a id="nav-test" class="dropdown-toggle" href="#">
+<span class="ico"><i class="fa fa-list"></i></span>
+</a>
+</li>
+<li class="nav-item dropdown" onclick="toggleView('exception-view')">
+<a id="nav-exception" class="dropdown-toggle" href="#">
+<span class="ico"><i class="fa fa-bug"></i></span>
+</a>
+</li>
+<li class="nav-item dropdown" onclick="toggleView('dashboard-view')">
+<a id="nav-dashboard" class="dropdown-toggle" href="#">
+<span class="ico"><i class="fa fa-bar-chart"></i></span>
+</a>
+</li>
+</ul>
+</div>
+</div>      <div class="vcontainer">
+        <div class="main-content">
+<div class="test-wrapper row view test-view">
+  <div class="test-list">
+    <div class="test-list-tools">
+<ul class="tools pull-left">
+<li><a href="#"><span class="font-size-14">Tests</span></a></li>
+</ul>
+<ul class="tools text-right">
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-exclamation-circle"></i></a>
+<ul id="status-toggle" class="dropdown-menu dropdown-md p-v-0">
+<a class="dropdown-item" status="fail" href="#"><span>Fail</span><span class="status danger"></span></a>
+<div class="dropdown-divider"></div>
+<a status="clear" class="dropdown-item" href="#"><span>Clear</span><span class="pull-right"><i class="fa fa-close"></i></span></a>
+</ul>
+</li>
+</ul>
+</div>    <div class="test-list-wrapper scrollable">
+      <ul class="test-list-item">
+        <li class="test-item"  status="fail" test-id="1"
+          author=""
+          tag=""
+          device="">
+          <div class="test-detail">
+            <p class="name">verifyingSideMenuText_Expanded_10-14-55</p>
+            <p class="text-sm">
+              <span>10:15:08 AM</span> / <span>00:01:25:367</span>
+              <span class="badge fail-bg log float-right">Fail</span>
+            </p>
+          </div>
+          <div class="test-contents d-none">
+<div class="detail-head">
+<div class="p-v-10">
+<div class="info">
+<h5 class="test-status text-fail">verifyingSideMenuText_Expanded_10-14-55</h5>
+<span class='badge badge-success'>11.01.2026 10:15:08 AM</span>
+<span class='badge badge-danger'>11.01.2026 10:16:34 AM</span>
+<span class='badge badge-default'>00:01:25:367</span>
+&middot; <span class='uri-anchor badge badge-default'>#test-id=1</span>
+<span title='Skip to the next failed step' class='badge badge-danger pointer float-right ne ml-1'><i class="fa fa-fast-forward"></i></span>
+<span title='Collapse all nodes' class='badge badge-default pointer float-right ct ml-1'><i class="fa fa-compress"></i></span>
+<span title='Expand all nodes' class='badge badge-default pointer float-right et'><i class="fa fa-expand"></i></span>
+</div>
+</div>
+</div><div class="detail-body mt-4">
+<table class="table table-sm">
+  <thead><tr><th class="status-col">Status</th><th class="timestamp-col">Timestamp</th><th class="details-col">Details</th></tr></thead>
+  <tbody>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          Summary | passed 9 of 10 | 1 failed | unknown version: 1 | usual version: 9
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log fail-bg">Fail</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          <textarea readonly class="code-block">java.lang.AssertionError: The following asserts failed:
+	Side menu text differs | language=Afrikaans expected [Tuis Kortvideo's Intekeninge Myne Geskiedenis Musiek Flieks en TV Regstreeks YouTube Premium YouTube Kids Aangeegeskiedenis CANARY] but found [Tuis Kortvideo's Intekeninge Myne Geskiedenis Musiek Flieks en TV Regstreeks YouTube Premium YouTube Kids Aangeegeskiedenis]
+	at org.testng.asserts.SoftAssert.assertAll(SoftAssert.java:46)
+	at org.testng.asserts.SoftAssert.assertAll(SoftAssert.java:30)
+	at main.test.java.tests.YtMasterTests.verifyingSideMenuText_Expanded(YtMasterTests.java:125)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:141)
+	at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:686)
+	at org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:230)
+	at org.testng.internal.invokers.MethodRunner.runInSequence(MethodRunner.java:63)
+	at org.testng.internal.invokers.TestInvoker$MethodInvocationAgent.invoke(TestInvoker.java:992)
+	at org.testng.internal.invokers.TestInvoker.invokeTestMethods(TestInvoker.java:203)
+	at org.testng.internal.invokers.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:154)
+	at org.testng.internal.invokers.TestMethodWorker.run(TestMethodWorker.java:134)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at org.testng.internal.thread.graph.TestNGFutureTask.run(TestNGFutureTask.java:22)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1095)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:619)
+	at java.base/java.lang.Thread.run(Thread.java:1447)
+</textarea>
+          
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          📂 Logs:
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          📄 <a href='../logs/verifyingSideMenuText_Expanded_10-14-55/verifyingSideMenuText_Expanded_10-14-55.log' target='_blank'>verifyingSideMenuText_Expanded_10-14-55.log</a>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          📸 Screenshots:
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/291920390900.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/291920390900.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/297056043000.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/297056043000.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/305419554100.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/305419554100.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/308987346100.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/308987346100.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/313563625700.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/313563625700.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/316766034100.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/316766034100.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/320908702400.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/320908702400.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/323685243100.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/323685243100.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/327971521200.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/327971521200.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/331596901600.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/331596901600.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/335624637100.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/335624637100.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/338740945200.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/338740945200.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/342837597900.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/342837597900.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/345909399700.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/345909399700.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/350216886500.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/350216886500.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/352981736600.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/352981736600.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/357191304000.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/357191304000.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/360065875100.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/360065875100.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/364274979900.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/364274979900.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:34 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuText_Expanded_10-14-55/367073678900.png' src="../screenshots/verifyingSideMenuText_Expanded_10-14-55/367073678900.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+</div>
+          </div>
+        </li>
+        <li class="test-item"  status="fail" test-id="2"
+          author=""
+          tag=""
+          device="">
+          <div class="test-detail">
+            <p class="name">verifyingSideMenuLanguage_Expanded_10-14-55</p>
+            <p class="text-sm">
+              <span>10:15:08 AM</span> / <span>00:01:23:136</span>
+              <span class="badge fail-bg log float-right">Fail</span>
+            </p>
+          </div>
+          <div class="test-contents d-none">
+<div class="detail-head">
+<div class="p-v-10">
+<div class="info">
+<h5 class="test-status text-fail">verifyingSideMenuLanguage_Expanded_10-14-55</h5>
+<span class='badge badge-success'>11.01.2026 10:15:08 AM</span>
+<span class='badge badge-danger'>11.01.2026 10:16:31 AM</span>
+<span class='badge badge-default'>00:01:23:136</span>
+&middot; <span class='uri-anchor badge badge-default'>#test-id=2</span>
+<span title='Skip to the next failed step' class='badge badge-danger pointer float-right ne ml-1'><i class="fa fa-fast-forward"></i></span>
+<span title='Collapse all nodes' class='badge badge-default pointer float-right ct ml-1'><i class="fa fa-compress"></i></span>
+<span title='Expand all nodes' class='badge badge-default pointer float-right et'><i class="fa fa-expand"></i></span>
+</div>
+</div>
+</div><div class="detail-body mt-4">
+<table class="table table-sm">
+  <thead><tr><th class="status-col">Status</th><th class="timestamp-col">Timestamp</th><th class="details-col">Details</th></tr></thead>
+  <tbody>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          Summary | passed 8 of 10 | 2 failed | detection skipped: 1
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log fail-bg">Fail</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          <textarea readonly class="code-block">java.lang.AssertionError: The following asserts failed:
+	Lingua detection differs | language=Azərbaycan expected [AZERBAIJANI CANARY] but found [AZERBAIJANI],
+	Html lang attribute differs | language=Bahasa Indonesia expected [id-ID CANARY] but found [id-ID]
+	at org.testng.asserts.SoftAssert.assertAll(SoftAssert.java:46)
+	at org.testng.asserts.SoftAssert.assertAll(SoftAssert.java:30)
+	at main.test.java.tests.YtMasterTests.verifyingSideMenuLanguage_Expanded(YtMasterTests.java:233)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:141)
+	at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:686)
+	at org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:230)
+	at org.testng.internal.invokers.MethodRunner.runInSequence(MethodRunner.java:63)
+	at org.testng.internal.invokers.TestInvoker$MethodInvocationAgent.invoke(TestInvoker.java:992)
+	at org.testng.internal.invokers.TestInvoker.invokeTestMethods(TestInvoker.java:203)
+	at org.testng.internal.invokers.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:154)
+	at org.testng.internal.invokers.TestMethodWorker.run(TestMethodWorker.java:134)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at org.testng.internal.thread.graph.TestNGFutureTask.run(TestNGFutureTask.java:22)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1095)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:619)
+	at java.base/java.lang.Thread.run(Thread.java:1447)
+</textarea>
+          
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          📂 Logs:
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          📄 <a href='../logs/verifyingSideMenuLanguage_Expanded_10-14-55/verifyingSideMenuLanguage_Expanded_10-14-55.log' target='_blank'>verifyingSideMenuLanguage_Expanded_10-14-55.log</a>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          📸 Screenshots:
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/296070338700.png' src="../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/296070338700.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/310945849300.png' src="../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/310945849300.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/317778698400.png' src="../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/317778698400.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/324714596600.png' src="../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/324714596600.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/331109696600.png' src="../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/331109696600.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/337426732800.png' src="../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/337426732800.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/343879090700.png' src="../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/343879090700.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/351093539400.png' src="../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/351093539400.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/357815889600.png' src="../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/357815889600.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+      <tr class="event-row">
+        <td><span class="badge log info-bg">Info</span></td>
+        <td>10:16:31 AM</td>
+        <td>
+          
+    <div class="row mb-3"><div class="col-md-3">
+    
+
+<img data-featherlight='../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/364517214200.png' src="../screenshots/verifyingSideMenuLanguage_Expanded_10-14-55/364517214200.png">
+  
+    
+
+    </div></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+<div class="test-content scrollable">
+<div class="test-content-tools">
+<ul><li><a class="back-to-test" href="#"><i class="fa fa-arrow-left"></i></a></li></ul>
+</div>
+<div class="test-content-detail"><div class="detail-body"></div></div>
+</div></div>
+<div class="test-wrapper row view exception-view attributes-view">
+<div class="test-list">
+<div class="test-list-tools">
+<ul class="tools pull-left"><li><a href=""><span class="font-size-14">Exception</span></a></li></ul>
+<ul class="tools text-right"><li><a href="#"><span class="badge badge-primary">1</span></a></li></ul>
+</div>
+<div class="test-list-wrapper scrollable">
+<ul class="test-list-item">
+<li class="test-item">
+<div class="test-detail">
+<span class="meta">
+<span class='badge log badge-danger'>2</span>
+</span>
+<p class="name">java.lang.AssertionError</p>
+<p class="duration text-sm">2 tests</p>
+</div>
+<div class="test-contents d-none">
+<div class="info">
+<h4>java.lang.AssertionError</h4>
+<span status="fail" class='badge log badge-danger'>2 failed</span>
+</div>
+<table class='table table-sm mt-4'>
+<thead>
+<tr>
+<th class="status-col">Status</th>
+<th class="timestamp-col">Timestamp</th>
+<th>TestName</th>
+</tr>
+</thead>
+<tbody>
+<tr class="tag-test-status" status="fail">
+<td><span class="badge log fail-bg">Fail</span></td>
+<td>10:15:08 AM</td>
+<td>
+<a href="#" class="linked" test-id='2' id='2'>verifyingSideMenuLanguage_Expanded_10-14-55</a>
+</td>
+</tr>
+<tr class="tag-test-status" status="fail">
+<td><span class="badge log fail-bg">Fail</span></td>
+<td>10:15:08 AM</td>
+<td>
+<a href="#" class="linked" test-id='1' id='1'>verifyingSideMenuText_Expanded_10-14-55</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="test-content scrollable">
+<div class="test-content-detail">
+<div class="detail-body"></div>
+</div>
+</div>
+</div><div class="container-fluid p-4 view dashboard-view">
+<div class="row">
+<div class="col-md-3">
+<div class="card"><div class="card-body">
+<p class="m-b-0">Started</p>
+<h3>Nov 1, 2026 10:14:55 AM</h3>
+</div></div>
+</div>
+<div class="col-md-3">
+<div class="card"><div class="card-body">
+<p class="m-b-0">Ended</p>
+<h3>Nov 1, 2026 10:16:34 AM</h3>
+</div></div>
+</div>
+<div class="col-md-3">
+<div class="card"><div class="card-body">
+<p class="m-b-0 text-pass">Tests Passed</p>
+<h3>0</h3>
+</div></div>
+</div>
+<div class="col-md-3">
+<div class="card"><div class="card-body">
+<p class="m-b-0 text-fail">Tests Failed</p>
+<h3>2</h3>
+</div></div>
+</div>
+</div>
+<div class="row">
+<div class="col-md-6">
+<div class="card">
+<div class="card-header">
+<h6 class="card-title">Tests</h6>
+</div>
+<div class="card-body">
+<div class="">
+<canvas id='parent-analysis' width='115' height='90'></canvas>
+</div>
+</div>
+<div class="card-footer">
+<div><small data-tooltip='0%'>
+<b>0</b> tests passed
+</small>
+</div>
+<div>
+<small data-tooltip='100%'><b>2</b> tests failed,
+<b>0</b> skipped, <b data-tooltip='0%'>0</b> others
+</small>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="card">
+<div class="card-header">
+<h6 class="card-title">Log events</h6>
+</div>
+<div class="card-body">
+<div class="">
+<canvas id='events-analysis' width='115' height='90'></canvas>
+</div>
+</div>
+<div class="card-footer">
+<div><small data-tooltip='0%'><b>0</b> events passed</small></div>
+<div>
+<small data-tooltip='5%'><b>2</b> events failed,
+<b data-tooltip='%'>38</b> others
+</small>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="row"><div class="col-md-12">
+<div class="card"><div class="card-header"><p>Timeline</p></div>
+<div class="card-body pt-0"><div>
+<canvas id="timeline" height="120"></canvas>
+</div></div>
+</div>
+</div></div>
+<script>
+var timeline = {
+"verifyingSideMenuText_Expanded_10-14-55":85.367,"verifyingSideMenuLanguage_Expanded_10-14-55":83.136
+};
+</script>
+<div class="row">
+</div>
+</div>
+<script>
+var statusGroup = {
+parentCount: 5,
+passParent: 0,
+failParent: 2,
+warningParent: 0,
+skipParent: 0,
+childCount: 5,
+passChild: 0,
+failChild: 0,
+warningChild: 0,
+skipChild: 0,
+infoChild: 0,
+grandChildCount: 5,
+passGrandChild: 0,
+failGrandChild: 0,
+warningGrandChild: 0,
+skipGrandChild: 0,
+infoGrandChild: 0,
+eventsCount: 5,
+passEvents: 0,
+failEvents: 2,
+warningEvents: 0,
+skipEvents: 0,
+infoEvents: 38
+};
+</script>        </div>
+      </div>
+    </div>
+  </div>
+<script src="https://cdn.jsdelivr.net/gh/extent-framework/extent-github-cdn@c05cd28cde1617b9d0c05a831daff6cb97fd9fd5/spark/js/spark-script.js"></script>
+<script type="text/javascript"></script></body>
+</html>
