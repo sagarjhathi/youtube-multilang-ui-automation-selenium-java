@@ -159,7 +159,7 @@ Each execution produces one clean, timestamped run folder:
 run_<timestamp>/
   reports/ExtentReport.html
   logs/<testName>/<testName>.log
-  screenshots/<testName>/<step>.png
+  screenshots/<testName>/<step>.jpg
 ```
 
 Allure raw results are written separately to `target/allure-results/`.

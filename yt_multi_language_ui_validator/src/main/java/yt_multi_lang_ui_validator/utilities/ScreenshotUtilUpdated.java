@@ -36,7 +36,9 @@ public class ScreenshotUtilUpdated {
 	        	File folder = new File(screenShotPath);
 	        	folder.mkdirs();
 	
-	        	String finalPath= screenShotPath + File.separator + ThreadContext.get("testNameShort")+System.nanoTime()+".png";
+	        	// compressed screenshots are saved as .jpg (PNG ignores the quality setting), uncompressed ones stay .png
+	        	String extension = ConfigManager.getBoolean("compressImage", false) ? ".jpg" : ".png";
+	        	String finalPath= screenShotPath + File.separator + ThreadContext.get("testNameShort")+System.nanoTime()+extension;
 	        		System.out.println(finalPath+"   -->> final path if param exist");
 	        	
 	
@@ -53,6 +55,7 @@ public class ScreenshotUtilUpdated {
 	                  		ImageCompressor.compressImage(src, finalPath,parseImageQuality);
 	                  	  }catch(Exception e) {
 	                  		  log.warn("[{}] compression quality / compressImage method failed, handling it the default way[No compression].", ThreadContext.get("testName"));
+	                  		  finalPath = finalPath.replaceAll("\\.jpg$", ".png"); // the raw file is a PNG
 	                  		  FileUtils.copyFile(src, new File(finalPath));
 	                  	  }
 	                	  

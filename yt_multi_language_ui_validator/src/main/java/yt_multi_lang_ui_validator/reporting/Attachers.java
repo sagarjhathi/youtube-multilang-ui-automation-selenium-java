@@ -62,7 +62,9 @@ public class Attachers {
 
 	          for (File img : allFilesImages) {
 
-	              if (img.getName().endsWith(".png")) {
+	              boolean isJpg = img.getName().endsWith(".jpg");
+
+	              if (isJpg || img.getName().endsWith(".png")) {
 
 	                  String relativeImgPath =
 	                          "../screenshots/" + testName + "/" + img.getName();
@@ -75,7 +77,7 @@ public class Attachers {
 
 					        // Allure: copies the image into allure-results
                     try (InputStream in = Files.newInputStream(img.toPath())) {
-                        Allure.addAttachment(img.getName(), "image/png", in, "png");
+                        Allure.addAttachment(img.getName(), isJpg ? "image/jpeg" : "image/png", in, isJpg ? "jpg" : "png");
                     } catch (Exception e) {
                         System.err.println("Allure image attach failed for " + img.getName() + ": " + e.getMessage());
                     }

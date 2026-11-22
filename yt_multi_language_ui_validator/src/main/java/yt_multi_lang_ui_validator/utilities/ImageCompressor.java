@@ -12,6 +12,7 @@ public class ImageCompressor {
 		try {
 			Thumbnails.of(src)
 			.scale(1)
+			.outputFormat("jpg")
 			.outputQuality(outPutQuality)
 			.toFile(new File(outPutPath));
 		} catch (IOException e) {
