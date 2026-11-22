@@ -159,9 +159,6 @@ public class DriverManager {
 					if (ConfigManager.getBoolean("chrome.arg.disable_gpu", true)) {
 						options.addArguments("--disable-gpu");
 					}
-					if (ConfigManager.getBoolean("chrome.arg.disable_blink_features_automation_controlled", true)) {
-						options.addArguments("--disable-blink-features=AutomationControlled");
-					}
 					if (ConfigManager.getBoolean("chrome.arg.disable_dev_shm_usage", true)) {
 						options.addArguments("--disable-dev-shm-usage");
 					}

@@ -144,10 +144,15 @@ jobs:
         shell: bash
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          TITLE: "CI Test Started - ${{ matrix.group }}"
+          ACTOR: ${{ github.actor }}
+          BRANCH: ${{ github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          timestamp=$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p IST")
-          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**CI Test Started - ${{ matrix.group }}**\\n Triggered by: ${{ github.actor }}\\n Branch: ${{ github.ref_name }}\\n Start Time: $timestamp\\n [View Run]($runUrl)\"}" "$DISCORD_WEBHOOK"
+          if [ -z "$DISCORD_WEBHOOK" ]; then echo "No Discord webhook secret (DISCORD_WEBHOOK), message skipped"; exit 0; fi
+          timestamp=$(TZ='IST-5:30' date +"%Y-%m-%d %I:%M %p IST")
+          content=$(printf '%s\n' "**$TITLE**" "Triggered by: $ACTOR" "Branch: $BRANCH" "Start Time: $timestamp" "[View Run]($RUN_URL)")
+          jq -n --arg content "$content" '{content: $content}' | curl -sS --fail -H "Content-Type: application/json" -X POST -d @- "$DISCORD_WEBHOOK"
 
       # The tests read RUN_TIMESTAMP for the name of their run folder (same format as a local run)
       - name: Set RUN_TIMESTAMP
@@ -416,22 +421,32 @@ jobs:
         shell: bash
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          JOB_STATUS: ${{ job.status }}
+          TESTS_RESULT: ${{ needs.test.result }}
+          EVENT: ${{ github.event_name }}
+          BRANCH: ${{ github.ref_name }}
+          CANARY: ${{ needs.offline-checks.outputs.canary }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          HUB_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
         run: |
-          runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          timestamp=$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p IST")
+          if [ -z "$DISCORD_WEBHOOK" ]; then echo "No Discord webhook secret (DISCORD_WEBHOOK), message skipped"; exit 0; fi
+          timestamp=$(TZ='IST-5:30' date +"%Y-%m-%d %I:%M %p IST")
 
           # The problems found by the coverage check (empty when there are none), kept to one short plain line.
-          problems=$(head -c 300 coverage-message.txt 2>/dev/null | tr -d '\r\n' | sed 's/["\\]//g')
+          problems=$(head -c 300 coverage-message.txt 2>/dev/null | tr -d '\r\n')
           problemLine=""
-          if [ -n "$problems" ]; then problemLine="\\n Problems: $problems"; fi
+          if [ -n "$problems" ]; then problemLine=$(printf '\n%s' "Problems: $problems"); fi
 
           # The hub page is only published by a push or a manual run, and a canary run does not replace it.
           reportLine=""
-          if [ "${{ github.event_name }}" != "pull_request" ] && [ "${{ needs.offline-checks.outputs.canary }}" != "true" ]; then
-            reportLine="\\n [Report hub](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/)"
+          if [ "$EVENT" != "pull_request" ] && [ "$CANARY" != "true" ]; then
+            reportLine=$(printf '\n%s' "[Report hub]($HUB_URL)")
           fi
 
-          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**Report Publish - ${{ job.status }}**\\n Tests job: ${{ needs.test.result }}$problemLine\\n Trigger: ${{ github.event_name }}\\n Branch: ${{ github.ref_name }}\\n Time: $timestamp\\n [View Run]($runUrl)$reportLine\"}" "$DISCORD_WEBHOOK"
+          first=$(printf '%s\n' "**Report Publish - $JOB_STATUS**" "Tests job: $TESTS_RESULT")
+          rest=$(printf '%s\n' "Trigger: $EVENT" "Branch: $BRANCH" "Time: $timestamp" "[View Run]($RUN_URL)")
+          content="$first$problemLine"$'\n'"$rest$reportLine"
+          jq -n --arg content "$content" '{content: $content}' | curl -sS --fail -H "Content-Type: application/json" -X POST -d @- "$DISCORD_WEBHOOK"
 
   # The shards and publish are skipped when the offline checks fail, and the publish job holds the result message,
   # so this job is what tells Discord about that case.
@@ -446,7 +461,12 @@ jobs:
         shell: bash
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          OFFLINE_RESULT: ${{ needs.offline-checks.result }}
+          EVENT: ${{ github.event_name }}
+          BRANCH: ${{ github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          timestamp=$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p IST")
-          curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"**Offline checks - ${{ needs.offline-checks.result }}**\n Tests and report publish were skipped, the offline checks (data sheets and logic tests) need a fix\n Trigger: ${{ github.event_name }}\n Branch: ${{ github.ref_name }}\n Time: $timestamp\n [View Run]($runUrl)\"}" "$DISCORD_WEBHOOK"
+          if [ -z "$DISCORD_WEBHOOK" ]; then echo "No Discord webhook secret (DISCORD_WEBHOOK), message skipped"; exit 0; fi
+          timestamp=$(TZ='IST-5:30' date +"%Y-%m-%d %I:%M %p IST")
+          content=$(printf '%s\n' "**Offline checks - $OFFLINE_RESULT**" "Tests and report publish were skipped, the offline checks (data sheets and logic tests) need a fix" "Trigger: $EVENT" "Branch: $BRANCH" "Time: $timestamp" "[View Run]($RUN_URL)")
+          jq -n --arg content "$content" '{content: $content}' | curl -sS --fail -H "Content-Type: application/json" -X POST -d @- "$DISCORD_WEBHOOK"
