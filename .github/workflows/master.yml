@@ -38,7 +38,7 @@ on:
         type: boolean
         default: false
   schedule:
-    - cron: "7 18 * * *"   # 11:37 PM IST daily
+    - cron: "43 3 * * *"   # 09:13 AM IST daily (03:43 UTC: a quiet time, off the busy :00/:15/:30/:45 minutes)
 
 permissions:
   contents: write   # publish pushes the reports to the gh-pages branch
