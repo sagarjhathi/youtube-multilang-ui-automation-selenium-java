@@ -8,6 +8,7 @@
       <class name="main.test.java.tests.AcceptedSideMenuTextsTest"/>
       <class name="main.test.java.tests.CanaryTest"/>
       <class name="main.test.java.tests.DataIntegrityTest"/>
+      <class name="main.test.java.tests.ScreenshotNamingTest"/>
     </classes>
   </test>
 

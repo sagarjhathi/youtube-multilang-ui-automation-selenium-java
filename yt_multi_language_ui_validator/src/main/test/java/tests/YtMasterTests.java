@@ -58,14 +58,12 @@ public class YtMasterTests extends BaseTest{
 			try {
 				System.out.println(langText+" lang text from the sheet   "+(i+1));
 
-				ScreenshotUtilUpdated.capture();
 
 
 				landingPage.languageEntry(langText).click();
 
 				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 
@@ -103,7 +101,7 @@ public class YtMasterTests extends BaseTest{
 				System.out.println("========="+expectedData+" =====  Expected data from the sheet");
 				GenericUtility.logComparison("Side menu", langText, acceptedIndex>=0, actualData.trim().length(), "version: "+version);
 				guard.count(acceptedIndex==0?"usual version":acceptedIndex>0?"other version":"unknown version");
-				GenericUtility.softAssertEquals(softAssert, guard, actualData.trim(),expectedData.trim(),"Side menu text differs | language="+langText);
+				GenericUtility.softAssertEquals(softAssert, guard, langText, actualData.trim(),expectedData.trim(),"Side menu text differs | language="+langText);
 
 
 				landingPage.toggleSettingsMenu();
@@ -178,7 +176,6 @@ public class YtMasterTests extends BaseTest{
 
 				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 
@@ -279,7 +276,6 @@ public class YtMasterTests extends BaseTest{
 				waitUtility.waitForElementReady(landingPage.collapsedSideMenuEntries);
 				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 				List<WebElement> listOfSideMenu=landingPage.readCollapsedSideMenuEntries();
@@ -299,7 +295,7 @@ public class YtMasterTests extends BaseTest{
 
 
 				GenericUtility.logComparison("Collapsed side menu", langText, actualData.trim().equals(expectedData.trim()), actualData.trim().length(), null);
-				GenericUtility.softAssertEquals(softAssert, guard, actualData.trim(),expectedData.trim(),"Side menu text differs | language="+langText);
+				GenericUtility.softAssertEquals(softAssert, guard, langText, actualData.trim(),expectedData.trim(),"Side menu text differs | language="+langText);
 
 
 				landingPage.toggleSettingsMenu();
@@ -378,7 +374,6 @@ public class YtMasterTests extends BaseTest{
 
 				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 				List<WebElement> listOfSideMenu=landingPage.readCollapsedSideMenuEntries();
@@ -474,7 +469,7 @@ public class YtMasterTests extends BaseTest{
 
 				// landingPage.toggleSettingsMenu();
 				landingPage.openSettingsMenu();
-				ScreenshotUtilUpdated.capture();
+				ScreenshotUtilUpdated.hold(); // the menu is closed before the checks, a failed check keeps this picture of the open menu
 				// landingPage.toggleSettingsMenu();
 				//
 				// landingPage.toggleSettingsMenu();
@@ -596,7 +591,6 @@ public class YtMasterTests extends BaseTest{
 				locationRows.get(locationIndex).click();
 
 				landingPage.toggleSettingsMenu();
-				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 
@@ -609,11 +603,11 @@ public class YtMasterTests extends BaseTest{
 				System.out.println("applicable location is ==  "+applicableLocation+" Expected location  =="+expectedCountryCode+"  detected country code"+detectedCountryCode);
 				boolean codeMatches=java.util.Objects.equals(detectedCountryCode, expectedCountryCode);
 				GenericUtility.logComparison("Country code", locationText, codeMatches, detectedCountryCode==null ? 0 : detectedCountryCode.length(), "code: '"+detectedCountryCode+"'");
-				GenericUtility.softAssertEquals(softAssert, guard, detectedCountryCode, expectedCountryCode,"Country code differs | location="+locationText);
+				GenericUtility.softAssertEquals(softAssert, guard, locationText, detectedCountryCode, expectedCountryCode,"Country code differs | location="+locationText);
 				if(sheetCountryCode.isEmpty()) {
 					// only the United States has no code, an empty expected code on any other row would pass a failed read
 					guard.count("no code expected");
-					GenericUtility.softAssertEquals(softAssert, guard, locationText, "United States", "Expected country code is empty for \""+locationText+"\", only \"United States\" has none.");
+					GenericUtility.softAssertEquals(softAssert, guard, locationText, locationText, "United States", "Expected country code is empty for \""+locationText+"\", only \"United States\" has none.");
 				}
 
 				landingPage.toggleSettingsMenu();
@@ -678,14 +672,13 @@ public class YtMasterTests extends BaseTest{
 
 				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 
 
 				landingPage.openSearchFilter();
-				ScreenshotUtilUpdated.capture();
 				String globalSettingText=landingPage.readSearchFilterText();
+				ScreenshotUtilUpdated.hold(); // the popup is closed on the next line, a failed check keeps this picture of the open popup
 				landingPage.closeSearchFilter();
 
 
@@ -696,7 +689,7 @@ public class YtMasterTests extends BaseTest{
 				String actualNormalized=GenericUtility.normalizeText(actualValue);
 				String expectedNormalized=GenericUtility.normalizeText(expectedData);
 				GenericUtility.logComparison("Search filter", langText, actualNormalized.equals(expectedNormalized), actualNormalized.length(), null);
-				GenericUtility.softAssertEquals(softAssert, guard, actualNormalized, expectedNormalized, "Global filter text differs | language="+langText);
+				GenericUtility.softAssertEquals(softAssert, guard, langText, actualNormalized, expectedNormalized, "Global filter text differs | language="+langText);
 
 				guard.passed(langText);
 			} catch (Exception e) {
@@ -764,14 +757,13 @@ public class YtMasterTests extends BaseTest{
 
 				landingPage.toggleSettingsMenu();
 				landingPage.recoverSettingsMenuIfClosed();
-				ScreenshotUtilUpdated.capture();
 				landingPage.toggleSettingsMenu();
 
 
 
 				landingPage.openSearchFilter();
-				ScreenshotUtilUpdated.capture();
 				String globalSettingText=landingPage.readSearchFilterText();
+				ScreenshotUtilUpdated.hold(); // the popup is closed on the next line, a failed check keeps this picture of the open popup
 				landingPage.closeSearchFilter();
 
 

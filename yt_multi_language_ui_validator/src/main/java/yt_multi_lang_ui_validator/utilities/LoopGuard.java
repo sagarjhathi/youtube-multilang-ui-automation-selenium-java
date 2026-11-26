@@ -57,21 +57,35 @@ public class LoopGuard {
 	private int passedOnRetryCount = 0;
 	private int failedCount = 0;
 	private boolean itemMismatch = false;
+	private boolean checkShotTaken = false; // one picture per item attempt, however many of its checks fail
 	private final Map<String, Integer> counters = new LinkedHashMap<>();
 	// counts of the item being checked: added to the summary when the item ends, dropped when it is run again
 	private final Map<String, Integer> itemCounters = new LinkedHashMap<>();
 
 	public LoopGuard(SoftAssert softAssert) {
 		this.softAssert = softAssert;
+		ScreenshotUtilUpdated.dropHeld(); // a picture held by an earlier test on this thread does not belong to this loop
 	}
 
 	public boolean shouldStop() {
 		return stop;
 	}
 
-	/** Marks the current item as failed on a comparison. The soft assertion itself is made by the caller. */
-	public void mismatch() {
+	/** 1 = first try of the current item, 2 = the retry. Used in the names of the screenshots. */
+	public int attempt() {
+		return retrying ? 2 : 1;
+	}
+
+	/**
+	 * Marks the current item as failed on a comparison and keeps a picture of the page as it was checked.
+	 * The soft assertion itself is made by the caller.
+	 */
+	public void mismatch(String item) {
 		itemMismatch = true;
+		if (!checkShotTaken) {
+			checkShotTaken = true;
+			ScreenshotUtilUpdated.captureHeldOrNow("check-failed", item, attempt());
+		}
 	}
 
 	/** Counts a named event for the summary, e.g. count("detection skipped") or count("slot Live"). */
@@ -97,6 +111,8 @@ public class LoopGuard {
 			}
 		}
 		itemMismatch = false;
+		checkShotTaken = false;
+		ScreenshotUtilUpdated.dropHeld(); // a passed item needs no picture
 		commitItemCounters();
 		retrying = false;
 		environmentFailures = 0;
@@ -137,10 +153,17 @@ public class LoopGuard {
 	public boolean retryAfterFailure(String item, Exception e, Recovery recovery) {
 		log.error("[{}] {} failed | {}", ThreadContext.get("testName"), item, describe(e));
 
+		// picture of the broken page before the recovery resets it
+		ScreenshotUtilUpdated.capture("failed-before-recovery", item, attempt());
+		// the held picture and the check picture belong to the attempt that just ended
+		ScreenshotUtilUpdated.dropHeld();
+		checkShotTaken = false;
+
 		try {
 			recovery.run();
 		} catch (Exception recoveryError) {
 			log.error("[{}] could not recover the page | {}", ThreadContext.get("testName"), describe(recoveryError));
+			ScreenshotUtilUpdated.capture("recovery-failed", item, attempt());
 		}
 
 		// first failure: run the same item once more
@@ -171,6 +194,7 @@ public class LoopGuard {
 			softAssert.fail("Aborted at " + item + " | failures in a row: environment=" + environmentFailures
 					+ ", element/code=" + otherFailures + ", remaining items not checked");
 			stop = true;
+			ScreenshotUtilUpdated.capture("loop-aborted", item, 2); // only reached after the retry failed
 		}
 	}
 

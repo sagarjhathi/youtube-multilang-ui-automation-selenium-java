@@ -121,7 +121,7 @@ This project demonstrates:
 
 ### Reporting
 - **ExtentReports (Spark HTML)**
-  - Embedded screenshots
+  - Embedded screenshots of failures
   - Linked logs
   - Failure stack traces
   - Public hosting compatible
@@ -159,10 +159,21 @@ Each execution produces one clean, timestamped run folder:
 run_<timestamp>/
   reports/ExtentReport.html
   logs/<testName>/<testName>.log
-  screenshots/<testName>/<step>.jpg
+  screenshots/<testName>/s<NN>_<item>_<kind>_a<attempt>.jpg
 ```
 
 Allure raw results are written separately to `target/allure-results/`.
+
+### Screenshots of failures
+
+A picture is taken only where something went wrong, never for a passing item. It is taken right after the page was read (or right after the error) and before the next click or reload, so it shows the page as it was checked.
+
+- **File name:** `s03_Deutsch_check-failed_a1.jpg`: picture number of the test (the report lists them in this order), language or location, what went wrong, and the attempt (`a1` first try, `a2` the retry; left out outside the loops).
+- **Kinds:** `check-failed`, `failed-before-recovery`, `recovery-failed`, `loop-aborted`, `menu-not-open`, `menu-collapse-failed`, `menu-not-stable`, `lang-attr-unreadable`, `test-failed`.
+- **One picture per item attempt** for failed checks, however many of its checks fail. For the settings menu and the search filter popup, which are closed before the checks run, the picture is taken while they are open, kept in memory, and saved only if a check of that item fails.
+- **Limit:** at most 15 pictures per test (3 in a canary run); the rest are only logged.
+- **Note:** the log line written with each picture holds the url, page title, `readyState` and `<html lang>`.
+- A screenshot problem (closed browser, any error) is logged and never fails a test.
 
 No log mixing. No ambiguity.
 
@@ -355,7 +366,7 @@ Detect language & attributes
         |
 Validate expected data
         |
-Capture screenshots
+Capture screenshots (failures only)
         |
 Generate logs & report
         |
@@ -431,7 +442,7 @@ yt_multi_language_ui_validator/
     │   │   └── log4j2.xml
     │   └── test/java/
     │       ├── tests/           YtMasterTests, plus the offline tests (no browser):
-    │       │                    AcceptedSideMenuTextsTest, CanaryTest, DataIntegrityTest
+    │       │                    AcceptedSideMenuTextsTest, CanaryTest, DataIntegrityTest, ScreenshotNamingTest
     │       ├── retry/           RetryFailedTest, RetryListener
     │       └── runners/         testng.xml, lingua.xml, settings-options.xml, offline.xml
     └── test/resources/

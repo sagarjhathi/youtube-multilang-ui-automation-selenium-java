@@ -62,7 +62,7 @@ yt_multi_language_ui_validator/    the Maven project (run every mvn command from
   src/main/resources/data/          7 Excel sheets: LanguagesList, countryCodes, expectedSideMenuExpanded,
                                     expectedSideMenuCollapsed, expectedSearchFilter,
                                     ApplicableLanguageExpectedLanguage, ApplicableLanguageExpectedAttibute
-  src/main/test/java/tests/         YtMasterTests (9 LIVE tests), AcceptedSideMenuTextsTest, CanaryTest, DataIntegrityTest (23 OFFLINE tests)
+  src/main/test/java/tests/         YtMasterTests (9 LIVE tests), AcceptedSideMenuTextsTest, CanaryTest, DataIntegrityTest, ScreenshotNamingTest (30 OFFLINE tests)
   src/main/test/java/retry/         RetryFailedTest, RetryListener
   src/main/test/java/runners/       testng.xml (live, parallel methods, 3 threads), lingua.xml, settings-options.xml, offline.xml
   src/test/resources/masterdata.properties          run settings
@@ -70,7 +70,7 @@ yt_multi_language_ui_validator/    the Maven project (run every mvn command from
 
 Note the odd layout: tests live under `src/main/test/java`, not `src/test/java`; only `masterdata.properties` is under `src/test/resources`.
 
-**Test counts** (from `@Test` annotations and the offline run, 2026-11-22): 9 live tests in `YtMasterTests` (the country-code test is two methods, one per half of the countries); 23 offline tests = `AcceptedSideMenuTextsTest` 13 + `CanaryTest` 4 + `DataIntegrityTest` 6. The offline run reported 23 run, 0 failed, 0 skipped.
+**Test counts** (from `@Test` annotations and the offline run, 2026-11-22): 9 live tests in `YtMasterTests` (the country-code test is two methods, one per half of the countries); 30 offline tests = `AcceptedSideMenuTextsTest` 13 + `CanaryTest` 4 + `DataIntegrityTest` 6 + `ScreenshotNamingTest` 7 (added 2026-11-26). The offline run of 2026-11-26 reported 30 run, 0 failed, 0 skipped.
 
 **Git-ignored** (`.gitignore`): `docs/`, `.claude/`, `CLAUDE.local.md`, `.env`, `*.pem`, `*.key`, `target/`, `run_*/`, `test-output/`, `allure-results/`, `allure-report/`, `logs/`, `*.log`, `.metadata/`, `.vscode/`, `bin/`. **Tracked:** everything else, including `CLAUDE.md`. Only `CLAUDE.md` of the agent setup files is tracked; the rest are local and ignored.
 
@@ -81,7 +81,7 @@ Run from `yt_multi_language_ui_validator\` (where `pom.xml` is). Status: **verif
 | Purpose | Command | Status |
 |---|---|---|
 | Compile check | `mvn -q test-compile` | **verified**, exit 0 |
-| Offline suite (the fast check, no browser) | `mvn test "-Dsurefire.suiteXmlFiles=src/main/test/java/runners/offline.xml"` | **verified**: 23 run, 0 failed, 0 skipped, BUILD SUCCESS (prints log4j `FileAppender` ERROR lines because the log path is empty offline; the tests still pass) |
+| Offline suite (the fast check, no browser) | `mvn test "-Dsurefire.suiteXmlFiles=src/main/test/java/runners/offline.xml"` | **verified** 2026-11-26: 30 run, 0 failed, 0 skipped, BUILD SUCCESS (prints log4j `FileAppender` ERROR lines because the log path is empty offline; the tests still pass) |
 | Lint / format | none; the repo has no lint tool | verified by reading `pom.xml` |
 | One live group (4 shards in CI) | `mvn test -Dgroups=side-menu-expanded` (or `side-menu-collapsed`, `settings-region`, `global-filter`) | UNVERIFIED today; **LIVE, ask first** |
 | By detector type | `mvn test -Dgroups=lingua` / `-Dgroups=non-lingua` | README, UNVERIFIED today; **LIVE, ask first** |
@@ -113,13 +113,14 @@ Machine notes: Windows; no `python`, `jq` or `gh` on the owner's PC; use `curl` 
 ## 5. Conventions
 
 - **Layers:** tests -> page object (`pages/YtLandingPage`) -> `SafeActions` -> utilities (`utilities/`, `WaitUtility`) -> reporting (`TestListenerUpdated`, `Attachers`, Log4j). Each layer calls only the one below. Tests do not call raw Selenium actions that `SafeActions` covers.
-- **Naming:** live tests `verifying...` (for example `verifyingSearchFilterText`); offline tests are in `AcceptedSideMenuTextsTest`, `CanaryTest`, `DataIntegrityTest`. Test method names are read by other code (the `publish` job's lost-tests check): search the whole repo before renaming one. UNVERIFIED which other files depend on them.
+- **Naming:** live tests `verifying...` (for example `verifyingSearchFilterText`); offline tests are in `AcceptedSideMenuTextsTest`, `CanaryTest`, `DataIntegrityTest`, `ScreenshotNamingTest`. Test method names are read by other code (the `publish` job's lost-tests check): search the whole repo before renaming one. UNVERIFIED which other files depend on them.
 - **Style:** tab-indented Java, no formatter or linter is configured; do not add one unasked. Comments explain WHY. The owner wants changes kept simple, with easy to understand syntax.
 - **Test patterns:**
   - One test goes through all languages or locations. Use `SoftAssert` inside the loop (a wrong value is reported at the end and the loop continues) and a hard assert only outside loops (`softAssert.assertAll()` after the loop).
   - Each item runs inside `LoopGuard` (`passed()`, `retryAfterFailure()`, `shouldStop()`): one retry per item; stop after 3 environment failures or 5 other failures in a row.
   - Loops start at row 0 of the language list. Rows are found by NAME (`DataSheets.…get(langText)` through `SheetLookup`); a duplicate name stops at load, and a missing name or column throws an error that names the file, sheet and column.
   - Missing data or a missing page option throws; it never silently passes. Known exception: `YtMasterTests` `checkCountryCodes` (line ~574) returns early, with a log line, when its half has no locations (only with a very small `locationCount`). It is logged, not silent, but it checks nothing: see docs/STATUS.md known issues.
+  - Screenshots are evidence of failures only (`ScreenshotUtilUpdated`, readme "Screenshots of failures"): never for a passing item, taken before the next click, named `s<NN>_<item>_<kind>_a<attempt>`, at most 15 per test (3 in canary), never throwing. A check goes through `GenericUtility.softAssertEquals(..., item, ...)`, which keeps the picture; the settings menu and search filter tests call `ScreenshotUtilUpdated.hold()` while the menu or popup is open.
   - Texts are compared after normalization (`GenericUtility.normalizeText`). The expanded side menu accepts several versions of its text (see glossary: accepted side-menu texts).
 - **Git:** branches on `origin`: `master` (used), `canary`, `improve`, `cleanup-and-timeouts`, `cleanup/premium-config-surefire`, `ci/gate-on-offline-checks`, `ci/node24-actions`; `gh-pages` holds the published reports (never touch by hand). **The owner makes every commit and push.** No commit-message format or branching convention is defined here. This clone does not fetch `gh-pages` (refspec `^refs/heads/gh-pages`, set 2026-11-22) because it is about 135 MB per fetch.
 - **CI:** workflow `CI Pipeline`. Jobs: `offline-checks` (no browser; if it fails nothing else runs) -> `test` (matrix of 4 groups, `fail-fast: false`, 60 min limit) -> `publish` (merges reports, adds problems to the hub page and run summary, deploys to `gh-pages`, stays green even when shards failed) plus `notify-offline-failure`. Each shard ends with a step that fails the shard when the Maven step did not succeed or no tests ran (`master.yml` around lines 205-226). Triggers: push and pull_request on every branch, manual run with switches `canary`, `check_failed_tests`, `check_lost_shard`, and nightly cron `43 3 * * *` UTC (09:13 AM IST). `publish` has its own lock `gh-pages-publish`; pull requests build reports but never publish. Discord messages (secret `DISCORD_WEBHOOK`): each shard start, the publish result, offline-check failure; all `continue-on-error: true`.

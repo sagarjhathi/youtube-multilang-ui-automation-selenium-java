@@ -14,6 +14,7 @@ import main.java.yt_multi_lang_ui_validator.base.BasePage;
 import main.java.yt_multi_lang_ui_validator.config.ConfigManager;
 import main.java.yt_multi_lang_ui_validator.logger.LoggerUtility;
 import main.java.yt_multi_lang_ui_validator.safeActions.SafeActions;
+import main.java.yt_multi_lang_ui_validator.utilities.ScreenshotUtilUpdated;
 
 public class YtLandingPage  extends BasePage{
 
@@ -135,6 +136,7 @@ public class YtLandingPage  extends BasePage{
 		safeAct.safeFindElement(sideMenuButton).click();
 		if (!sideMenuCollapsesWithin(3)) {
 			log.warn("Side menu did not collapse, clicking left ellipses once more");
+			ScreenshotUtilUpdated.capture("menu-collapse-failed", "side menu", 0);
 			safeAct.safeFindElement(sideMenuButton).click();
 		}
 	}
@@ -250,6 +252,10 @@ public class YtLandingPage  extends BasePage{
 			elements = reRead;
 			text = reReadText;
 		}
+		if (identicalReads < MENU_STABLE_READS) {
+			log.warn("The menu never settled after {} extra reads, using the last read", MENU_MAX_EXTRA_READS);
+			ScreenshotUtilUpdated.capture("menu-not-stable", "menu read", 0);
+		}
 		return elements;
 	}
 
@@ -294,6 +300,7 @@ public class YtLandingPage  extends BasePage{
 	public void recoverSettingsMenuIfClosed() {
 		if (!settingsMenuOpensWithin(3)) {
 			log.warn("Settings menu is not open, opening it before using a dropdown inside it");
+			ScreenshotUtilUpdated.capture("menu-not-open", "settings menu", 0);
 			openSettingsMenu();
 		}
 	}

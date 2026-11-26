@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 
 import java.nio.file.Files;
+import java.util.Arrays;
 import com.aventstack.extentreports.MediaEntityBuilder;
 
 import io.qameta.allure.Allure;
@@ -55,6 +56,9 @@ public class Attachers {
 		 File screenshotFolder = new File(PathManager.getScreenshotPath(testName)!=null ?PathManager.getScreenshotPath(testName): "Default");
 
 	      File[] allFilesImages = screenshotFolder.listFiles();
+	      if (allFilesImages != null) {
+	          Arrays.sort(allFilesImages); // the names start with the picture number, so the report shows them in the order they were taken
+	      }
 
 	      if (allFilesImages != null && allFilesImages.length > 0) {
 

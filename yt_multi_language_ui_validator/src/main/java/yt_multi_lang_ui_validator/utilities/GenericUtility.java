@@ -36,6 +36,7 @@ public class GenericUtility extends BasePage {
             return langProp;
         } catch (Exception e) {
             log.error("Failed to read html lang attribute: {}", e.getMessage());
+            ScreenshotUtilUpdated.capture("lang-attr-unreadable", "page", 0);
             return null;
         }
     }
@@ -298,10 +299,10 @@ public class GenericUtility extends BasePage {
 	 * Soft assertion that also tells the loop guard when the values differ, so the item is counted as failed in the
 	 * summary instead of passed.
 	 */
-	public static void softAssertEquals(org.testng.asserts.SoftAssert softAssert, LoopGuard guard, Object actual, Object expected, String message) {
+	public static void softAssertEquals(org.testng.asserts.SoftAssert softAssert, LoopGuard guard, String item, Object actual, Object expected, String message) {
 		softAssert.assertEquals(actual, expected, message);
 		if (!java.util.Objects.equals(actual, expected)) {
-			guard.mismatch();
+			guard.mismatch(item); // also keeps the picture of the page as it was checked
 		}
 	}
 
@@ -362,7 +363,7 @@ public class GenericUtility extends BasePage {
 	 */
 	public void assertLanguageDetectedAndAttributeMatch(org.testng.asserts.SoftAssert softAssert, LoopGuard guard, String langText,
 			String detectedLanguage, String expectedLanguage, String detectedAttribute, String expectedAttribute, boolean sideMenuText, boolean collapsedMenu) {
-		softAssertEquals(softAssert, guard, detectedAttribute, expectedAttribute, "Html lang attribute differs | language=" + langText);
+		softAssertEquals(softAssert, guard, langText, detectedAttribute, expectedAttribute, "Html lang attribute differs | language=" + langText);
 		boolean attributeMatch = java.util.Objects.equals(detectedAttribute, expectedAttribute);
 		if (sideMenuText && ConfigManager.getBoolean("skipFlakyLanguageDetection", true) && isFlakyDetectionLanguage(langText, collapsedMenu)) {
 			log.info("[{}] Skipping language detection check for flaky language={}", ThreadContext.get("testName"), langText);
@@ -370,7 +371,7 @@ public class GenericUtility extends BasePage {
 			logLanguageCheck(langText, attributeMatch, detectedAttribute, expectedAttribute, "detection skipped (flaky), Lingua said " + detectedLanguage);
 			return;
 		}
-		softAssertEquals(softAssert, guard, detectedLanguage, expectedLanguage, "Lingua detection differs | language=" + langText);
+		softAssertEquals(softAssert, guard, langText, detectedLanguage, expectedLanguage, "Lingua detection differs | language=" + langText);
 		boolean detectionMatch = java.util.Objects.equals(detectedLanguage, expectedLanguage);
 		logLanguageCheck(langText, attributeMatch && detectionMatch, detectedAttribute, expectedAttribute,
 				"detection " + detectedLanguage + (detectionMatch ? " = " : " != ") + expectedLanguage);
